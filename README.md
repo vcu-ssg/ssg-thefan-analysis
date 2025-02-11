@@ -3,6 +3,8 @@
 This project is all about creating dashboards that inform about
 *The Fan*, a neighborhood in the near west end of Richmond, Virginia.
 
+[This project has a github page.](https://vcu-ssg.github.io/ssg-thefan-analysis/)
+
 ## Tasks:
 
 1. explore the site, focusing specifically on dashboard.
