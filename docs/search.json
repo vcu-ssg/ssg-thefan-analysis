@@ -4,14 +4,14 @@
     "href": "index.html",
     "title": "Welcome!",
     "section": "",
-    "text": "Neighborhoods in Richmond - A quick report exploring the GIS shapefile from City of Richmond containing a listing of neighborhoods in the City. The boundary for The Fan can be pulled from here and used to find addresses and parcels located within The fan."
+    "text": "Neighborhoods in Richmond - A quick report exploring the GIS shapefile from City of Richmond containing a listing of neighborhoods in the City. The boundary for The Fan can be pulled from here and used to find addresses and parcels located within The fan.\nSample Dashboard - A quick dashboard highlighting some of the dashboard features built into Quarto.\n\nThe top left panel contains a leaflet map of the fan. One can zoom in and out and pan around to explore the city or world.\nThe top right panel contains a display of the neighborhood shapefile downloaded from City of Richmond. Look at the report above for more details.\nthe cards across the bottom contain dummy data and in the code present different ways to create cards."
   },
   {
     "objectID": "index.html#reports",
     "href": "index.html#reports",
     "title": "Welcome!",
     "section": "",
-    "text": "Neighborhoods in Richmond - A quick report exploring the GIS shapefile from City of Richmond containing a listing of neighborhoods in the City. The boundary for The Fan can be pulled from here and used to find addresses and parcels located within The fan."
+    "text": "Neighborhoods in Richmond - A quick report exploring the GIS shapefile from City of Richmond containing a listing of neighborhoods in the City. The boundary for The Fan can be pulled from here and used to find addresses and parcels located within The fan.\nSample Dashboard - A quick dashboard highlighting some of the dashboard features built into Quarto.\n\nThe top left panel contains a leaflet map of the fan. One can zoom in and out and pan around to explore the city or world.\nThe top right panel contains a display of the neighborhood shapefile downloaded from City of Richmond. Look at the report above for more details.\nthe cards across the bottom contain dummy data and in the code present different ways to create cards."
   },
   {
     "objectID": "neighborhoods.html",
