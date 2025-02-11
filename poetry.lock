@@ -219,6 +219,21 @@ webencodings = "*"
 css = ["tinycss2 (>=1.1.0,<1.5)"]
 
 [[package]]
+name = "branca"
+version = "0.8.1"
+description = "Generate complex HTML+JS pages with Python"
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = [
+    {file = "branca-0.8.1-py3-none-any.whl", hash = "sha256:d29c5fab31f7c21a92e34bf3f854234e29fecdcf5d2df306b616f20d816be425"},
+    {file = "branca-0.8.1.tar.gz", hash = "sha256:ac397c2d79bd13af0d04193b26d5ed17031d27609a7f1fab50c438b8ae712390"},
+]
+
+[package.dependencies]
+jinja2 = ">=3"
+
+[[package]]
 name = "certifi"
 version = "2025.1.31"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -857,6 +872,25 @@ pyside6 = ["pyside6"]
 test = ["flaky", "ipyparallel", "pre-commit", "pytest (>=7.0)", "pytest-asyncio (>=0.23.5)", "pytest-cov", "pytest-timeout"]
 
 [[package]]
+name = "ipyleaflet"
+version = "0.19.2"
+description = "A Jupyter widget for dynamic Leaflet maps"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "ipyleaflet-0.19.2-py3-none-any.whl", hash = "sha256:7cc9157848baca2e1793b96e79f8bdb1aa7340521d2b7d8a62aa8bc30eab5278"},
+    {file = "ipyleaflet-0.19.2.tar.gz", hash = "sha256:b3b83fe3460e742964c2a5924ea7934365a3749bb75310ce388d45fd751372d2"},
+]
+
+[package.dependencies]
+branca = ">=0.5.0"
+ipywidgets = ">=7.6.0,<9"
+jupyter-leaflet = ">=0.19,<0.20"
+traittypes = ">=0.2.1,<3"
+xyzservices = ">=2021.8.1"
+
+[[package]]
 name = "ipython"
 version = "8.32.0"
 description = "IPython: Productive Interactive Computing"
@@ -1155,6 +1189,18 @@ traitlets = ">=5.3"
 cli = ["click", "rich"]
 docs = ["jupyterlite-sphinx", "myst-parser", "pydata-sphinx-theme (>=0.16)", "sphinx (>=8)", "sphinxcontrib-spelling"]
 test = ["click", "pre-commit", "pytest (>=7.0)", "pytest-asyncio (>=0.19.0)", "pytest-console-scripts", "rich"]
+
+[[package]]
+name = "jupyter-leaflet"
+version = "0.19.2"
+description = "ipyleaflet extensions for JupyterLab and Jupyter Notebook"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "jupyter_leaflet-0.19.2-py3-none-any.whl", hash = "sha256:0d57e15e80c08a4360f0cde0b4c490beddc5d422bb0e9bc1c0b4479d3fb725a6"},
+    {file = "jupyter_leaflet-0.19.2.tar.gz", hash = "sha256:b09b5ba48b1488cb61da37a6f558347269eb53ff6d64dc1a73e005ffc4420063"},
+]
 
 [[package]]
 name = "jupyter-lsp"
@@ -2982,6 +3028,24 @@ docs = ["myst-parser", "pydata-sphinx-theme", "sphinx"]
 test = ["argcomplete (>=3.0.3)", "mypy (>=1.7.0)", "pre-commit", "pytest (>=7.0,<8.2)", "pytest-mock", "pytest-mypy-testing"]
 
 [[package]]
+name = "traittypes"
+version = "0.2.1"
+description = "Scipy trait types"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "traittypes-0.2.1-py2.py3-none-any.whl", hash = "sha256:1340af133810b6eee1a2eb2e988f862b0d12b6c2d16f282aaf3207b782134c2e"},
+    {file = "traittypes-0.2.1.tar.gz", hash = "sha256:be6fa26294733e7489822ded4ae25da5b4824a8a7a0e0c2dccfde596e3489bd6"},
+]
+
+[package.dependencies]
+traitlets = ">=4.2.2"
+
+[package.extras]
+test = ["numpy", "pandas", "pytest", "xarray"]
+
+[[package]]
 name = "types-python-dateutil"
 version = "2.9.0.20241206"
 description = "Typing stubs for python-dateutil"
@@ -3115,7 +3179,19 @@ files = [
     {file = "widgetsnbextension-4.0.13.tar.gz", hash = "sha256:ffcb67bc9febd10234a362795f643927f4e0c05d9342c727b65d2384f8feacb6"},
 ]
 
+[[package]]
+name = "xyzservices"
+version = "2025.1.0"
+description = "Source of XYZ tiles providers"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "xyzservices-2025.1.0-py3-none-any.whl", hash = "sha256:fa599956c5ab32dad1689960b3bb08fdcdbe0252cc82d84fc60ae415dc648907"},
+    {file = "xyzservices-2025.1.0.tar.gz", hash = "sha256:5cdbb0907c20be1be066c6e2dc69c645842d1113a4e83e642065604a21f254ba"},
+]
+
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13"
-content-hash = "4830ffb3d3ccc4a7a1c25cf9d10de82ca9bf0bdbc50aada3d4103d1712e5b59d"
+content-hash = "4814e619e4a9558b214da1e694455f0dc859211f57b2c8645d791537fee5ca49"

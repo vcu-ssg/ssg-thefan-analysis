@@ -1,0 +1,66 @@
+---
+title: Example Dashboard
+format: dashboard
+---
+
+## Row {height=70%}
+
+```{python}
+from ipyleaflet import Map, basemaps, basemap_to_tiles
+lat = 37.5525
+long = -77.465556
+print("title=", f"The Fan District RVA: {lat}, {long}")
+Map(basemap=basemap_to_tiles(basemaps.OpenStreetMap.Mapnik),
+    center=(lat, long), zoom=15)
+```
+
+```{python}
+import matplotlib.pyplot as plt
+from fandu.geo_utils import load_shapefile_from_zip
+
+print("title=",f"City of Richmond Neighborhood Shapefile")
+gdf = load_shapefile_from_zip( zip_path="../data/Neighborhoods-shp.zip")
+fig, ax = plt.subplots( figsize=(10, 6) )
+gdf.plot(ax=ax, edgecolor="black", facecolor="lightgray")
+
+```
+
+## Row {height=30%}
+
+```{python}
+#| content: valuebox
+#| title: Parcels
+#| icon: pencil
+#| color: primary
+
+parcels = 1200
+dict(
+  value = parcels
+)
+```
+
+```{python}
+#| content: valuebox
+#| title: "Addresses"
+
+addresses = 1500
+
+dict(
+  icon = "chat",
+  color = "primary",
+  value = addresses
+)
+```
+
+
+```{python}
+#| content: valuebox
+#| title: "Members for the week"
+
+members = 650
+dict(
+  icon = "chat",
+  color = "primary",
+  value = members
+)
+```

@@ -1,5 +1,16 @@
 # Quarto.yml project file
 
+project:
+  type: website
+  output-dir: ../docs
+
+website:
+  title: "The Fan"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+
 format:
   html:
     html-math-method: katex
