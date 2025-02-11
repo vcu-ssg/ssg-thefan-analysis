@@ -5,11 +5,18 @@ This project is all about creating dashboards that inform about
 
 ## Tasks:
 
-* de
+1. explore the site, focusing specifically on dashboard.
+2. design a simple dashboard. 
+3. Learn about GIS file manipulation.
+4. Create subset shapefiles for addresses and parcels using The Fan shape from the neighborhood shapefile.
+5. Create a dashboard showing parcels and addresses for The Fan.
+6. Add cards to show counts of parcels and addresses.
+7. Add a card to show the total value of all properties in The Fan.
 
 ## Reports and Dashboards
 
 * Reports and dashboards for this project are created using [Quarto](https://quarto.org).  QMD files are stored in the *./reports* folder.
+* Outputs are written to the *./docs* folder for use by github pages.
 
 
 ## Data Sources
