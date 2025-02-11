@@ -1,0 +1,30 @@
+[project]
+name = "ssg-thefan-analysis"
+version = "0.1.0"
+description = "Data analysis and dashboards for The Fan"
+authors = [
+    {name = "John Leonard",email = "john@lowkeylabs.com"}
+]
+package-mode = false
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "matplotlib (>=3.10.0,<4.0.0)",
+    "plotly (>=6.0.0,<7.0.0)",
+    "pandas (>=2.2.3,<3.0.0)",
+    "geopandas (>=1.0.1,<2.0.0)",
+    "jupyter (>=1.1.1,<2.0.0)",
+    "click (>=8.1.8,<9.0.0)",
+    "tabulate (>=0.9.0,<0.10.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+packages = [{ include = "fandu" }]
+
+[tool.poetry.scripts]
+fandu = "fandu._main:cli"

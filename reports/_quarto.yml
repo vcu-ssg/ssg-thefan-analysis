@@ -1,0 +1,8 @@
+# Quarto.yml project file
+
+format:
+  html:
+    html-math-method: katex
+    smooth-scroll: true
+    embed-resources: true
+

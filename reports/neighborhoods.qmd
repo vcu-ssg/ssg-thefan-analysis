@@ -1,0 +1,45 @@
+---
+title: Neighborhood Shapefile
+date: last-modified
+---
+
+Display the neighborhood shapefile obtained from the [Richmond Geohub](https://richmond-geo-hub-cor.hub.arcgis.com/).
+
+## Shapefile plot
+
+Below is a plot of the boundaries in the shape file.  No formatting
+or cleaning is being done.  Later, one can pretty-up the plot
+by removing axes, adding shape titles or names, etc.
+
+```{python}
+#import os
+import matplotlib.pyplot as plt
+from fandu.geo_utils import load_shapefile_from_zip
+
+gdf = load_shapefile_from_zip( zip_path="../data/Neighborhoods-shp.zip")
+
+fig, ax = plt.subplots( figsize=(10, 6) )
+gdf.plot(ax=ax, edgecolor="black", facecolor="lightgray")
+
+```
+
+## Shapefile data
+
+The table below lists the regions in the shape file.
+
+```{python}
+from tabulate import tabulate
+from IPython.display import Markdown
+
+# Display available columns 
+#print("Available columns:", gdf.columns)  
+
+# Select relevant columns
+columns = ["ID", "Name", "District", "Class"]
+table_data = gdf[columns].values.tolist()
+
+# Generate a Markdown table
+Markdown(tabulate(table_data, headers=columns ) )
+
+
+```
