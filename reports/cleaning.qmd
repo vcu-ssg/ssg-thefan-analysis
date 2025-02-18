@@ -1,0 +1,59 @@
+---
+title: Export data cleaning
+date: last-modified
+---
+
+This report explores an export data file for the Fan District Association looking
+for data inconsistencies and overall metrics.
+
+## Initial data exploration
+
+```{python}
+#| echo: false
+from reports.utils import ExcelAnalyzer
+
+export_file_name = "../data/2025-02-17 Contacts Fan District Association.xls"
+metrics = ExcelAnalyzer( export_file_name )
+
+```
+
+## Overall summary of records
+
+```{python}
+metrics.summary()
+```
+
+## User IDs by level
+
+Only records marked with *Membership enabled = yes* are included in the list.
+
+```{python}
+metrics.count_membership_by_level()
+```
+
+## Bundles by level
+
+A *bundle* is a group of *user ids* that share a single membership. 
+
+```{python}
+metrics.count_bundles_by_level()
+```
+
+## Duplicate Emails
+
+Below is a list of user ID with duplicate emails.  This list
+is most probably clean.
+
+```{python}
+metrics.get_users_with_duplicate_emails()
+```
+
+
+## Duplicate names
+
+Below is a list of members with the same first and last names.  Note the *Membership enabled" column.  If *Membership enabled* is *yes* for both records, then this 
+record is a duplicate.
+```{python}
+metrics.get_users_with_duplicate_names()
+```
+
