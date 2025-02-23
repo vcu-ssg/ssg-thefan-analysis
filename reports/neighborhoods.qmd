@@ -11,17 +11,32 @@ Below is a plot of the boundaries in the shape file.  No formatting
 or cleaning is being done.  Later, one can pretty-up the plot
 by removing axes, adding shape titles or names, etc.
 
-Testing pushing!
-
 ```{python}
 #import os
+import sys
+import os
+
+# Add the project root to the Python path
+sys.path.append(os.path.abspath("..")) 
+
 import matplotlib.pyplot as plt
 from fandu.geo_utils import load_shapefile_from_zip
 
-gdf = load_shapefile_from_zip( zip_path="../data/Neighborhoods-shp.zip")
+# Load the full neighborhood shapefile
+gdf = load_shapefile_from_zip(zip_path="../data/Neighborhoods-shp.zip")
 
-fig, ax = plt.subplots( figsize=(10, 6) )
-gdf.plot(ax=ax, edgecolor="black", facecolor="lightgray")
+# Extract only "The Fan" boundary
+fan_gdf = gdf[gdf["Name"].str.strip().str.lower() == "the fan"]
+
+# Plot all neighborhoods
+fig, ax = plt.subplots(figsize=(10, 6))
+gdf.plot(ax=ax, edgecolor="black", facecolor="lightgray", alpha=0.5)  # Light gray for all neighborhoods
+
+# Highlight The Fan
+fan_gdf.plot(ax=ax, edgecolor="red", facecolor="none", linewidth=2)  # Red outline for The Fan
+
+plt.title("Richmond Neighborhoods (The Fan Highlighted in Red)")
+plt.show()
 
 ```
 
