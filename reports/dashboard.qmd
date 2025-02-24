@@ -6,12 +6,76 @@ format: dashboard
 ## Row {height=70%}
 
 ```{python}
-from ipyleaflet import Map, basemaps, basemap_to_tiles
-lat = 37.5525
-long = -77.465556
-print("title=", f"The Fan District RVA: {lat}, {long}")
-Map(basemap=basemap_to_tiles(basemaps.OpenStreetMap.Mapnik),
-    center=(lat, long), zoom=15)
+from ipyleaflet import Map, basemaps, basemap_to_tiles, Marker, MarkerCluster, GeoJSON, LayersControl, Heatmap
+import pandas as pd
+import geopandas as gpd
+from fandu.geo_utils import load_shapefile_from_zip
+
+# Create the base map
+lat, lon = 37.5525, -77.465556
+m = Map(
+    basemap=basemap_to_tiles(basemaps.OpenStreetMap.Mapnik),
+    center=(lat, lon),
+    zoom=15
+)
+
+# ------------------------------
+# Load The Fan Boundary and Reproject to EPSG:4326
+# ------------------------------
+gdf = load_shapefile_from_zip(zip_path="../data/Neighborhoods-shp.zip")
+
+# Reproject to EPSG:4326 if needed
+if gdf.crs != "EPSG:4326":
+    gdf = gdf.to_crs("EPSG:4326")
+
+fan_gdf = gdf[gdf["Name"].str.strip().str.lower() == "the fan"]
+if fan_gdf.empty:
+    raise ValueError("No boundary found for 'The Fan'. Please check the shapefile.")
+fan_geojson = fan_gdf.__geo_interface__
+
+# Create the GeoJSON layer with a red outline for visibility
+fan_layer = GeoJSON(data=fan_geojson, style={"color": "red", "fillOpacity": 0, "weight": 2})
+fan_layer.name = "Fan Boundary"
+m.add_layer(fan_layer)
+
+# ------------------------------
+# Load Addresses and Filter by The Fan (Addresses assumed in EPSG:4326)
+# ------------------------------
+addresses_csv = "../data/addresses.csv"
+df_addresses = pd.read_csv(addresses_csv, low_memory=False)
+if "Latitude" not in df_addresses or "Longitude" not in df_addresses:
+    raise KeyError("The addresses CSV must contain 'Latitude' and 'Longitude' columns.")
+
+addresses_gdf = gpd.GeoDataFrame(
+    df_addresses,
+    geometry=gpd.points_from_xy(df_addresses.Longitude, df_addresses.Latitude),
+    crs="EPSG:4326"
+)
+
+# Filter addresses within The Fan boundary (both now in EPSG:4326)
+fan_boundary = fan_gdf.unary_union
+addresses_in_fan = addresses_gdf[addresses_gdf.geometry.within(fan_boundary)]
+
+# ------------------------------
+# Placeholder for Member Locations (Empty for now)
+# ------------------------------
+member_cluster = MarkerCluster(markers=[], name="Member Locations")
+m.add_layer(member_cluster)
+
+
+# ------------------------------
+# Placeholder for Business Locations (Empty for now)
+# ------------------------------
+business_cluster = MarkerCluster(markers=[], name="Business Locations")
+m.add_layer(business_cluster)
+
+# ------------------------------
+# Add Layers Control for Toggling Layers
+# ------------------------------
+layers_control = LayersControl(position='topright')
+m.add_control(layers_control)
+
+m
 ```
 
 ```{python}

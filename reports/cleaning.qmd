@@ -57,3 +57,70 @@ record is a duplicate.
 metrics.get_users_with_duplicate_names()
 ```
 
+
+## Geocoding Excel File
+
+```{python}
+
+"""import pandas as pd
+import time
+from geopy.geocoders import Nominatim
+from geopy.exc import GeocoderTimedOut
+
+# Step 1: Read the Excel file from the data folder.
+excel_file = "../data/2025-02-17 Contacts Fan District Association.xls"
+df = pd.read_excel(excel_file)
+
+# Step 2: Build a "full_address" column using only "Address", "City", "State", and "Zip".
+def build_full_address(row):
+    parts = []
+    if pd.notnull(row["Address"]):
+        parts.append(str(row["Address"]).strip())
+    if pd.notnull(row["City"]):
+        parts.append(str(row["City"]).strip())
+    if pd.notnull(row["State"]):
+        parts.append(str(row["State"]).strip())
+    if pd.notnull(row["Zip"]):
+        parts.append(str(row["Zip"]).strip())
+    return ", ".join(parts)
+
+df["full_address"] = df.apply(build_full_address, axis=1)
+df["full_address"] = df["full_address"].astype(str).str.strip()
+
+# Step 3: Initialize the geocoder with an increased timeout.
+geolocator = Nominatim(user_agent="fan_district_geocoder", timeout=10)
+
+# Step 4: Define a geocoding function with retry logic that suppresses output.
+def geocode_address(address, retries=3):
+    for attempt in range(retries):
+        try:
+            time.sleep(1)  # Respect rate limits.
+            location = geolocator.geocode(address)
+            if location:
+                return location.latitude, location.longitude
+            else:
+                return None, None
+        except GeocoderTimedOut:
+            # Retry silently after a brief pause.
+            time.sleep(2)
+        except Exception:
+            return None, None
+    return None, None
+
+# Step 5: Geocode each address.
+geocoded = df["full_address"].apply(geocode_address)
+df["lat"] = geocoded.apply(lambda x: x[0])
+df["lon"] = geocoded.apply(lambda x: x[1])
+
+# Optional: Drop rows where geocoding failed (i.e. lat or lon is None).
+df = df.dropna(subset=["lat", "lon"])
+
+# Step 6: Write the resulting DataFrame to a CSV file containing only the desired columns.
+output_csv = "../data/geocoded_contacts.csv"
+df[["full_address", "lat", "lon"]].to_csv(output_csv, index=False)
+print(f"Geocoded CSV file saved as {output_csv}")
+
+# (Optional) Verify by reading back the CSV and displaying the first few rows.
+df_verified = pd.read_csv(output_csv)
+df_verified.head() """
+```
