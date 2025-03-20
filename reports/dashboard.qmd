@@ -6,12 +6,16 @@ format: dashboard
 ## Row {height=70%}
 
 ```{python}
-from ipyleaflet import Map, basemaps, basemap_to_tiles, Marker, MarkerCluster, GeoJSON, LayersControl, Heatmap
+import sys
+sys.path.append("../fandu")  # Ensure the 'fandu' folder is on the PYTHONPATH
+from ipyleaflet import Map, basemaps, basemap_to_tiles, Marker, MarkerCluster, GeoJSON, LayersControl
 import pandas as pd
 import geopandas as gpd
-from fandu.geo_utils import load_shapefile_from_zip
+from geo_utils import load_shapefile_from_zip
 
-# Create the base map
+# ------------------------------
+# Create the Base Map
+# ------------------------------
 lat, lon = 37.5525, -77.465556
 m = Map(
     basemap=basemap_to_tiles(basemaps.OpenStreetMap.Mapnik),
@@ -23,11 +27,8 @@ m = Map(
 # Load The Fan Boundary and Reproject to EPSG:4326
 # ------------------------------
 gdf = load_shapefile_from_zip(zip_path="../data/Neighborhoods-shp.zip")
-
-# Reproject to EPSG:4326 if needed
 if gdf.crs != "EPSG:4326":
     gdf = gdf.to_crs("EPSG:4326")
-
 fan_gdf = gdf[gdf["Name"].str.strip().str.lower() == "the fan"]
 if fan_gdf.empty:
     raise ValueError("No boundary found for 'The Fan'. Please check the shapefile.")
@@ -39,29 +40,37 @@ fan_layer.name = "Fan Boundary"
 m.add_layer(fan_layer)
 
 # ------------------------------
-# Load Addresses and Filter by The Fan (Addresses assumed in EPSG:4326)
+# Load Geocoded Contacts CSV and Filter by The Fan (Member Data)
 # ------------------------------
-addresses_csv = "../data/addresses.csv"
-df_addresses = pd.read_csv(addresses_csv, low_memory=False)
-if "Latitude" not in df_addresses or "Longitude" not in df_addresses:
-    raise KeyError("The addresses CSV must contain 'Latitude' and 'Longitude' columns.")
+contacts_csv = "../data/geocoded_contacts.csv"
+df_contacts = pd.read_csv(contacts_csv)
+if "lat" not in df_contacts.columns or "lon" not in df_contacts.columns:
+    raise KeyError("The geocoded contacts CSV must contain 'lat' and 'lon' columns.")
 
-addresses_gdf = gpd.GeoDataFrame(
-    df_addresses,
-    geometry=gpd.points_from_xy(df_addresses.Longitude, df_addresses.Latitude),
+contacts_gdf = gpd.GeoDataFrame(
+    df_contacts,
+    geometry=gpd.points_from_xy(df_contacts.lon, df_contacts.lat),
     crs="EPSG:4326"
 )
 
-# Filter addresses within The Fan boundary (both now in EPSG:4326)
+# Filter contacts that fall within The Fan boundary
 fan_boundary = fan_gdf.unary_union
-addresses_in_fan = addresses_gdf[addresses_gdf.geometry.within(fan_boundary)]
+members_in_fan = contacts_gdf[contacts_gdf.geometry.within(fan_boundary)]
+print("Number of valid members within The Fan:", len(members_in_fan))
 
 # ------------------------------
-# Placeholder for Member Locations (Empty for now)
+# Create a MarkerCluster Layer for Individual Member Locations
 # ------------------------------
-member_cluster = MarkerCluster(markers=[], name="Member Locations")
+member_markers = [
+    Marker(
+        location=(row.geometry.y, row.geometry.x),
+        draggable=False,
+        title=f"{row.get('First name', '')} {row.get('Last name', '')}"
+    )
+    for idx, row in members_in_fan.iterrows()
+]
+member_cluster = MarkerCluster(markers=member_markers, name="Member Locations")
 m.add_layer(member_cluster)
-
 
 # ------------------------------
 # Placeholder for Business Locations (Empty for now)

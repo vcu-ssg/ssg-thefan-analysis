@@ -4827,7 +4827,7 @@ vertical-align: -.125em;
 </section>
 <section id="overall-summary-of-records" class="level2">
 <h2 class="anchored" data-anchor-id="overall-summary-of-records">Overall summary of records</h2>
-<div id="76ded754" class="cell" data-execution_count="2">
+<div id="4052a0d7" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>metrics.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Excel File: ../data/2025-02-17 Contacts Fan District Association.xls
@@ -4842,7 +4842,7 @@ Number of unique, non-blank Member bundle ID or emails: 893</code></pre>
 <section id="user-ids-by-level" class="level2">
 <h2 class="anchored" data-anchor-id="user-ids-by-level">User IDs by level</h2>
 <p>Only records marked with <em>Membership enabled = yes</em> are included in the list.</p>
-<div id="d157e0b3" class="cell" data-execution_count="3">
+<div id="a92055bb" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>metrics.count_membership_by_level()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <pre><code>Membership level
@@ -4861,7 +4861,7 @@ Name: User ID, dtype: int64</code></pre>
 <section id="bundles-by-level" class="level2">
 <h2 class="anchored" data-anchor-id="bundles-by-level">Bundles by level</h2>
 <p>A <em>bundle</em> is a group of <em>user ids</em> that share a single membership.</p>
-<div id="b2ce63f1" class="cell" data-execution_count="4">
+<div id="b5bb839f" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>metrics.count_bundles_by_level()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <pre><code>Membership level
@@ -4880,7 +4880,7 @@ Name: Member bundle ID or email, dtype: int64</code></pre>
 <section id="duplicate-emails" class="level2">
 <h2 class="anchored" data-anchor-id="duplicate-emails">Duplicate Emails</h2>
 <p>Below is a list of user ID with duplicate emails. This list is most probably clean.</p>
-<div id="ba429017" class="cell" data-execution_count="5">
+<div id="a6013dc7" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>metrics.get_users_with_duplicate_emails()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
 <div>
@@ -4908,7 +4908,7 @@ Name: Member bundle ID or email, dtype: int64</code></pre>
 <section id="duplicate-names" class="level2">
 <h2 class="anchored" data-anchor-id="duplicate-names">Duplicate names</h2>
 <p>Below is a list of members with the same first and last names. Note the <em>Membership enabled” column. If </em>Membership enabled* is <em>yes</em> for both records, then this record is a duplicate.</p>
-<div id="7c3ae07a" class="cell" data-execution_count="6">
+<div id="6681ceac" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>metrics.get_users_with_duplicate_names()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <div>
@@ -5080,7 +5080,7 @@ Name: Member bundle ID or email, dtype: int64</code></pre>
 </section>
 <section id="geocoding-excel-file" class="level2">
 <h2 class="anchored" data-anchor-id="geocoding-excel-file">Geocoding Excel File</h2>
-<div id="135edea6" class="cell" data-execution_count="7">
+<div id="0377f421" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Flag to control whether to run geocoding (set to False to use existing CSV)</span></span>
