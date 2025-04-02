@@ -8,10 +8,13 @@ format: dashboard
 ```{python}
 import sys
 sys.path.append("../fandu")  # Ensure the 'fandu' folder is on the PYTHONPATH
-from ipyleaflet import Map, basemaps, basemap_to_tiles, Marker, MarkerCluster, GeoJSON, LayersControl
+from ipyleaflet import Map, basemaps, basemap_to_tiles, Marker, MarkerCluster, GeoJSON, LayersControl, Heatmap
 import pandas as pd
 import geopandas as gpd
+from shapely.geometry import box
 from geo_utils import load_shapefile_from_zip
+import matplotlib.cm as cm
+import matplotlib.colors as mcolors
 
 # ------------------------------
 # Create the Base Map
@@ -56,7 +59,7 @@ contacts_gdf = gpd.GeoDataFrame(
 # Filter contacts that fall within The Fan boundary
 fan_boundary = fan_gdf.unary_union
 members_in_fan = contacts_gdf[contacts_gdf.geometry.within(fan_boundary)]
-print("Number of valid members within The Fan:", len(members_in_fan))
+print("Number of members within The Fan:", len(members_in_fan))
 
 # ------------------------------
 # Create a MarkerCluster Layer for Individual Member Locations
@@ -77,6 +80,54 @@ m.add_layer(member_cluster)
 # ------------------------------
 business_cluster = MarkerCluster(markers=[], name="Business Locations")
 m.add_layer(business_cluster)
+
+# ------------------------------
+# Create a Grid Heatmap Layer
+# ------------------------------
+# Determine bounding box of the Fan boundary
+minx, miny, maxx, maxy = fan_gdf.total_bounds
+# Choose a cell size (adjust as needed; here we divide the width into 20 cells)
+cell_size = (maxx - minx) / 20
+
+# Generate grid cells covering the bounding box
+grid_cells = []
+x = minx
+while x < maxx:
+    y = miny
+    while y < maxy:
+        grid_cells.append(box(x, y, x + cell_size, y + cell_size))
+        y += cell_size
+    x += cell_size
+
+# Create a GeoDataFrame for the grid cells
+grid_gdf = gpd.GeoDataFrame({'geometry': grid_cells}, crs="EPSG:4326")
+# Keep only grid cells that intersect the Fan boundary (to reduce clutter)
+grid_gdf = grid_gdf[grid_gdf.geometry.intersects(fan_boundary)]
+
+# Count number of members within each grid cell
+grid_gdf['count'] = grid_gdf.geometry.apply(lambda cell: members_in_fan[members_in_fan.geometry.within(cell)].shape[0])
+print("Grid cells created:", len(grid_gdf))
+
+# Define a color scaling function based on count
+max_count = grid_gdf['count'].max() if grid_gdf['count'].max() > 0 else 1
+norm = mcolors.Normalize(vmin=0, vmax=max_count)
+cmap = cm.get_cmap('Reds')
+def get_color(count):
+    rgba = cmap(norm(count))
+    return mcolors.rgb2hex(rgba)
+
+# Define a style function for the grid cells
+def style_function(feature):
+    count = feature['properties']['count']
+    return {"fillColor": get_color(count), "color": "grey", "weight": 1, "fillOpacity": 0.7}
+
+# Convert grid_gdf to GeoJSON
+grid_geojson = grid_gdf.__geo_interface__
+
+# Create a GeoJSON layer for the grid heatmap using style_callback instead of style
+grid_layer = GeoJSON(data=grid_geojson, style_callback=style_function)
+grid_layer.name = "Grid Heatmap"
+m.add_layer(grid_layer)
 
 # ------------------------------
 # Add Layers Control for Toggling Layers
