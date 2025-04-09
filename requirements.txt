@@ -118,3 +118,4 @@ websocket-client==1.8.0
 widgetsnbextension==4.0.13
 xlrd==2.0.1
 xyzservices==2025.1.0
+scikit-learn

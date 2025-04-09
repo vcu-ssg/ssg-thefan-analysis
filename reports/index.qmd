@@ -13,4 +13,9 @@ here and used to find addresses and parcels located within The fan.
 	- The top right panel contains a display of the *neighborhood* shapefile downloaded from City of Richmond.  Look at the report above for more details.
 	- the cards across the bottom contain dummy data and in the code present different ways to create *cards*.
 
-	
+* [Mini Dashboard](mini_dashboard.qmd) - A mini project based on the homes that served as hosts for the "Holiday House Tour" since 1963.
+	- Includes:
+		- Pins on a map highlighting all the addresses
+	- List of addresses sorted by street
+	- Search bar to look for specific properties, people, and years
+	- Number cards with the number of years, number of homes, and number of homes that participated two or more times.

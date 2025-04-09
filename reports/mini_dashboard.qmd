@@ -1,0 +1,136 @@
+---
+title: Mini Dashboard
+format: dashboard
+---
+
+## Row {height=70%}
+
+```{python}
+import sys
+import os
+sys.path.append("../fandu")  # Ensure the 'fandu' folder is on the PYTHONPATH
+from ipyleaflet import Map, Marker, MarkerCluster, GeoJSON, LayersControl, basemap_to_tiles, basemaps
+import sys
+import os
+sys.path.append("../fandu")  # Ensure the 'fandu' folder is on the PYTHONPATH
+
+# Debug: List files in the data folder
+print("Files in ../data:", os.listdir("../data"))
+
+xlsx_file = "../data/1963-2024 HHT Homeowners_Adresses.xlsx"
+if not os.path.exists(xlsx_file):
+    raise FileNotFoundError(f"Data file not found: {xlsx_file}")
+
+import pandas as pd
+df = pd.read_excel(xlsx_file)
+
+# Build full addresses (using Address, City, State, Zip)
+df["full_address"] = df[["Address", "City", "State", "Zip"]].fillna("").agg(", ".join, axis=1)
+
+# Ensure lat/lon columns exist (assumes the file has been pre-geocoded)
+if "lat" not in df.columns or "lon" not in df.columns:
+    raise ValueError("Expected 'lat' and 'lon' columns in the spreadsheet. Please ensure the data is geocoded.")
+
+# Create a GeoDataFrame from the geocoded data
+gdf_homes = gpd.GeoDataFrame(
+    df,
+    geometry=gpd.points_from_xy(df["lon"], df["lat"]),
+    crs="EPSG:4326"
+)
+
+# ------------------------------
+# Load Fan Boundary
+# ------------------------------
+fan_boundary_gdf = load_shapefile_from_zip("../data/Neighborhoods-shp.zip")
+fan_gdf = fan_boundary_gdf[fan_boundary_gdf["Name"].str.lower().str.strip() == "the fan"]
+if fan_gdf.empty:
+    raise ValueError("Could not find The Fan boundary.")
+fan_boundary = fan_gdf.unary_union
+
+# Filter homes that fall inside the Fan boundary
+homes_in_fan = gdf_homes[gdf_homes.geometry.within(fan_boundary)]
+print("Number of homes in the HHT dataset within The Fan:", len(homes_in_fan))
+
+# ------------------------------
+# Create the Base Map
+# ------------------------------
+lat_center, lon_center = 37.5525, -77.465556
+m = Map(
+    center=(lat_center, lon_center),
+    zoom=15,
+    basemap=basemap_to_tiles(basemaps.OpenStreetMap.Mapnik)
+)
+
+# Add Fan boundary as a GeoJSON layer (blue outline with slight fill)
+fan_geojson = fan_gdf.__geo_interface__
+m.add_layer(GeoJSON(data=fan_geojson, style={"color": "blue", "fillOpacity": 0.05, "weight": 2}))
+
+# ------------------------------
+# Add Markers for HHT Homes
+# ------------------------------
+home_markers = [
+    Marker(
+        location=(row.geometry.y, row.geometry.x),
+        title=f"{row.get('Address', '')} ({row.get('Year', 'N/A')})"
+    )
+    for idx, row in homes_in_fan.iterrows()
+]
+home_cluster = MarkerCluster(markers=home_markers, name="HHT Homes")
+m.add_layer(home_cluster)
+
+# (Optional) You can later add the sorted list of addresses, search bar, and number cards in additional cells.
+
+# ------------------------------
+# Add Layers Control for Toggling
+# ------------------------------
+m.add_control(LayersControl(position="topright"))
+
+m
+```
+
+## Row {height=15%}
+
+```{python}
+# List of homes sorted by street
+sorted_df = homes_in_fan.copy()
+sorted_df["Street"] = sorted_df["Address"].str.extract(r"\d+\s+(.*)")
+sorted_df = sorted_df.sort_values("Street")
+
+sorted_df[["Address", "Name", "Year"]].reset_index(drop=True).head(20)
+```
+
+## Row {height=15%}
+```{python}
+#| layout-ncol: 3
+
+# Number of unique years
+num_years = df["Year"].nunique()
+
+# Number of total homes
+num_homes = df["Address"].nunique()
+
+# Number of repeat homes (appearing more than once)
+repeats = df["Address"].value_counts()
+repeat_homes = (repeats > 1).sum()
+
+[
+  {
+    "title": "Years",
+    "value": num_years,
+    "icon": "calendar",
+    "color": "primary"
+  },
+  {
+    "title": "Unique Homes",
+    "value": num_homes,
+    "icon": "home",
+    "color": "primary"
+  },
+  {
+    "title": "Repeat Homes",
+    "value": repeat_homes,
+    "icon": "refresh",
+    "color": "primary"
+  }
+]
+```

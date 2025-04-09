@@ -14,6 +14,8 @@ website:
         text: Cleaning
       - href: dashboard.qmd
         text: Dashboard
+      - href: mini_dashboard.qmd
+        text: Mini Dashboard
 
 format:
   html:

@@ -122,11 +122,12 @@ if RUN_GEOCODING:
     output_csv = "../data/geocoded_contacts.csv"
     df[["full_address", "lat", "lon"]].to_csv(output_csv, index=False)
     print(f"Geocoded CSV file saved as {output_csv}")
+else:
+    print("Skipping geocoding; using previously generated CSV.")
 
 # =============================================================================
 # Load the previously generated CSV and display its head.
 # =============================================================================
-
 df_verified = pd.read_csv("../data/geocoded_contacts.csv")
 df_verified.head()
 ```
