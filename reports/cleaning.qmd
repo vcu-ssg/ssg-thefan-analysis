@@ -10,17 +10,25 @@ for data inconsistencies and overall metrics.
 
 ```{python}
 #| echo: false
-from reports.utils import ExcelAnalyzer
+RUN_EXCEL_ANALYSIS = False
 
-export_file_name = "../data/2025-02-17 Contacts Fan District Association.xls"
-metrics = ExcelAnalyzer( export_file_name )
-
+if RUN_EXCEL_ANALYSIS:
+    from reports.utils import ExcelAnalyzer
+    export_file_name = "../data/2025-02-17 Contacts Fan District Association.xls"
+    metrics = ExcelAnalyzer(export_file_name)
+    print("ExcelAnalyzer initialized.")
+else:
+    print("Skipping ExcelAnalyzer steps.")
+    metrics = None
 ```
 
 ## Overall summary of records
 
 ```{python}
-metrics.summary()
+if metrics:
+    metrics.summary()
+else:
+    print("metrics.summary() skipped.")
 ```
 
 ## User IDs by level
@@ -28,7 +36,10 @@ metrics.summary()
 Only records marked with *Membership enabled = yes* are included in the list.
 
 ```{python}
-metrics.count_membership_by_level()
+if metrics:
+    metrics.count_membership_by_level()
+else:
+    print("count_membership_by_level() skipped.")
 ```
 
 ## Bundles by level
@@ -36,7 +47,10 @@ metrics.count_membership_by_level()
 A *bundle* is a group of *user ids* that share a single membership. 
 
 ```{python}
-metrics.count_bundles_by_level()
+if metrics:
+    metrics.count_bundles_by_level()
+else:
+    print("count_bundles_by_level() skipped.")
 ```
 
 ## Duplicate Emails
@@ -45,7 +59,10 @@ Below is a list of user ID with duplicate emails.  This list
 is most probably clean.
 
 ```{python}
-metrics.get_users_with_duplicate_emails()
+if metrics:
+    metrics.get_users_with_duplicate_emails()
+else:
+    print("get_users_with_duplicate_emails() skipped.")
 ```
 
 
@@ -54,9 +71,11 @@ metrics.get_users_with_duplicate_emails()
 Below is a list of members with the same first and last names.  Note the *Membership enabled" column.  If *Membership enabled* is *yes* for both records, then this 
 record is a duplicate.
 ```{python}
-metrics.get_users_with_duplicate_names()
+if metrics:
+    metrics.get_users_with_duplicate_names()
+else:
+    print("get_users_with_duplicate_names() skipped.")
 ```
-
 
 ## Geocoding Excel File
 
@@ -130,4 +149,49 @@ else:
 # =============================================================================
 df_verified = pd.read_csv("../data/geocoded_contacts.csv")
 df_verified.head()
+```
+
+## Geocoding Excel HHT file (mini-dashboard)
+
+```{python}
+import pandas as pd
+import time, os
+
+RUN_GEOCODING = False  # <-- set this to True to generate coordinates
+
+if RUN_GEOCODING:
+    from geopy.geocoders import Nominatim
+    from geopy.exc import GeocoderTimedOut
+
+    df_hht = pd.read_csv("../data/cleaned_hht_homes.csv")
+
+    def build_full_address(row):
+        return f"{row['Address']}, Richmond, VA"
+
+    df_hht["full_address"] = df_hht.apply(build_full_address, axis=1)
+
+    geolocator = Nominatim(user_agent="fan_hht_geocoder", timeout=10)
+
+    def geocode_address(address, retries=3):
+        for attempt in range(retries):
+            try:
+                time.sleep(1)
+                location = geolocator.geocode(address)
+                if location:
+                    return location.latitude, location.longitude
+            except GeocoderTimedOut:
+                time.sleep(2)
+        return None, None
+
+    geocoded = df_hht["full_address"].apply(geocode_address)
+    df_hht["lat"] = geocoded.apply(lambda x: x[0])
+    df_hht["lon"] = geocoded.apply(lambda x: x[1])
+
+    df_hht = df_hht.dropna(subset=["lat", "lon"])
+
+    output_csv = "../data/geocoded_hht_homes.csv"
+    df_hht.to_csv(output_csv, index=False)
+    print(f"Geocoded file saved to {output_csv}")
+else:
+    print("Skipping geocoding. Set RUN_GEOCODING = True to generate coordinates.")
 ```

@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-03-19">
+<meta name="dcterms.date" content="2025-04-17">
 
 <title>Export data cleaning – The Fan</title>
 <style>
@@ -4781,6 +4781,10 @@ vertical-align: -.125em;
     <a class="nav-link" href="./dashboard.html"> 
 <span class="menu-text">Dashboard</span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./mini_dashboard.html"> 
+<span class="menu-text">Mini Dashboard</span></a>
+  </li>  
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
@@ -4809,7 +4813,7 @@ vertical-align: -.125em;
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 19, 2025</p>
+      <p class="date">April 17, 2025</p>
     </div>
   </div>
   
@@ -4824,331 +4828,151 @@ vertical-align: -.125em;
 <p>This report explores an export data file for the Fan District Association looking for data inconsistencies and overall metrics.</p>
 <section id="initial-data-exploration" class="level2">
 <h2 class="anchored" data-anchor-id="initial-data-exploration">Initial data exploration</h2>
+<div id="42d1280f" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-stdout">
+<pre><code>Skipping ExcelAnalyzer steps.</code></pre>
+</div>
+</div>
 </section>
 <section id="overall-summary-of-records" class="level2">
 <h2 class="anchored" data-anchor-id="overall-summary-of-records">Overall summary of records</h2>
-<div id="4052a0d7" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>metrics.summary()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="858e8411" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> metrics:</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    metrics.summary()</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;metrics.summary() skipped.&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Excel File: ../data/2025-02-17 Contacts Fan District Association.xls
-Number of records: 1235
-Number of unique User IDs: 1235
-Number of unique, non-blank emails: 1161
-Number of unique, non-blank Usernames: 1039
-Number of unique, non-blank Member bundle ID or emails: 893</code></pre>
+<pre><code>metrics.summary() skipped.</code></pre>
 </div>
 </div>
 </section>
 <section id="user-ids-by-level" class="level2">
 <h2 class="anchored" data-anchor-id="user-ids-by-level">User IDs by level</h2>
 <p>Only records marked with <em>Membership enabled = yes</em> are included in the list.</p>
-<div id="a92055bb" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>metrics.count_membership_by_level()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>Membership level
-Friend                                            29
-Household                                        689
-Household - Autorenewing Annually                235
-Individual                                       162
-Individual - Autorenewing Annually                39
-Organization/Business                             26
-Organization/Business - Autorenewing Annually      9
-Student                                            6
-Name: User ID, dtype: int64</code></pre>
+<div id="3e08ce15" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> metrics:</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    metrics.count_membership_by_level()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;count_membership_by_level() skipped.&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>count_membership_by_level() skipped.</code></pre>
 </div>
 </div>
 </section>
 <section id="bundles-by-level" class="level2">
 <h2 class="anchored" data-anchor-id="bundles-by-level">Bundles by level</h2>
 <p>A <em>bundle</em> is a group of <em>user ids</em> that share a single membership.</p>
-<div id="b5bb839f" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>metrics.count_bundles_by_level()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<pre><code>Membership level
-Friend                                            29
-Household                                        427
-Household - Autorenewing Annually                155
-Individual                                       162
-Individual - Autorenewing Annually                39
-Organization/Business                             26
-Organization/Business - Autorenewing Annually      9
-Student                                            6
-Name: Member bundle ID or email, dtype: int64</code></pre>
+<div id="cb191c18" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> metrics:</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    metrics.count_bundles_by_level()</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;count_bundles_by_level() skipped.&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>count_bundles_by_level() skipped.</code></pre>
 </div>
 </div>
 </section>
 <section id="duplicate-emails" class="level2">
 <h2 class="anchored" data-anchor-id="duplicate-emails">Duplicate Emails</h2>
 <p>Below is a list of user ID with duplicate emails. This list is most probably clean.</p>
-<div id="a6013dc7" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>metrics.get_users_with_duplicate_emails()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">User ID</th>
-<th data-quarto-table-cell-role="th">Username</th>
-<th data-quarto-table-cell-role="th">First name</th>
-<th data-quarto-table-cell-role="th">Last name</th>
-<th data-quarto-table-cell-role="th">Email</th>
-</tr>
-</thead>
-<tbody>
-</tbody>
-</table>
-
-</div>
+<div id="c4c6fc1d" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> metrics:</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    metrics.get_users_with_duplicate_emails()</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;get_users_with_duplicate_emails() skipped.&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>get_users_with_duplicate_emails() skipped.</code></pre>
 </div>
 </div>
 </section>
 <section id="duplicate-names" class="level2">
 <h2 class="anchored" data-anchor-id="duplicate-names">Duplicate names</h2>
 <p>Below is a list of members with the same first and last names. Note the <em>Membership enabled” column. If </em>Membership enabled* is <em>yes</em> for both records, then this record is a duplicate.</p>
-<div id="6681ceac" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>metrics.get_users_with_duplicate_names()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">User ID</th>
-<th data-quarto-table-cell-role="th">Username</th>
-<th data-quarto-table-cell-role="th">First name</th>
-<th data-quarto-table-cell-role="th">Last name</th>
-<th data-quarto-table-cell-role="th">Email</th>
-<th data-quarto-table-cell-role="th">Membership enabled</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">128</td>
-<td>38493941</td>
-<td>gwenb511@optonline.net</td>
-<td>Gwen</td>
-<td>Burroughs</td>
-<td>gwenb511@optonline.net</td>
-<td>yes</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">129</td>
-<td>67477088</td>
-<td>Gwenb511&amp;gmail.com</td>
-<td>Gwen</td>
-<td>Burroughs</td>
-<td>gwenb511@gmail.com</td>
-<td>yes</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">647</td>
-<td>64538713</td>
-<td>jmitchmartin@gmail.com</td>
-<td>Mitch</td>
-<td>Martin</td>
-<td>jmitchmartin@gmail.com</td>
-<td>yes</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">648</td>
-<td>69739795</td>
-<td>mitch.martin@mattersacct.com</td>
-<td>Mitch</td>
-<td>Martin</td>
-<td>mitch.martin@mattersacct.com</td>
-<td>yes</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">708</td>
-<td>69607571</td>
-<td>mgmonta@gmail.com</td>
-<td>Matt</td>
-<td>Monta</td>
-<td>mgmonta@gmail.com</td>
-<td>yes</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">709</td>
-<td>73499854</td>
-<td>NaN</td>
-<td>Matt</td>
-<td>Monta</td>
-<td>montamusic@gmail.com</td>
-<td>no</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">739</td>
-<td>39285105</td>
-<td>mjmurray@electcottage.com</td>
-<td>Muriel</td>
-<td>Murray</td>
-<td>mjmurray@electcottage.com</td>
-<td>yes</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">740</td>
-<td>79354466</td>
-<td>NaN</td>
-<td>Muriel</td>
-<td>Murray</td>
-<td>moogoestoitaly@gmail.com</td>
-<td>no</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">1089</td>
-<td>74839289</td>
-<td>jimandmelissatracy@gmail.com</td>
-<td>Melissa</td>
-<td>Tracy</td>
-<td>jimandmelissatracy@gmail.com</td>
-<td>yes</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1090</td>
-<td>74839314</td>
-<td>jimandmelissatracy@gmail.com</td>
-<td>Melissa</td>
-<td>Tracy</td>
-<td>NaN</td>
-<td>yes</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">1141</td>
-<td>63359872</td>
-<td>mweeter</td>
-<td>Melissa</td>
-<td>Weeter</td>
-<td>melissa.weeter@gmail.com</td>
-<td>yes</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1142</td>
-<td>65067661</td>
-<td>waia1941</td>
-<td>Melissa</td>
-<td>Weeter</td>
-<td>westavenue1941@gmail.com</td>
-<td>yes</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">1217</td>
-<td>62522316</td>
-<td>edgewaterwolfie@gmail.com</td>
-<td>Laura</td>
-<td>Wright</td>
-<td>edgewaterwolfie@gmail.com</td>
-<td>yes</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1218</td>
-<td>63415518</td>
-<td>edgewaterwolfie@gmail.com</td>
-<td>Laura</td>
-<td>Wright</td>
-<td>edgewaterwolfie@gmail.comn</td>
-<td>yes</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">1229</td>
-<td>78917015</td>
-<td>NaN</td>
-<td>Jessica</td>
-<td>Yin</td>
-<td>yinjessica12@gmail.com</td>
-<td>no</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1230</td>
-<td>79049092</td>
-<td>NaN</td>
-<td>Jessica</td>
-<td>Yin</td>
-<td>jessicayin33@gmail.com</td>
-<td>no</td>
-</tr>
-</tbody>
-</table>
-
-</div>
+<div id="b7687189" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> metrics:</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    metrics.get_users_with_duplicate_names()</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;get_users_with_duplicate_names() skipped.&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>get_users_with_duplicate_names() skipped.</code></pre>
 </div>
 </div>
 </section>
 <section id="geocoding-excel-file" class="level2">
 <h2 class="anchored" data-anchor-id="geocoding-excel-file">Geocoding Excel File</h2>
-<div id="0377f421" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Flag to control whether to run geocoding (set to False to use existing CSV)</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>RUN_GEOCODING <span class="op">=</span> <span class="va">False</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> RUN_GEOCODING:</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> time</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> geopy.geocoders <span class="im">import</span> Nominatim</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> geopy.exc <span class="im">import</span> GeocoderTimedOut</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Read the Excel file</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    excel_file <span class="op">=</span> <span class="st">&quot;../data/2025-02-17 Contacts Fan District Association.xls&quot;</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_excel(excel_file)</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Build a full_address column using only &quot;Address&quot;, &quot;City&quot;, &quot;State&quot;, and &quot;Zip&quot;.</span></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> build_full_address(row):</span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>        parts <span class="op">=</span> []</span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> pd.notnull(row[<span class="st">&quot;Address&quot;</span>]):</span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>            parts.append(<span class="bu">str</span>(row[<span class="st">&quot;Address&quot;</span>]).strip())</span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> pd.notnull(row[<span class="st">&quot;City&quot;</span>]):</span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>            parts.append(<span class="bu">str</span>(row[<span class="st">&quot;City&quot;</span>]).strip())</span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> pd.notnull(row[<span class="st">&quot;State&quot;</span>]):</span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>            parts.append(<span class="bu">str</span>(row[<span class="st">&quot;State&quot;</span>]).strip())</span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> pd.notnull(row[<span class="st">&quot;Zip&quot;</span>]):</span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>            parts.append(<span class="bu">str</span>(row[<span class="st">&quot;Zip&quot;</span>]).strip())</span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">&quot;, &quot;</span>.join(parts)</span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">&quot;full_address&quot;</span>] <span class="op">=</span> df.<span class="bu">apply</span>(build_full_address, axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">&quot;full_address&quot;</span>] <span class="op">=</span> df[<span class="st">&quot;full_address&quot;</span>].astype(<span class="bu">str</span>).<span class="bu">str</span>.strip()</span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize the geocoder.</span></span>
-<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    geolocator <span class="op">=</span> Nominatim(user_agent<span class="op">=</span><span class="st">&quot;fan_district_geocoder&quot;</span>, timeout<span class="op">=</span><span class="dv">10</span>)</span>
-<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Define a geocoding function with retry logic.</span></span>
-<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> geocode_address(address, retries<span class="op">=</span><span class="dv">3</span>):</span>
-<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> attempt <span class="kw">in</span> <span class="bu">range</span>(retries):</span>
-<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span>:</span>
-<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>                time.sleep(<span class="dv">1</span>)  <span class="co"># Respect rate limits.</span></span>
-<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>                location <span class="op">=</span> geolocator.geocode(address)</span>
-<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> location:</span>
-<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">return</span> location.latitude, location.longitude</span>
-<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span>:</span>
-<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">return</span> <span class="va">None</span>, <span class="va">None</span></span>
-<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>            <span class="cf">except</span> GeocoderTimedOut:</span>
-<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>                time.sleep(<span class="dv">2</span>)</span>
-<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>            <span class="cf">except</span> <span class="pp">Exception</span>:</span>
-<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> <span class="va">None</span>, <span class="va">None</span></span>
-<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">None</span>, <span class="va">None</span></span>
-<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Geocode each address.</span></span>
-<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a>    geocoded <span class="op">=</span> df[<span class="st">&quot;full_address&quot;</span>].<span class="bu">apply</span>(geocode_address)</span>
-<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">&quot;lat&quot;</span>] <span class="op">=</span> geocoded.<span class="bu">apply</span>(<span class="kw">lambda</span> x: x[<span class="dv">0</span>])</span>
-<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">&quot;lon&quot;</span>] <span class="op">=</span> geocoded.<span class="bu">apply</span>(<span class="kw">lambda</span> x: x[<span class="dv">1</span>])</span>
-<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Drop rows where geocoding failed.</span></span>
-<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> df.dropna(subset<span class="op">=</span>[<span class="st">&quot;lat&quot;</span>, <span class="st">&quot;lon&quot;</span>])</span>
-<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Write the results to a CSV file.</span></span>
-<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a>    output_csv <span class="op">=</span> <span class="st">&quot;../data/geocoded_contacts.csv&quot;</span></span>
-<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a>    df[[<span class="st">&quot;full_address&quot;</span>, <span class="st">&quot;lat&quot;</span>, <span class="st">&quot;lon&quot;</span>]].to_csv(output_csv, index<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;Geocoded CSV file saved as </span><span class="sc">{</span>output_csv<span class="sc">}</span><span class="ss">&quot;</span>)</span>
-<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a><span class="co"># =============================================================================</span></span>
-<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the previously generated CSV and display its head.</span></span>
-<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a><span class="co"># =============================================================================</span></span>
-<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-67"><a href="#cb9-67" aria-hidden="true" tabindex="-1"></a>df_verified <span class="op">=</span> pd.read_csv(<span class="st">&quot;../data/geocoded_contacts.csv&quot;</span>)</span>
-<span id="cb9-68"><a href="#cb9-68" aria-hidden="true" tabindex="-1"></a>df_verified.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="f4155588" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Flag to control whether to run geocoding (set to False to use existing CSV)</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>RUN_GEOCODING <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> RUN_GEOCODING:</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> time</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> geopy.geocoders <span class="im">import</span> Nominatim</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> geopy.exc <span class="im">import</span> GeocoderTimedOut</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Read the Excel file</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    excel_file <span class="op">=</span> <span class="st">&quot;../data/2025-02-17 Contacts Fan District Association.xls&quot;</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_excel(excel_file)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Build a full_address column using only &quot;Address&quot;, &quot;City&quot;, &quot;State&quot;, and &quot;Zip&quot;.</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> build_full_address(row):</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>        parts <span class="op">=</span> []</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> pd.notnull(row[<span class="st">&quot;Address&quot;</span>]):</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>            parts.append(<span class="bu">str</span>(row[<span class="st">&quot;Address&quot;</span>]).strip())</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> pd.notnull(row[<span class="st">&quot;City&quot;</span>]):</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>            parts.append(<span class="bu">str</span>(row[<span class="st">&quot;City&quot;</span>]).strip())</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> pd.notnull(row[<span class="st">&quot;State&quot;</span>]):</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>            parts.append(<span class="bu">str</span>(row[<span class="st">&quot;State&quot;</span>]).strip())</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> pd.notnull(row[<span class="st">&quot;Zip&quot;</span>]):</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>            parts.append(<span class="bu">str</span>(row[<span class="st">&quot;Zip&quot;</span>]).strip())</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">&quot;, &quot;</span>.join(parts)</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">&quot;full_address&quot;</span>] <span class="op">=</span> df.<span class="bu">apply</span>(build_full_address, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">&quot;full_address&quot;</span>] <span class="op">=</span> df[<span class="st">&quot;full_address&quot;</span>].astype(<span class="bu">str</span>).<span class="bu">str</span>.strip()</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize the geocoder.</span></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>    geolocator <span class="op">=</span> Nominatim(user_agent<span class="op">=</span><span class="st">&quot;fan_district_geocoder&quot;</span>, timeout<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Define a geocoding function with retry logic.</span></span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> geocode_address(address, retries<span class="op">=</span><span class="dv">3</span>):</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> attempt <span class="kw">in</span> <span class="bu">range</span>(retries):</span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span>:</span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>                time.sleep(<span class="dv">1</span>)  <span class="co"># Respect rate limits.</span></span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>                location <span class="op">=</span> geolocator.geocode(address)</span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> location:</span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">return</span> location.latitude, location.longitude</span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span>:</span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">return</span> <span class="va">None</span>, <span class="va">None</span></span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>            <span class="cf">except</span> GeocoderTimedOut:</span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>                time.sleep(<span class="dv">2</span>)</span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>            <span class="cf">except</span> <span class="pp">Exception</span>:</span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> <span class="va">None</span>, <span class="va">None</span></span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">None</span>, <span class="va">None</span></span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Geocode each address.</span></span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>    geocoded <span class="op">=</span> df[<span class="st">&quot;full_address&quot;</span>].<span class="bu">apply</span>(geocode_address)</span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">&quot;lat&quot;</span>] <span class="op">=</span> geocoded.<span class="bu">apply</span>(<span class="kw">lambda</span> x: x[<span class="dv">0</span>])</span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">&quot;lon&quot;</span>] <span class="op">=</span> geocoded.<span class="bu">apply</span>(<span class="kw">lambda</span> x: x[<span class="dv">1</span>])</span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Drop rows where geocoding failed.</span></span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> df.dropna(subset<span class="op">=</span>[<span class="st">&quot;lat&quot;</span>, <span class="st">&quot;lon&quot;</span>])</span>
+<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Write the results to a CSV file.</span></span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a>    output_csv <span class="op">=</span> <span class="st">&quot;../data/geocoded_contacts.csv&quot;</span></span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a>    df[[<span class="st">&quot;full_address&quot;</span>, <span class="st">&quot;lat&quot;</span>, <span class="st">&quot;lon&quot;</span>]].to_csv(output_csv, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;Geocoded CSV file saved as </span><span class="sc">{</span>output_csv<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Skipping geocoding; using previously generated CSV.&quot;</span>)</span>
+<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a><span class="co"># =============================================================================</span></span>
+<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the previously generated CSV and display its head.</span></span>
+<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a><span class="co"># =============================================================================</span></span>
+<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a>df_verified <span class="op">=</span> pd.read_csv(<span class="st">&quot;../data/geocoded_contacts.csv&quot;</span>)</span>
+<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a>df_verified.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Skipping geocoding; using previously generated CSV.</code></pre>
+</div>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
@@ -5197,6 +5021,54 @@ Name: Member bundle ID or email, dtype: int64</code></pre>
 </table>
 
 </div>
+</div>
+</div>
+</section>
+<section id="geocoding-excel-hht-file-mini-dashboard" class="level2">
+<h2 class="anchored" data-anchor-id="geocoding-excel-hht-file-mini-dashboard">Geocoding Excel HHT file (mini-dashboard)</h2>
+<div id="d41b0385" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time, os</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>RUN_GEOCODING <span class="op">=</span> <span class="va">False</span>  <span class="co"># &lt;-- set this to True to generate coordinates</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> RUN_GEOCODING:</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> geopy.geocoders <span class="im">import</span> Nominatim</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> geopy.exc <span class="im">import</span> GeocoderTimedOut</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    df_hht <span class="op">=</span> pd.read_csv(<span class="st">&quot;../data/cleaned_hht_homes.csv&quot;</span>)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> build_full_address(row):</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="ss">f&quot;</span><span class="sc">{</span>row[<span class="st">&#39;Address&#39;</span>]<span class="sc">}</span><span class="ss">, Richmond, VA&quot;</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    df_hht[<span class="st">&quot;full_address&quot;</span>] <span class="op">=</span> df_hht.<span class="bu">apply</span>(build_full_address, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    geolocator <span class="op">=</span> Nominatim(user_agent<span class="op">=</span><span class="st">&quot;fan_hht_geocoder&quot;</span>, timeout<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> geocode_address(address, retries<span class="op">=</span><span class="dv">3</span>):</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> attempt <span class="kw">in</span> <span class="bu">range</span>(retries):</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span>:</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>                time.sleep(<span class="dv">1</span>)</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>                location <span class="op">=</span> geolocator.geocode(address)</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> location:</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">return</span> location.latitude, location.longitude</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">except</span> GeocoderTimedOut:</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>                time.sleep(<span class="dv">2</span>)</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">None</span>, <span class="va">None</span></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>    geocoded <span class="op">=</span> df_hht[<span class="st">&quot;full_address&quot;</span>].<span class="bu">apply</span>(geocode_address)</span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>    df_hht[<span class="st">&quot;lat&quot;</span>] <span class="op">=</span> geocoded.<span class="bu">apply</span>(<span class="kw">lambda</span> x: x[<span class="dv">0</span>])</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>    df_hht[<span class="st">&quot;lon&quot;</span>] <span class="op">=</span> geocoded.<span class="bu">apply</span>(<span class="kw">lambda</span> x: x[<span class="dv">1</span>])</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>    df_hht <span class="op">=</span> df_hht.dropna(subset<span class="op">=</span>[<span class="st">&quot;lat&quot;</span>, <span class="st">&quot;lon&quot;</span>])</span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>    output_csv <span class="op">=</span> <span class="st">&quot;../data/geocoded_hht_homes.csv&quot;</span></span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>    df_hht.to_csv(output_csv, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;Geocoded file saved to </span><span class="sc">{</span>output_csv<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Skipping geocoding. Set RUN_GEOCODING = True to generate coordinates.&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Skipping geocoding. Set RUN_GEOCODING = True to generate coordinates.</code></pre>
 </div>
 </div>
 

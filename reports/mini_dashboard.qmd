@@ -6,131 +6,104 @@ format: dashboard
 ## Row {height=70%}
 
 ```{python}
-import sys
-import os
-sys.path.append("../fandu")  # Ensure the 'fandu' folder is on the PYTHONPATH
-from ipyleaflet import Map, Marker, MarkerCluster, GeoJSON, LayersControl, basemap_to_tiles, basemaps
-import sys
-import os
-sys.path.append("../fandu")  # Ensure the 'fandu' folder is on the PYTHONPATH
+#| echo: false
 
-# Debug: List files in the data folder
-print("Files in ../data:", os.listdir("../data"))
-
-xlsx_file = "../data/1963-2024 HHT Homeowners_Adresses.xlsx"
-if not os.path.exists(xlsx_file):
-    raise FileNotFoundError(f"Data file not found: {xlsx_file}")
-
+# Load data directly (instead of from __quarto__)
 import pandas as pd
-df = pd.read_excel(xlsx_file)
+import geopandas as gpd
+from shapely.geometry import Point
+from geo_utils import load_shapefile_from_zip
+from ipyleaflet import Map, Marker, MarkerCluster, GeoJSON, LayersControl, basemap_to_tiles, basemaps
+import ipywidgets as widgets
 
-# Build full addresses (using Address, City, State, Zip)
-df["full_address"] = df[["Address", "City", "State", "Zip"]].fillna("").agg(", ".join, axis=1)
-
-# Ensure lat/lon columns exist (assumes the file has been pre-geocoded)
-if "lat" not in df.columns or "lon" not in df.columns:
-    raise ValueError("Expected 'lat' and 'lon' columns in the spreadsheet. Please ensure the data is geocoded.")
-
-# Create a GeoDataFrame from the geocoded data
-gdf_homes = gpd.GeoDataFrame(
-    df,
-    geometry=gpd.points_from_xy(df["lon"], df["lat"]),
-    crs="EPSG:4326"
-)
-
-# ------------------------------
-# Load Fan Boundary
-# ------------------------------
-fan_boundary_gdf = load_shapefile_from_zip("../data/Neighborhoods-shp.zip")
-fan_gdf = fan_boundary_gdf[fan_boundary_gdf["Name"].str.lower().str.strip() == "the fan"]
-if fan_gdf.empty:
-    raise ValueError("Could not find The Fan boundary.")
+# Load Fan boundary
+zip_path = "../data/Neighborhoods-shp.zip"
+gdf_neigh = load_shapefile_from_zip(zip_path).to_crs("EPSG:4326")
+fan_gdf = gdf_neigh[gdf_neigh["Name"].str.strip().str.lower() == "the fan"].copy()
+fan_gdf["geometry"] = fan_gdf.geometry.simplify(0.0001, preserve_topology=True)
 fan_boundary = fan_gdf.unary_union
 
-# Filter homes that fall inside the Fan boundary
-homes_in_fan = gdf_homes[gdf_homes.geometry.within(fan_boundary)]
-print("Number of homes in the HHT dataset within The Fan:", len(homes_in_fan))
+# Load geocoded homes
+df_hht = pd.read_csv("../data/geocoded_hht_homes.csv")
+gdf_hht = gpd.GeoDataFrame(
+    df_hht,
+    geometry=gpd.points_from_xy(df_hht.lon, df_hht.lat),
+    crs="EPSG:4326"
+)
+homes_in_fan = gdf_hht[gdf_hht.geometry.within(fan_boundary)].copy()
 
-# ------------------------------
-# Create the Base Map
-# ------------------------------
-lat_center, lon_center = 37.5525, -77.465556
+# Base map
 m = Map(
-    center=(lat_center, lon_center),
+    center=(37.5525, -77.465556),
     zoom=15,
     basemap=basemap_to_tiles(basemaps.OpenStreetMap.Mapnik)
 )
 
-# Add Fan boundary as a GeoJSON layer (blue outline with slight fill)
-fan_geojson = fan_gdf.__geo_interface__
-m.add_layer(GeoJSON(data=fan_geojson, style={"color": "blue", "fillOpacity": 0.05, "weight": 2}))
+# Fan boundary layer
+m.add_layer(GeoJSON(
+    data=fan_gdf.__geo_interface__,
+    style={"color": "blue", "fillOpacity": 0.05, "weight": 2},
+    name="Fan Boundary"
+))
 
-# ------------------------------
-# Add Markers for HHT Homes
-# ------------------------------
-home_markers = [
-    Marker(
-        location=(row.geometry.y, row.geometry.x),
-        title=f"{row.get('Address', '')} ({row.get('Year', 'N/A')})"
-    )
-    for idx, row in homes_in_fan.iterrows()
+# Add all homes
+markers = [
+    Marker(location=(r.geometry.y, r.geometry.x),
+           title=f"{r['Address']} ({r['Year']})")
+    for _, r in homes_in_fan.iterrows()
 ]
-home_cluster = MarkerCluster(markers=home_markers, name="HHT Homes")
-m.add_layer(home_cluster)
-
-# (Optional) You can later add the sorted list of addresses, search bar, and number cards in additional cells.
-
-# ------------------------------
-# Add Layers Control for Toggling
-# ------------------------------
+m.add_layer(MarkerCluster(markers=markers, name="All Homes"))
 m.add_control(LayersControl(position="topright"))
 
+# Search bar
+search = widgets.Text(placeholder="Filter by address, owner, or year…", description="Search:")
+display(search)
+
+def update_map(change):
+    term = change["new"]
+    filt = homes_in_fan[
+        homes_in_fan["Address"].str.contains(term, case=False, na=False) |
+        homes_in_fan["Owner"].str.contains(term, case=False, na=False) |
+        homes_in_fan["Year"].astype(str).str.contains(term)
+    ]
+    m.layers = m.layers[:2]  # Keep base + boundary
+    new_markers = [
+        Marker(location=(r.geometry.y, r.geometry.x),
+               title=f"{r['Address']} ({r['Year']})")
+        for _, r in filt.iterrows()
+    ]
+    m.add_layer(MarkerCluster(markers=new_markers, name="Filtered Homes"))
+
+search.observe(update_map, names="value")
 m
 ```
 
 ## Row {height=15%}
 
 ```{python}
-# List of homes sorted by street
-sorted_df = homes_in_fan.copy()
-sorted_df["Street"] = sorted_df["Address"].str.extract(r"\d+\s+(.*)")
-sorted_df = sorted_df.sort_values("Street")
+#| echo: false
 
-sorted_df[["Address", "Name", "Year"]].reset_index(drop=True).head(20)
+homes = homes_in_fan.copy()
+homes["Street"] = homes["Address"].str.extract(r"\d+\s+(.*)")[0]
+sorted_df = homes.sort_values("Street")
+sorted_df[["Address", "Owner", "Year"]].reset_index(drop=True).head(20)
 ```
 
 ## Row {height=15%}
 ```{python}
-#| layout-ncol: 3
+#| layout-ncol: 4
+#| echo: false
 
-# Number of unique years
-num_years = df["Year"].nunique()
-
-# Number of total homes
-num_homes = df["Address"].nunique()
-
-# Number of repeat homes (appearing more than once)
-repeats = df["Address"].value_counts()
-repeat_homes = (repeats > 1).sum()
+homes = homes_in_fan
+num_years     = homes["Year"].nunique()
+num_homes     = homes["Address"].nunique()
+repeat_homes  = (homes["Address"].value_counts() > 1).sum()
+unique_owners = homes["Owner"].nunique()
 
 [
-  {
-    "title": "Years",
-    "value": num_years,
-    "icon": "calendar",
-    "color": "primary"
-  },
-  {
-    "title": "Unique Homes",
-    "value": num_homes,
-    "icon": "home",
-    "color": "primary"
-  },
-  {
-    "title": "Repeat Homes",
-    "value": repeat_homes,
-    "icon": "refresh",
-    "color": "primary"
-  }
+  {"title":"Years",        "value": num_years,     "icon":"calendar", "color":"primary"},
+  {"title":"Unique Homes", "value": num_homes,     "icon":"home",     "color":"primary"},
+  {"title":"Repeat Homes", "value": repeat_homes,  "icon":"refresh",  "color":"primary"},
+  {"title":"Owners",       "value": unique_owners, "icon":"users",    "color":"primary"}
 ]
 ```
