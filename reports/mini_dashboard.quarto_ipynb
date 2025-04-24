@@ -1,0 +1,162 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: Mini Dashboard\n",
+        "format: dashboard\n",
+        "---\n",
+        "\n",
+        "\n",
+        "## Row {height=70%}\n"
+      ],
+      "id": "88a05137"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: false\n",
+        "\n",
+        "# Load data directly (instead of from __quarto__)\n",
+        "import pandas as pd\n",
+        "import geopandas as gpd\n",
+        "from shapely.geometry import Point\n",
+        "from geo_utils import load_shapefile_from_zip\n",
+        "from ipyleaflet import Map, Marker, MarkerCluster, GeoJSON, LayersControl, basemap_to_tiles, basemaps\n",
+        "import ipywidgets as widgets\n",
+        "\n",
+        "# Load Fan boundary\n",
+        "zip_path = \"../data/Neighborhoods-shp.zip\"\n",
+        "gdf_neigh = load_shapefile_from_zip(zip_path).to_crs(\"EPSG:4326\")\n",
+        "fan_gdf = gdf_neigh[gdf_neigh[\"Name\"].str.strip().str.lower() == \"the fan\"].copy()\n",
+        "fan_gdf[\"geometry\"] = fan_gdf.geometry.simplify(0.0001, preserve_topology=True)\n",
+        "fan_boundary = fan_gdf.unary_union\n",
+        "\n",
+        "# Load geocoded homes\n",
+        "df_hht = pd.read_csv(\"../data/geocoded_hht_homes.csv\")\n",
+        "gdf_hht = gpd.GeoDataFrame(\n",
+        "    df_hht,\n",
+        "    geometry=gpd.points_from_xy(df_hht.lon, df_hht.lat),\n",
+        "    crs=\"EPSG:4326\"\n",
+        ")\n",
+        "homes_in_fan = gdf_hht[gdf_hht.geometry.within(fan_boundary)].copy()\n",
+        "\n",
+        "# Base map\n",
+        "m = Map(\n",
+        "    center=(37.5525, -77.465556),\n",
+        "    zoom=15,\n",
+        "    basemap=basemap_to_tiles(basemaps.OpenStreetMap.Mapnik)\n",
+        ")\n",
+        "\n",
+        "# Fan boundary layer\n",
+        "m.add_layer(GeoJSON(\n",
+        "    data=fan_gdf.__geo_interface__,\n",
+        "    style={\"color\": \"blue\", \"fillOpacity\": 0.05, \"weight\": 2},\n",
+        "    name=\"Fan Boundary\"\n",
+        "))\n",
+        "\n",
+        "# Add all homes\n",
+        "markers = [\n",
+        "    Marker(location=(r.geometry.y, r.geometry.x),\n",
+        "           title=f\"{r['Address']} ({r['Year']})\")\n",
+        "    for _, r in homes_in_fan.iterrows()\n",
+        "]\n",
+        "m.add_layer(MarkerCluster(markers=markers, name=\"All Homes\"))\n",
+        "m.add_control(LayersControl(position=\"topright\"))\n",
+        "\n",
+        "# Search bar\n",
+        "search = widgets.Text(placeholder=\"Filter by address, owner, or year…\", description=\"Search:\")\n",
+        "display(search)\n",
+        "\n",
+        "def update_map(change):\n",
+        "    term = change[\"new\"]\n",
+        "    filt = homes_in_fan[\n",
+        "        homes_in_fan[\"Address\"].str.contains(term, case=False, na=False) |\n",
+        "        homes_in_fan[\"Owner\"].str.contains(term, case=False, na=False) |\n",
+        "        homes_in_fan[\"Year\"].astype(str).str.contains(term)\n",
+        "    ]\n",
+        "    m.layers = m.layers[:2]  # Keep base + boundary\n",
+        "    new_markers = [\n",
+        "        Marker(location=(r.geometry.y, r.geometry.x),\n",
+        "               title=f\"{r['Address']} ({r['Year']})\")\n",
+        "        for _, r in filt.iterrows()\n",
+        "    ]\n",
+        "    m.add_layer(MarkerCluster(markers=new_markers, name=\"Filtered Homes\"))\n",
+        "\n",
+        "search.observe(update_map, names=\"value\")\n",
+        "m"
+      ],
+      "id": "351d2ee0",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Row {height=15%}\n"
+      ],
+      "id": "9546751a"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: false\n",
+        "\n",
+        "homes = homes_in_fan.copy()\n",
+        "homes[\"Street\"] = homes[\"Address\"].str.extract(r\"\\d+\\s+(.*)\")[0]\n",
+        "sorted_df = homes.sort_values(\"Street\")\n",
+        "sorted_df[[\"Address\", \"Owner\", \"Year\"]].reset_index(drop=True).head(20)"
+      ],
+      "id": "bfe86a19",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Row {height=15%}"
+      ],
+      "id": "fe99985b"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| layout-ncol: 4\n",
+        "#| echo: false\n",
+        "\n",
+        "homes = homes_in_fan\n",
+        "num_years     = homes[\"Year\"].nunique()\n",
+        "num_homes     = homes[\"Address\"].nunique()\n",
+        "repeat_homes  = (homes[\"Address\"].value_counts() > 1).sum()\n",
+        "unique_owners = homes[\"Owner\"].nunique()\n",
+        "\n",
+        "[\n",
+        "  {\"title\":\"Years\",        \"value\": num_years,     \"icon\":\"calendar\", \"color\":\"primary\"},\n",
+        "  {\"title\":\"Unique Homes\", \"value\": num_homes,     \"icon\":\"home\",     \"color\":\"primary\"},\n",
+        "  {\"title\":\"Repeat Homes\", \"value\": repeat_homes,  \"icon\":\"refresh\",  \"color\":\"primary\"},\n",
+        "  {\"title\":\"Owners\",       \"value\": unique_owners, \"icon\":\"users\",    \"color\":\"primary\"}\n",
+        "]"
+      ],
+      "id": "962b1325",
+      "execution_count": null,
+      "outputs": []
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "/home/john/.cache/pypoetry/virtualenvs/ssg-thefan-analysis-Md-w6cvw-py3.13/share/jupyter/kernels/python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
