@@ -3,107 +3,100 @@ title: Mini Dashboard
 format: dashboard
 ---
 
+## Row {height=15%, columns=4}
+
+```{python}
+#| echo: false
+import pandas as pd
+
+# Load the cleaned & geocoded HHT homes
+df = pd.read_csv("../data/geocoded_hht_homes.csv")
+
+# Compute metrics
+num_years     = df.Year.nunique()
+num_homes     = df.Address.nunique()
+repeat_homes  = (df.Address.value_counts()>1).sum()
+unique_owners = df.Owner.nunique()
+
+# Return list of valueboxes
+[
+  {"title": "Years\nFeatured", "value": num_years,     "icon": "calendar", "color": "primary"},
+  {"title": "Total\nHomes",    "value": num_homes,     "icon": "home",     "color": "success"},
+  {"title": "Repeat\nVisits",  "value": repeat_homes,  "icon": "refresh",  "color": "warning"},
+  {"title": "Unique\nOwners",  "value": unique_owners, "icon": "users",    "color": "info"}
+]
+
+```
+
 ## Row {height=70%}
 
 ```{python}
 #| echo: false
+import sys, os
+sys.path.insert(0, os.path.abspath(".."))
 
-# Load data directly (instead of from __quarto__)
 import pandas as pd
 import geopandas as gpd
-from shapely.geometry import Point
-from geo_utils import load_shapefile_from_zip
 from ipyleaflet import Map, Marker, MarkerCluster, GeoJSON, LayersControl, basemap_to_tiles, basemaps
-import ipywidgets as widgets
+from fandu.geo_utils import load_shapefile_from_zip
 
-# Load Fan boundary
-zip_path = "../data/Neighborhoods-shp.zip"
-gdf_neigh = load_shapefile_from_zip(zip_path).to_crs("EPSG:4326")
-fan_gdf = gdf_neigh[gdf_neigh["Name"].str.strip().str.lower() == "the fan"].copy()
-fan_gdf["geometry"] = fan_gdf.geometry.simplify(0.0001, preserve_topology=True)
-fan_boundary = fan_gdf.unary_union
-
-# Load geocoded homes
-df_hht = pd.read_csv("../data/geocoded_hht_homes.csv")
-gdf_hht = gpd.GeoDataFrame(
-    df_hht,
-    geometry=gpd.points_from_xy(df_hht.lon, df_hht.lat),
-    crs="EPSG:4326"
+# 1 Load & simplify The Fan boundary
+neigh = (
+  load_shapefile_from_zip("../data/Neighborhoods-shp.zip")
+  .to_crs("EPSG:4326")
 )
-homes_in_fan = gdf_hht[gdf_hht.geometry.within(fan_boundary)].copy()
+fan = neigh[neigh["Name"].str.lower().str.strip()=="the fan"].copy()
+fan.geometry = fan.geometry.simplify(0.0001, preserve_topology=True)
+boundary = fan.unary_union
 
-# Base map
+# 2 Load geocoded homes
+df = pd.read_csv("../data/geocoded_hht_homes.csv")
+gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.lon, df.lat), crs="EPSG:4326")
+homes = gdf[gdf.geometry.within(boundary)]
+
+# 3 Build map
 m = Map(
-    center=(37.5525, -77.465556),
-    zoom=15,
-    basemap=basemap_to_tiles(basemaps.OpenStreetMap.Mapnik)
+  basemap=basemap_to_tiles(basemaps.OpenStreetMap.Mapnik),
+  center=(37.5525, -77.465556), zoom=15
 )
 
 # Fan boundary layer
 m.add_layer(GeoJSON(
-    data=fan_gdf.__geo_interface__,
-    style={"color": "blue", "fillOpacity": 0.05, "weight": 2},
-    name="Fan Boundary"
+  data=fan.__geo_interface__,
+  style={"color":"#1f77b4","fillOpacity":0.1,"weight":2},
+  name="Fan Boundary"
 ))
 
-# Add all homes
+# Home markers
 markers = [
-    Marker(location=(r.geometry.y, r.geometry.x),
-           title=f"{r['Address']} ({r['Year']})")
-    for _, r in homes_in_fan.iterrows()
+  Marker(location=(r.lat, r.lon), title=f"{r.Address} ({r.Year})")
+  for _, r in homes.iterrows()
 ]
-m.add_layer(MarkerCluster(markers=markers, name="All Homes"))
+m.add_layer(MarkerCluster(markers=markers, name="Holiday Homes"))
+
+# Toggle control
 m.add_control(LayersControl(position="topright"))
 
-# Search bar
-search = widgets.Text(placeholder="Filter by address, owner, or year…", description="Search:")
-display(search)
-
-def update_map(change):
-    term = change["new"]
-    filt = homes_in_fan[
-        homes_in_fan["Address"].str.contains(term, case=False, na=False) |
-        homes_in_fan["Owner"].str.contains(term, case=False, na=False) |
-        homes_in_fan["Year"].astype(str).str.contains(term)
-    ]
-    m.layers = m.layers[:2]  # Keep base + boundary
-    new_markers = [
-        Marker(location=(r.geometry.y, r.geometry.x),
-               title=f"{r['Address']} ({r['Year']})")
-        for _, r in filt.iterrows()
-    ]
-    m.add_layer(MarkerCluster(markers=new_markers, name="Filtered Homes"))
-
-search.observe(update_map, names="value")
 m
 ```
 
 ## Row {height=15%}
-
 ```{python}
 #| echo: false
+import pandas as pd
 
-homes = homes_in_fan.copy()
-homes["Street"] = homes["Address"].str.extract(r"\d+\s+(.*)")[0]
-sorted_df = homes.sort_values("Street")
-sorted_df[["Address", "Owner", "Year"]].reset_index(drop=True).head(20)
-```
+# reload & sort by street
+df = pd.read_csv("../data/geocoded_hht_homes.csv")
+df["Street"] = df.Address.str.extract(r"\d+\s+(.*)")[0]
+tbl = (
+  df.sort_values("Street")
+    .loc[:, ["Address","Owner","Year"]]
+    .reset_index(drop=True)
+    .head(20)
+)
 
-## Row {height=15%}
-```{python}
-#| layout-ncol: 4
-#| echo: false
-
-homes = homes_in_fan
-num_years     = homes["Year"].nunique()
-num_homes     = homes["Address"].nunique()
-repeat_homes  = (homes["Address"].value_counts() > 1).sum()
-unique_owners = homes["Owner"].nunique()
-
-[
-  {"title":"Years",        "value": num_years,     "icon":"calendar", "color":"primary"},
-  {"title":"Unique Homes", "value": num_homes,     "icon":"home",     "color":"primary"},
-  {"title":"Repeat Homes", "value": repeat_homes,  "icon":"refresh",  "color":"primary"},
-  {"title":"Owners",       "value": unique_owners, "icon":"users",    "color":"primary"}
-]
+# display as Markdown table
+from tabulate import tabulate
+from IPython.display import Markdown
+Markdown(tabulate(tbl, headers=tbl.columns, tablefmt="github"))
 ```
