@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Cleaning the Holiday House Tour data – The Fan</title>
+<title>Parsing and cleaning the HHC excel workbook – The Fan</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -18,6 +18,40 @@ ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
 width: 0.8em;
 margin: 0 0.8em 0.2em -1em;  vertical-align: middle;
+}
+
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+}
+pre.numberSource { margin-left: 3em; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -4767,7 +4801,7 @@ vertical-align: -.125em;
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Cleaning the Holiday House Tour data</h1>
+<h1 class="title">Parsing and cleaning the HHC excel workbook</h1>
 </div>
 
 
@@ -4784,13 +4818,24 @@ vertical-align: -.125em;
 </header>
 
 
-<section id="geocoding-excel-hht-file-mini-dashboard" class="level2">
-<h2 class="anchored" data-anchor-id="geocoding-excel-hht-file-mini-dashboard">Geocoding Excel HHT file (mini-dashboard)</h2>
-<div id="f4b08df2" class="cell" data-execution_count="1">
+<section id="cleaning" class="level1">
+<h1>Cleaning</h1>
+<section id="load-the-excel-file" class="level2">
+<h2 class="anchored" data-anchor-id="load-the-excel-file">Load the excel file</h2>
+<div id="67896ebd" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> load_csv_file(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    CSV_HHT_FILE,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    skip_rows<span class="op">=</span><span class="dv">3</span>,             <span class="co"># Skip first 3 rows (0-based index)</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    header_row<span class="op">=</span><span class="va">None</span>,         <span class="co"># No header row in the file</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    column_names<span class="op">=</span>[<span class="st">&quot;data&quot;</span>]    <span class="co"># Manually assign column name</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>df.head(<span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Skipping geocoding; using existing geocoded_hht_homes.csv</code></pre>
+<pre><code>[Info] No mojibake detected. No repair needed.
+[Info] Loaded 665 rows from CSV: ../data/1963-2024 HHT Homeowners_Adresses.csv</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="1">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
@@ -4798,59 +4843,129 @@ vertical-align: -.125em;
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">Year</th>
-<th data-quarto-table-cell-role="th">Address</th>
-<th data-quarto-table-cell-role="th">Owner</th>
-<th data-quarto-table-cell-role="th">full_address</th>
-<th data-quarto-table-cell-role="th">lat</th>
-<th data-quarto-table-cell-role="th">lon</th>
+<th data-quarto-table-cell-role="th">data</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>1963</td>
-<td>307 N. Allen Ave.</td>
-<td>Mr. &amp; Mrs. Richard (Ann) Velz</td>
-<td>307 N. Allen Ave., Richmond, VA</td>
-<td>37.552218</td>
-<td>-77.460972</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>1963</td>
-<td>1825 Grove Ave.</td>
-<td>Mr. &amp; Mrs. William (Anne) Carleton</td>
-<td>1825 Grove Ave., Richmond, VA</td>
-<td>37.550715</td>
-<td>-77.463318</td>
+<td>307 N. Allen Ave. – Mr. &amp; Mrs. Richard (Ann) Velz</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>1963</td>
-<td>1914 Grove Ave.</td>
-<td>Mrs. Louise Fowlkes &amp; Miss Dorothy Daniels</td>
-<td>1914 Grove Ave., Richmond, VA</td>
-<td>37.551485</td>
-<td>-77.463947</td>
+<td>1825 Grove Ave. – Mr. &amp; Mrs. William (Anne) Ca...</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>1963</td>
-<td>2109 Hanover Ave.</td>
-<td>Mr. &amp; Mrs. Charles (Jed) (Betty) Wilson</td>
-<td>2109 Hanover Ave., Richmond, VA</td>
-<td>37.552972</td>
-<td>-77.465737</td>
+<td>1914 Grove Ave. – Mrs. Louise Fowlkes &amp; Miss D...</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>1963</td>
-<td>1714 Park Ave.</td>
-<td>Mr. &amp; Mrs. Dallas (Elizabeth) Coons</td>
-<td>1714 Park Ave., Richmond, VA</td>
-<td>37.552658</td>
-<td>-77.460287</td>
+<td>2109 Hanover Ave. – Mr. &amp; Mrs. Charles (Jed) (...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>1714 Park Ave. – Mr. &amp; Mrs. Dallas (Elizabeth)...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>1725 Park Ave. – Mr. &amp; Mrs. James (Patricia) G...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>2108 Stuart Ave. -- Mr. &amp; Mrs. Mitchell (Mario...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>1964 - Chair, Mrs. Charles O. (Adella) Watlington</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>1702 Grove Ave. – Mr. &amp; Mrs. Sam (Barbara) Perry</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>1909 Hanover Ave. – Mr. &amp; Mrs. John (Suzanne) ...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>1643 Monument Ave. – Mr. &amp; Mrs. Horace (Sarah...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>1301 Park Ave. – Mr. &amp; Mrs. John (Margaret) Synon</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">13</td>
+<td>2419 Park Ave. – Mr. &amp; Mrs. Charles (June) Weaver</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>2214 Stuart Ave. – Mr. &amp; Mrs. Emmett (Jane) Reid</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>1965 - Chair, Mrs. Raymond (Jacqueline) Hodges</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>2127 Floyd Ave. – Mr. Richard Duncan</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>102 N. Shields Ave. – Mr. J. Henry Brown Jr.</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>106 N. Shields Ave. – Mr. &amp; Mrs. Kenton (Marga...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">19</td>
+<td>109 N. Shields Ave. – Mr. Vernon Jackson</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>115 N. Shields Ave. – Mr. Jacques Van Caneghem</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>117 N. Shields Ave. -- Mr. &amp; Mrs. Benjamin (Ma...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>121 N. Shields Ave. – Mr. J. L. Spiers, Jr.</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>1966 - Chair, Mrs. Drew (Ann) Carneal</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>1614 Hanover Ave.– Mr. &amp; Mrs. H. Waldo (Virgin...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25</td>
+<td>1803 Hanover Ave.– Mr. &amp; Mrs. George (Judith) ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">26</td>
+<td>1900 Hanover Ave.– Honorable &amp; Mrs. Fred (Jane...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">27</td>
+<td>1719 Park Ave.– Mr. &amp; Mrs. David (Carlyle) Cli...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">28</td>
+<td>2021 Stuart Ave.– Dr. &amp; Mrs. Bennett (Susan) M...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">29</td>
+<td>2013 Stuart Ave.– Mr. &amp; Mrs. Dewitt B. (Joseph...</td>
 </tr>
 </tbody>
 </table>
@@ -4858,8 +4973,576 @@ vertical-align: -.125em;
 </div>
 </div>
 </div>
+</section>
+<section id="extract-and-fill-year-and-chair" class="level2">
+<h2 class="anchored" data-anchor-id="extract-and-fill-year-and-chair">Extract and fill year and chair</h2>
+<div id="1f43524c" class="cell" data-execution_count="3">
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
 
 
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">data</th>
+<th data-quarto-table-cell-role="th">year_and_chair</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>307 N. Allen Ave. – Mr. &amp; Mrs. Richard (Ann) Velz</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1825 Grove Ave. – Mr. &amp; Mrs. William (Anne) Ca...</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1914 Grove Ave. – Mrs. Louise Fowlkes &amp; Miss D...</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2109 Hanover Ave. – Mr. &amp; Mrs. Charles (Jed) (...</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>1714 Park Ave. – Mr. &amp; Mrs. Dallas (Elizabeth)...</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="clean-columns" class="level2">
+<h2 class="anchored" data-anchor-id="clean-columns">Clean columns</h2>
+<div id="d5d880a0" class="cell" data-execution_count="4">
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">data</th>
+<th data-quarto-table-cell-role="th">year_and_chair</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>307 N. Allen Ave. – Mr. &amp; Mrs. Richard (Ann) Velz</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1825 Grove Ave. – Mr. &amp; Mrs. William (Anne) Ca...</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1914 Grove Ave. – Mrs. Louise Fowlkes &amp; Miss D...</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2109 Hanover Ave. – Mr. &amp; Mrs. Charles (Jed) (...</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>1714 Park Ave. – Mr. &amp; Mrs. Dallas (Elizabeth)...</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>1725 Park Ave. – Mr. &amp; Mrs. James (Patricia) G...</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>2108 Stuart Ave. -- Mr. &amp; Mrs. Mitchell (Mario...</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>1702 Grove Ave. – Mr. &amp; Mrs. Sam (Barbara) Perry</td>
+<td>1964 - Chair, Mrs. Charles O. (Adella) Watlington</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>1909 Hanover Ave. – Mr. &amp; Mrs. John (Suzanne) ...</td>
+<td>1964 - Chair, Mrs. Charles O. (Adella) Watlington</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>1643 Monument Ave. – Mr. &amp; Mrs. Horace (Sarah...</td>
+<td>1964 - Chair, Mrs. Charles O. (Adella) Watlington</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>1301 Park Ave. – Mr. &amp; Mrs. John (Margaret) Synon</td>
+<td>1964 - Chair, Mrs. Charles O. (Adella) Watlington</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>2419 Park Ave. – Mr. &amp; Mrs. Charles (June) Weaver</td>
+<td>1964 - Chair, Mrs. Charles O. (Adella) Watlington</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>2214 Stuart Ave. – Mr. &amp; Mrs. Emmett (Jane) Reid</td>
+<td>1964 - Chair, Mrs. Charles O. (Adella) Watlington</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">13</td>
+<td>2127 Floyd Ave. – Mr. Richard Duncan</td>
+<td>1965 - Chair, Mrs. Raymond (Jacqueline) Hodges</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>102 N. Shields Ave. – Mr. J. Henry Brown Jr.</td>
+<td>1965 - Chair, Mrs. Raymond (Jacqueline) Hodges</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>106 N. Shields Ave. – Mr. &amp; Mrs. Kenton (Marga...</td>
+<td>1965 - Chair, Mrs. Raymond (Jacqueline) Hodges</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>109 N. Shields Ave. – Mr. Vernon Jackson</td>
+<td>1965 - Chair, Mrs. Raymond (Jacqueline) Hodges</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>115 N. Shields Ave. – Mr. Jacques Van Caneghem</td>
+<td>1965 - Chair, Mrs. Raymond (Jacqueline) Hodges</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>117 N. Shields Ave. -- Mr. &amp; Mrs. Benjamin (Ma...</td>
+<td>1965 - Chair, Mrs. Raymond (Jacqueline) Hodges</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">19</td>
+<td>121 N. Shields Ave. – Mr. J. L. Spiers, Jr.</td>
+<td>1965 - Chair, Mrs. Raymond (Jacqueline) Hodges</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="split-year-and-chair" class="level2">
+<h2 class="anchored" data-anchor-id="split-year-and-chair">Split year and chair</h2>
+<div id="df026f83" class="cell" data-execution_count="5">
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">data</th>
+<th data-quarto-table-cell-role="th">year_and_chair</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">chair</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>307 N. Allen Ave. – Mr. &amp; Mrs. Richard (Ann) Velz</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td>1963</td>
+<td>Mrs. Van Pelt (Virginia) Sessoms</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1825 Grove Ave. – Mr. &amp; Mrs. William (Anne) Ca...</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td>1963</td>
+<td>Mrs. Van Pelt (Virginia) Sessoms</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1914 Grove Ave. – Mrs. Louise Fowlkes &amp; Miss D...</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td>1963</td>
+<td>Mrs. Van Pelt (Virginia) Sessoms</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2109 Hanover Ave. – Mr. &amp; Mrs. Charles (Jed) (...</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td>1963</td>
+<td>Mrs. Van Pelt (Virginia) Sessoms</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>1714 Park Ave. – Mr. &amp; Mrs. Dallas (Elizabeth)...</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td>1963</td>
+<td>Mrs. Van Pelt (Virginia) Sessoms</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>1725 Park Ave. – Mr. &amp; Mrs. James (Patricia) G...</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td>1963</td>
+<td>Mrs. Van Pelt (Virginia) Sessoms</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>2108 Stuart Ave. -- Mr. &amp; Mrs. Mitchell (Mario...</td>
+<td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td>1963</td>
+<td>Mrs. Van Pelt (Virginia) Sessoms</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>1702 Grove Ave. – Mr. &amp; Mrs. Sam (Barbara) Perry</td>
+<td>1964 - Chair, Mrs. Charles O. (Adella) Watlington</td>
+<td>1964</td>
+<td>Mrs. Charles O. (Adella) Watlington</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>1909 Hanover Ave. – Mr. &amp; Mrs. John (Suzanne) ...</td>
+<td>1964 - Chair, Mrs. Charles O. (Adella) Watlington</td>
+<td>1964</td>
+<td>Mrs. Charles O. (Adella) Watlington</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>1643 Monument Ave. – Mr. &amp; Mrs. Horace (Sarah...</td>
+<td>1964 - Chair, Mrs. Charles O. (Adella) Watlington</td>
+<td>1964</td>
+<td>Mrs. Charles O. (Adella) Watlington</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="split-addresses-from-hosts" class="level2">
+<h2 class="anchored" data-anchor-id="split-addresses-from-hosts">Split addresses from hosts</h2>
+<div id="2d0847d3" class="cell" data-execution_count="6">
+<div class="cell-output cell-output-display" data-execution_count="6">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">data</th>
+<th data-quarto-table-cell-role="th">host_name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">60</td>
+<td>507 N. Lombardy St. - St. John’s United Church...</td>
+<td>St. John’s United Church of Christ</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">61</td>
+<td>605-12 N. Davis Ave. – Mr. David E. Martin</td>
+<td>Mr. David E. Martin</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">62</td>
+<td>1808 Hanover Ave. – Mr. &amp; Mrs. Henry (Reba) Mc...</td>
+<td>Mr. &amp; Mrs. Henry (Reba) McVey III</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">63</td>
+<td>2513 Kensington Ave. – Mr. &amp; Mrs. Walter Thoma...</td>
+<td>Mr. &amp; Mrs. Walter Thomas (Marion) Davis</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">64</td>
+<td>404 N. Meadow St. – Mr. &amp; Mrs. William (Brenda...</td>
+<td>Mr. &amp; Mrs. William (Brenda) Wilkins, Jr.</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">65</td>
+<td>2601 Monument Ave. – Mr. &amp; Mrs. Sydney (Franc...</td>
+<td>Mr. &amp; Mrs. Sydney (Frances) Lewis</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">66</td>
+<td>2605 Monument Ave. – Mr. &amp; Mrs. Walter (Zayde)...</td>
+<td>Mr. &amp; Mrs. Walter (Zayde) Dotts, Jr.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="further-split-addresses" class="level2">
+<h2 class="anchored" data-anchor-id="further-split-addresses">Further split addresses</h2>
+<div id="42dbe698" class="cell" data-execution_count="7">
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">data</th>
+<th data-quarto-table-cell-role="th">street_number</th>
+<th data-quarto-table-cell-role="th">street_name</th>
+<th data-quarto-table-cell-role="th">street_type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>307 N. Allen Ave. – Mr. &amp; Mrs. Richard (Ann) Velz</td>
+<td>307</td>
+<td>N. Allen</td>
+<td>Ave.</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1825 Grove Ave. – Mr. &amp; Mrs. William (Anne) Ca...</td>
+<td>1825</td>
+<td>Grove</td>
+<td>Ave.</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1914 Grove Ave. – Mrs. Louise Fowlkes &amp; Miss D...</td>
+<td>1914</td>
+<td>Grove</td>
+<td>Ave.</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2109 Hanover Ave. – Mr. &amp; Mrs. Charles (Jed) (...</td>
+<td>2109</td>
+<td>Hanover</td>
+<td>Ave.</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>1714 Park Ave. – Mr. &amp; Mrs. Dallas (Elizabeth)...</td>
+<td>1714</td>
+<td>Park</td>
+<td>Ave.</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>1725 Park Ave. – Mr. &amp; Mrs. James (Patricia) G...</td>
+<td>1725</td>
+<td>Park</td>
+<td>Ave.</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>2108 Stuart Ave. -- Mr. &amp; Mrs. Mitchell (Mario...</td>
+<td>2108</td>
+<td>Stuart</td>
+<td>Ave.</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>1702 Grove Ave. – Mr. &amp; Mrs. Sam (Barbara) Perry</td>
+<td>1702</td>
+<td>Grove</td>
+<td>Ave.</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>1909 Hanover Ave. – Mr. &amp; Mrs. John (Suzanne) ...</td>
+<td>1909</td>
+<td>Hanover</td>
+<td>Ave.</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>1643 Monument Ave. – Mr. &amp; Mrs. Horace (Sarah...</td>
+<td>1643</td>
+<td>Monument</td>
+<td>Ave.</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>1301 Park Ave. – Mr. &amp; Mrs. John (Margaret) Synon</td>
+<td>1301</td>
+<td>Park</td>
+<td>Ave.</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>2419 Park Ave. – Mr. &amp; Mrs. Charles (June) Weaver</td>
+<td>2419</td>
+<td>Park</td>
+<td>Ave.</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>2214 Stuart Ave. – Mr. &amp; Mrs. Emmett (Jane) Reid</td>
+<td>2214</td>
+<td>Stuart</td>
+<td>Ave.</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">13</td>
+<td>2127 Floyd Ave. – Mr. Richard Duncan</td>
+<td>2127</td>
+<td>Floyd</td>
+<td>Ave.</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>102 N. Shields Ave. – Mr. J. Henry Brown Jr.</td>
+<td>102</td>
+<td>N. Shields</td>
+<td>Ave.</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>106 N. Shields Ave. – Mr. &amp; Mrs. Kenton (Marga...</td>
+<td>106</td>
+<td>N. Shields</td>
+<td>Ave.</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>109 N. Shields Ave. – Mr. Vernon Jackson</td>
+<td>109</td>
+<td>N. Shields</td>
+<td>Ave.</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>115 N. Shields Ave. – Mr. Jacques Van Caneghem</td>
+<td>115</td>
+<td>N. Shields</td>
+<td>Ave.</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>117 N. Shields Ave. -- Mr. &amp; Mrs. Benjamin (Ma...</td>
+<td>117</td>
+<td>N. Shields</td>
+<td>Ave.</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">19</td>
+<td>121 N. Shields Ave. – Mr. J. L. Spiers, Jr.</td>
+<td>121</td>
+<td>N. Shields</td>
+<td>Ave.</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>1614 Hanover Ave.– Mr. &amp; Mrs. H. Waldo (Virgin...</td>
+<td>1614</td>
+<td>Hanover</td>
+<td>Ave.</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>1803 Hanover Ave.– Mr. &amp; Mrs. George (Judith) ...</td>
+<td>1803</td>
+<td>Hanover</td>
+<td>Ave.</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>1900 Hanover Ave.– Honorable &amp; Mrs. Fred (Jane...</td>
+<td>1900</td>
+<td>Hanover</td>
+<td>Ave.</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>1719 Park Ave.– Mr. &amp; Mrs. David (Carlyle) Cli...</td>
+<td>1719</td>
+<td>Park</td>
+<td>Ave.</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>2021 Stuart Ave.– Dr. &amp; Mrs. Bennett (Susan) M...</td>
+<td>2021</td>
+<td>Stuart</td>
+<td>Ave.</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25</td>
+<td>2013 Stuart Ave.– Mr. &amp; Mrs. Dewitt B. (Joseph...</td>
+<td>2013</td>
+<td>Stuart</td>
+<td>Ave.</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">26</td>
+<td>2020 Stuart Ave.– Mr. &amp; Mrs. Robert (Ann) Burrus</td>
+<td>2020</td>
+<td>Stuart</td>
+<td>Ave.</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">27</td>
+<td>1824 Grove Ave. – Miss Anne Ryland</td>
+<td>1824</td>
+<td>Grove</td>
+<td>Ave.</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">28</td>
+<td>1810 Monument Ave. – Mr. George T. Williamson</td>
+<td>1810</td>
+<td>Monument</td>
+<td>Ave.</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">29</td>
+<td>1414 Park Ave. – Mr. &amp; Mrs. Kemp (Delores) Hyers</td>
+<td>1414</td>
+<td>Park</td>
+<td>Ave.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="write-to-csv-file" class="level2">
+<h2 class="anchored" data-anchor-id="write-to-csv-file">Write to CSV file</h2>
+<div id="ce548761" class="cell" data-execution_count="8">
+<div class="cell-output cell-output-stdout">
+<pre><code>[Saved] Cleaned address data written to ../data/cleaned_hht_addresses.csv</code></pre>
+</div>
+</div>
+
+
+</section>
 </section>
 
 </main> <!-- /main -->

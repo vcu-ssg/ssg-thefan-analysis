@@ -6,6 +6,9 @@ project:
   render:
     - "*.qmd"
 
+execute:
+  echo: false
+
 website:
   title: "The Fan"
   navbar:
