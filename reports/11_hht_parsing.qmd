@@ -1,0 +1,137 @@
+---
+title: Parsing and cleaning the HHC excel workbook
+---
+
+```{python}
+import sys
+import click
+import pandas as pd
+
+sys.path.append("..")
+from fandu.utils import load_excel_sheet, extract_and_fill_year_and_chair_column, \
+        split_year_and_chair_columns, split_address_and_host, split_address_parts, \
+        perform_column_cleaning, load_csv_file, recode_street_names
+
+EXCEL_HHT_FILE = '../data/1963-2024 HHT Homeowners_Adresses.xlsx'
+CSV_HHT_FILE = '../data/1963-2024 HHT Homeowners_Adresses.csv'
+CLEANED_HHT_ADDRESSES = "../data/cleaned_hht_addresses.csv"
+
+```
+
+
+# Cleaning
+
+## Load the excel file
+
+```{python}
+#| echo: true
+
+if (0):
+
+    df = load_csv_file(
+        CSV_HHT_FILE,
+        skip_rows=3,             # Skip first 3 rows (0-based index)
+        header_row=None,         # No header row in the file
+        column_names=["data"]    # Manually assign column name
+    )
+
+else:
+
+    df = load_excel_sheet(
+        EXCEL_HHT_FILE,
+        skip_rows=3,             # Skip first 3 rows (0-based index)
+        header_row=None,         # No header row in the file
+        column_names=["data"]    # Manually assign column name
+    )
+
+
+df.head(30)
+
+```
+
+## Extract and fill year and chair
+
+```{python}
+df = extract_and_fill_year_and_chair_column(df)
+df.head()
+```
+
+## Clean columns
+
+```{python}
+df = perform_column_cleaning( df )
+df.head(20)
+```
+
+## Split year and chair
+
+```{python}
+df = split_year_and_chair_columns( df )
+df.head(10)
+```
+
+## Split addresses from hosts
+
+```{python}
+df = split_address_and_host( df )
+df[df["year"]=="1972"][["data","host_name"]].head(30)
+```
+
+## Further split addresses
+
+```{python}
+df = split_address_parts( df )
+df[["data", "street_number", "unit_number", "street_name", "street_type"]].head(30)
+```
+
+## Recoding and rearranging
+
+```{python}
+new_column_order = [
+    "data",
+    "year_and_chair",
+    "year",
+    "tour",
+    "chair",
+    "address",
+    "street_number",
+    "unit_number",  # <- moved here!
+    "street_name",
+    "street_type",
+    "place_name",
+    "host_name",
+]
+
+df = df[new_column_order]
+
+df = recode_street_names( df )
+
+```
+
+
+## Write to CSV file
+
+```{python}
+df.to_csv(CLEANED_HHT_ADDRESSES, index=False)
+click.echo(f"[Saved] Cleaned address data written to {CLEANED_HHT_ADDRESSES}")
+```
+
+
+# Quick cleaning analysis
+
+## Tighten up street names
+
+```{python}
+# Extract the unique street names
+unique_street_names = df["street_name"].dropna().unique()
+
+# Sort them alphabetically
+unique_street_names = sorted(unique_street_names)
+
+# Convert to a DataFrame if you want it as a table
+unique_street_names_df = pd.DataFrame(unique_street_names, columns=["street_name"])
+
+# Display
+click.echo(unique_street_names_df)
+
+```

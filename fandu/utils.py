@@ -170,43 +170,59 @@ def load_csv_file(file_path, *, header_row=None, skip_rows=None, column_names=No
 
 def extract_and_fill_year_and_chair_column(df):
     """
-    Identify header rows that begin with a 4-digit year and contain 'chair',
-    move them to a 'year_and_chair' column, and propagate the value downward.
-    Removes the original header rows from the data.
-
-    Parameters:
-    - df (pd.DataFrame): DataFrame with a single 'data' column.
+    Identify header rows (4-digit year + 'chair') and detect Tour A / Tour B markers.
+    - Tour A markers are removed (Tour A is default).
+    - Tour B markers switch tour to B until next year header.
+    - Year headers reset tour back to A.
 
     Returns:
-    - pd.DataFrame: Cleaned DataFrame with 'year_and_chair' column.
+    - DataFrame with 'year_and_chair' and 'tour' columns.
     """
     df = df.copy()
 
+    # Clean 'data' column
     if "data" in df.columns:
         df["data"] = df["data"].astype(str).str.strip()
 
-    # Detect header rows
-    pattern = r'^\s*\d{4}.*chair'
-    is_header = df["data"].str.contains(pattern, case=False, na=False)
+    # Detect year/chair header rows
+    year_chair_pattern = r'^\s*\d{4}.*chair'
+    is_year_chair_header = df["data"].str.contains(year_chair_pattern, case=False, na=False)
 
-    # Create 'year_and_chair' only where header matches
-    df["year_and_chair"] = df["data"].where(is_header)
+    # Detect Tour markers
+    is_tour_a_marker = df["data"].str.contains(r'\bTour A\b', case=False, na=False)
+    is_tour_b_marker = df["data"].str.contains(r'\bTour B\b', case=False, na=False)
 
-    # Forward-fill the last valid header
+    # Create year_and_chair column
+    df["year_and_chair"] = df["data"].where(is_year_chair_header)
     df["year_and_chair"] = df["year_and_chair"].ffill()
 
-    # Keep only non-header rows
-    df_clean = df[~is_header].copy().reset_index(drop=True)
+    # Initialize tour: default A
+    df["tour"] = "A"
 
-    # Very important: clean 'data' column again after filtering
-    if "data" in df_clean.columns:
-        df_clean["data"] = df_clean["data"].astype(str).str.strip()
+    # Step through rows carefully
+    current_tour = "A"
 
-    # And also clean 'year_and_chair' for safety
-    if "year_and_chair" in df_clean.columns:
-        df_clean["year_and_chair"] = df_clean["year_and_chair"].astype(str).str.strip()
+    for idx, row in df.iterrows():
+        if is_year_chair_header.loc[idx]:
+            current_tour = "A"  # reset to Tour A on new year
+        elif is_tour_b_marker.loc[idx]:
+            current_tour = "B"  # switch to Tour B
+        elif is_tour_a_marker.loc[idx]:
+            current_tour = "A"  # Tour A marker reaffirms A (no effect really)
+
+        df.at[idx, "tour"] = current_tour
+
+    # Remove all control rows (year headers, Tour A, Tour B)
+    remove_headers = is_year_chair_header | is_tour_a_marker | is_tour_b_marker
+    df_clean = df[~remove_headers].copy().reset_index(drop=True)
+
+    # Final cleanup
+    for col in ["data", "year_and_chair", "tour"]:
+        if col in df_clean.columns:
+            df_clean[col] = df_clean[col].astype(str).str.strip()
 
     return df_clean
+
 
 def split_year_and_chair_columns(df):
     """
@@ -241,42 +257,61 @@ def split_year_and_chair_columns(df):
 
 def split_address_and_host(df):
     """
-    Split the 'data' column into 'address' and 'host_name'.
-    If no dash separator is found but a comma is present,
-    replaces the first comma with a dash to enable splitting.
-
-    Parameters:
-    - df (pd.DataFrame): DataFrame with a 'data' column.
-
-    Returns:
-    - pd.DataFrame: With 'address' and 'host_name' columns added.
+    Splits the 'data' column into 'address', 'unit_number', 'place_name', and 'host_name'.
+    Handles unit numbers even without comma before '#', extracts place names, and splits address vs host safely.
     """
+    df = df.copy()
+
     dash_pattern = re.compile(r'[-–—]{1,2}')
+    place_pattern = re.compile(r'\[(.*?)\]')
+    unit_pattern = re.compile(r'\s*#(\w+)')
 
     def smart_split(text):
-        # If no dash but there is a comma, replace the first comma with a dash
-        if not dash_pattern.search(text) and ',' in text:
-            text = text.replace(',', ' –', 1)  # Replace only the first comma
+        original_text = text  # Save for debugging if needed
 
-        # Now proceed to find dashes normally
+        # 1. Extract place_name if present
+        place_match = place_pattern.search(text)
+        place_name = place_match.group(1).strip() if place_match else None
+
+        if place_match:
+            text = text.replace(place_match.group(0), "").strip()
+
+        # 2. Extract unit_number even if no comma
+        unit_match = unit_pattern.search(text)
+        unit_number = unit_match.group(1).strip() if unit_match else None
+
+        if unit_match:
+            # Remove the matched unit pattern (with optional preceding whitespace/comma)
+            text = unit_pattern.sub('', text, count=1).strip()
+
+        # 3. Fix if no dash but comma exists (rare case)
+        if not dash_pattern.search(text) and ',' in text:
+            text = text.replace(',', ' –', 1)
+
+        # 4. Split on FIRST dash
         matches = list(dash_pattern.finditer(text))
         if matches:
-            last = matches[-1]
-            address = text[:last.start()].strip()
-            host = text[last.end():].strip()
-            return pd.Series([address, host])
+            first = matches[0]
+            address = text[:first.start()].strip()
+            host = text[first.end():].strip()
         else:
-            return pd.Series([None, text.strip()])
+            address = text.strip()
+            host = None
 
-    df = df.copy()
-    df[["address", "host_name"]] = df["data"].apply(smart_split)
+        # 5. Special case: if no host but place_name exists
+        if not host and place_name:
+            host = place_name
+
+        return pd.Series([address, unit_number, place_name, host])
+
+    df[["address", "unit_number", "place_name", "host_name"]] = df["data"].apply(smart_split)
+
     return df
-
 
 def split_address_parts(df):
     """
     Splits the 'address' column into 'street_number', 'street_name', and 'street_type'.
-    Handles hyphenated numbers and street types with or without a trailing period.
+    Handles hyphenated numbers and street types with or without trailing period.
 
     Parameters:
     - df (pd.DataFrame): Must contain 'address' column.
@@ -284,57 +319,19 @@ def split_address_parts(df):
     Returns:
     - pd.DataFrame: With 'street_number', 'street_name', and 'street_type' columns.
     """
-    # Updated pattern to allow:
-    #   - Hyphenated or alphanumeric street numbers
-    #   - Street types with optional periods
-    street_type_pattern = r'(Ave\.?|St\.?|Blvd\.?|Dr\.?|Ct\.?|Rd\.?|Ln\.?|Way\.?|Cir\.?|Terr\.?|Pl\.?)'
+    df = df.copy()
+
+    # Pattern to match number, name, and type
+    street_type_pattern = r'(Ave\.?|St\.?|Blvd\.?|Dr\.?|Ct\.?|Rd\.?|Ln\.?|Way\.?|Cir\.?|Terr\.?|Pl\.?|Alley\.?)'
+
+#    street_type_pattern = r'(Ave\.?|St\.?|Blvd\.?|Dr\.?|Ct\.?|Rd\.?|Ln\.?|Way\.?|Cir\.?|Terr\.?|Pl\.?)'
     pattern = rf'^\s*(\d+(?:-\w+)?)\s+(.*?)\s+{street_type_pattern}\s*$'
 
-    # Extract components
     extracted = df["address"].str.extract(pattern)
     extracted.columns = ["street_number", "street_name", "street_type"]
 
-    df = df.copy()
     df[["street_number", "street_name", "street_type"]] = extracted
 
-    return df
-
-def move_text_to_previous_row(df, match_text):
-    """
-    Finds rows where 'data' starts with match_text,
-    removes match_text from that row,
-    and appends it to the end of the previous row's 'data'.
-
-    Parameters:
-    - df (pd.DataFrame): Must contain 'data' column.
-    - match_text (str): Text to match at the beginning of 'data'.
-
-    Returns:
-    - pd.DataFrame: Updated DataFrame.
-    """
-    df = df.copy()
-    indices_to_drop = []
-
-    for idx in df.index:
-        cell = df.at[idx, "data"]
-        if isinstance(cell, str) and cell.startswith(match_text):
-            # Remove the match_text from the current line
-            new_text = cell[len(match_text):].strip()
-            df.at[idx, "data"] = new_text
-
-            if idx > 0:
-                # Append match_text to the previous line
-                df.at[idx - 1, "data"] = df.at[idx - 1, "data"].strip() + " " + match_text
-            else:
-                # Edge case: if it's the first row, just leave it alone
-                pass
-
-            # Mark this row for deletion
-            indices_to_drop.append(idx)
-
-    # Drop all rows that had only match_text
-    df = df.drop(index=indices_to_drop).reset_index(drop=True)
-    
     return df
 
 
@@ -381,10 +378,6 @@ def perform_column_cleaning( df ):
         # Fractional / unit fixes
         r"\b(\d+)\s+1/2\b": r"\1-2",
         r"\b(\d+)\s+#(\d+)\b": r"\1-\2",
-        r"½": "-2",
-        r"St\. John.*s United Church of Christ": "507 N. Lombardy St. - St. John’s United Church of Christ",
-    
-
     }
 
     df = df.copy()
@@ -394,8 +387,44 @@ def perform_column_cleaning( df ):
         df["data"] = df["data"].str.replace(pattern, replacement, regex=True)
 
 
-    ## More cleaning using local routines
+    return df
 
-    df = move_text_to_previous_row(df, match_text="Charlotte Minor")
+
+def recode_street_names(df):
+    """
+    Recode specific street_name values to standard form.
+    
+    Parameters:
+    - df (pd.DataFrame): DataFrame containing 'street_name' column.
+
+    Returns:
+    - pd.DataFrame: Updated DataFrame with corrected 'street_name' values.
+    """
+    df = df.copy()
+
+    # Define your custom street name mappings here
+    street_recode_map = {
+        "West Franklin": "W. Franklin",
+        "Harvie" : "N. Harvie",
+        "Franklin": "W. Franklin",
+        "Strawberry": "N. Strawberry",
+        "Broad": "W. Broad",
+        "Main": "W. Main",
+        "Addison": "S. Addison",
+        "West Grace" : "W. Grace",
+        "Plum" : "N. Plum",
+        "Shields" : "N. Shields",
+        "Stafford" : "N. Stafford",
+        "Meadow" : "N. Meadow",
+        "Rowland" : "N. Rowland",
+        "Morris": "N. Morris",
+        "Linden" : "N. Linden",
+        "Harrison" : "N. Harrison",
+        "Lombardy" : "N. Lombardy",
+        # Add more as needed...
+    }
+
+    # Apply the recoding
+    df["street_name"] = df["street_name"].replace(street_recode_map)
 
     return df
