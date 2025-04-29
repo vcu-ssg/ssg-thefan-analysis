@@ -6,6 +6,7 @@ import os
 import re
 import click
 import pandas as pd
+from rapidfuzz import fuzz, process
 
 
 def test_function():
@@ -72,9 +73,17 @@ def fix_mojibake_dataframe(df):
     df["data"] = df["data"].apply(fix_mojibake_text)
     return df
 
-def load_excel_sheet(file_path, *, sheet_name=0, header_row=0, skip_rows=None, column_names=None):
+def load_excel_sheet(file_path, *, sheet_name=0, header_row=0, skip_rows=None, column_names=None, columns=None):
     """
     Load an Excel sheet into a pandas DataFrame with optional mojibake repair.
+    
+    Parameters:
+    - file_path: Path to the Excel file.
+    - sheet_name: Sheet index or name (default: 0).
+    - header_row: Row to use as header (ignored if column_names is provided).
+    - skip_rows: List of rows to skip.
+    - column_names: If provided, overrides header and uses these names.
+    - columns: Restrict to specific columns (e.g., [0, 2, 4] or ['Name', 'Address'])
     """
     try:
         read_args = {
@@ -88,6 +97,9 @@ def load_excel_sheet(file_path, *, sheet_name=0, header_row=0, skip_rows=None, c
             read_args["names"] = column_names
         else:
             read_args["header"] = header_row
+
+        if columns is not None:
+            read_args["usecols"] = columns
 
         df = pd.read_excel(file_path, **read_args)
 
@@ -103,7 +115,8 @@ def load_excel_sheet(file_path, *, sheet_name=0, header_row=0, skip_rows=None, c
     except Exception as e:
         click.echo(f"[Error] Could not load Excel file: {e}")
         return pd.DataFrame()
-    
+
+
 def standardize_string_columns(df, columns):
     """
     Ensure selected columns are converted to strings and stripped of leading/trailing spaces.
@@ -167,6 +180,27 @@ def load_csv_file(file_path, *, header_row=None, skip_rows=None, column_names=No
         click.echo(f"[Error] Could not load CSV file: {e}")
         return pd.DataFrame()
 
+def resort_by_year_and_chair_block_order(df):
+    """
+    Resort a DataFrame by 'year_and_chair' groups in chronological order,
+    while preserving the relative order of rows within each group.
+
+    Returns:
+    - A sorted DataFrame
+    """
+    df = df.copy()
+    
+    # Create a temporary column that represents the original row order
+    df["_original_index"] = range(len(df))
+    
+    # Extract the 4-digit year prefix for sorting
+    df["_year"] = df["year_and_chair"].str.extract(r'^(\d{4})').astype(float)
+    
+    # Sort by year, then by original row order within the block
+    df_sorted = df.sort_values(by=["_year", "_original_index"]).drop(columns=["_year", "_original_index"])
+    
+    return df_sorted.reset_index(drop=True)
+
 
 def extract_and_fill_year_and_chair_column(df):
     """
@@ -174,53 +208,77 @@ def extract_and_fill_year_and_chair_column(df):
     - Tour A markers are removed (Tour A is default).
     - Tour B markers switch tour to B until next year header.
     - Year headers reset tour back to A.
-
+    - Notes in square brackets are extracted from the year/chair row and applied only to rows in that group.
+    - If no data rows are found for a year_and_chair group, insert a placeholder row with just that year_and_chair and note.
+    
     Returns:
-    - DataFrame with 'year_and_chair' and 'tour' columns.
+    - DataFrame with columns: 'data', 'year_and_chair', 'tour', 'notes'
     """
     df = df.copy()
+    df["data"] = df["data"].astype(str).str.strip()
 
-    # Clean 'data' column
-    if "data" in df.columns:
-        df["data"] = df["data"].astype(str).str.strip()
-
-    # Detect year/chair header rows
+    # Identify control rows
     year_chair_pattern = r'^\s*\d{4}.*chair'
     is_year_chair_header = df["data"].str.contains(year_chair_pattern, case=False, na=False)
-
-    # Detect Tour markers
     is_tour_a_marker = df["data"].str.contains(r'\bTour A\b', case=False, na=False)
     is_tour_b_marker = df["data"].str.contains(r'\bTour B\b', case=False, na=False)
 
-    # Create year_and_chair column
+    # Extract notes and remove them from data
+    df["extracted_note"] = df["data"].where(is_year_chair_header).str.extract(r'\[([^\]]+)\]', expand=False)
+    df.loc[is_year_chair_header, "data"] = df.loc[is_year_chair_header, "data"].str.replace(r'\s*\[[^\]]+\]', '', regex=True)
+
+    # Set year_and_chair and forward fill
     df["year_and_chair"] = df["data"].where(is_year_chair_header)
     df["year_and_chair"] = df["year_and_chair"].ffill()
 
-    # Initialize tour: default A
-    df["tour"] = "A"
+    # Set notes per group
+    df["notes"] = ""
+    current_note = ""
+    last_yac = None
 
-    # Step through rows carefully
+    for idx, row in df.iterrows():
+        if is_year_chair_header.loc[idx]:
+            current_note = row["extracted_note"] if pd.notna(row["extracted_note"]) else ""
+            last_yac = row["year_and_chair"]
+        elif row["year_and_chair"] == last_yac:
+            df.at[idx, "notes"] = current_note
+
+    # Set tour logic
+    df["tour"] = "A"
     current_tour = "A"
 
     for idx, row in df.iterrows():
         if is_year_chair_header.loc[idx]:
-            current_tour = "A"  # reset to Tour A on new year
+            current_tour = "A"
         elif is_tour_b_marker.loc[idx]:
-            current_tour = "B"  # switch to Tour B
+            current_tour = "B"
         elif is_tour_a_marker.loc[idx]:
-            current_tour = "A"  # Tour A marker reaffirms A (no effect really)
-
+            current_tour = "A"
         df.at[idx, "tour"] = current_tour
 
-    # Remove all control rows (year headers, Tour A, Tour B)
-    remove_headers = is_year_chair_header | is_tour_a_marker | is_tour_b_marker
-    df_clean = df[~remove_headers].copy().reset_index(drop=True)
+    # Keep track of data groups
+    groups_with_data = set(df.loc[~(is_year_chair_header | is_tour_a_marker | is_tour_b_marker), "year_and_chair"])
 
-    # Final cleanup
-    for col in ["data", "year_and_chair", "tour"]:
-        if col in df_clean.columns:
-            df_clean[col] = df_clean[col].astype(str).str.strip()
+    # Insert filler rows for missing groups
+    fillers = []
+    for idx, row in df[is_year_chair_header].iterrows():
+        yac = row["year_and_chair"]
+        if yac not in groups_with_data:
+            fillers.append({
+                "data": "",
+                "year_and_chair": yac,
+                "tour": "A",
+                "notes": row["extracted_note"] if pd.notna(row["extracted_note"]) else ""
+            })
 
+    # Remove control rows and reassemble
+    df_clean = df[~(is_year_chair_header | is_tour_a_marker | is_tour_b_marker)].copy()
+    df_clean = pd.concat([df_clean, pd.DataFrame(fillers)], ignore_index=True)
+
+    for col in ["data", "year_and_chair", "tour", "notes"]:
+        df_clean[col] = df_clean[col].astype(str).str.strip()
+
+    df_clean = resort_by_year_and_chair_block_order( df_clean )
     return df_clean
 
 
@@ -253,6 +311,119 @@ def split_year_and_chair_columns(df):
 
     return df
 
+
+def extract_chair_names(chair_entry):
+    """
+    Extracts:
+    - chair1, chair2: full parsed names
+    - chair1_first, chair1_last: parsed components of chair1
+    - chair2_first, chair2_last: parsed components of chair2
+    """
+
+    def get_first_and_last_name(name):
+        """
+        Extracts the first and last name from a full name string.
+        Suffixes like 'Jr.', 'Sr.', etc. are included in the first name.
+        """
+        if not name or not isinstance(name, str):
+            return "", ""
+
+        name = name.strip().replace(",", "")
+        parts = name.split()
+
+        if not parts:
+            return "", ""
+
+        suffixes = {"Jr.", "Sr.", "II", "III", "IV", "Jr", "Sr"}
+
+        if parts[-1] in suffixes:
+            last_name = parts[-2] if len(parts) >= 2 else parts[-1]
+            first_name = " ".join(parts[:-2] + [parts[-1]])
+        else:
+            last_name = parts[-1]
+            first_name = " ".join(parts[:-1])
+
+        return first_name.strip(), last_name.strip()
+
+    if pd.isna(chair_entry) or not isinstance(chair_entry, str):
+        return "", "", "", "", "", ""
+
+    original = chair_entry.strip()
+
+    # Remove notes unless they are a single name like (Anne)
+    cleaned = re.sub(r'\(([^)]+)\)', lambda m: f"({m.group(1)})" if len(m.group(1).split()) == 1 else "", original)
+
+    # Special case: Mr. & Mrs. Bill (Anne) Patten
+    m = re.match(r'Mr\.\s*&\s*Mrs\.\s+([\w\-\.]+)\s+\(([\w\-]+)\)\s+([\w\-]+)', cleaned)
+    if m:
+        husband_first = m.group(1).strip()
+        wife_first = m.group(2).strip()
+        last = m.group(3).strip()
+        chair1 = f"{wife_first} {last}"
+        chair2 = f"{husband_first} {last}"
+        chair1_first, chair1_last = get_first_and_last_name(chair1)
+        chair2_first, chair2_last = get_first_and_last_name(chair2)
+        return chair1, chair1_first, chair1_last, chair2, chair2_first, chair2_last
+
+    # Special case: Priscilla & Tom George
+    m = re.match(r'([\w\-]+)\s*&\s*([\w\-]+)\s+([\w\-]+)$', cleaned)
+    if m:
+        first1 = m.group(1).strip()
+        first2 = m.group(2).strip()
+        last = m.group(3).strip()
+        chair1 = f"{first1} {last}"
+        chair2 = f"{first2} {last}"
+        chair1_first, chair1_last = get_first_and_last_name(chair1)
+        chair2_first, chair2_last = get_first_and_last_name(chair2)
+        return chair1, chair1_first, chair1_last, chair2, chair2_first, chair2_last
+
+    # General split
+    parts = re.split(r'\s*&\s*|\s+and\s+', cleaned, maxsplit=1)
+    result = []
+
+    for part in parts:
+        part = part.strip()
+
+        # Case: embedded name in parentheses
+        m = re.search(r'\(([^)]+)\)\s+([\w\-\']+)$', part)
+        if m:
+            first = m.group(1).strip()
+            last = m.group(2).strip()
+            result.append(f"{first} {last}")
+            continue
+
+        # Case: honorific or suffix present
+        m = re.match(r'(Mr\.|Mrs\.|Ms\.|Miss)?\s*(.+)', part)
+        if m:
+            name = m.group(2).strip()
+            if re.match(r'[A-Z]\.[A-Z]\.', name) or re.search(r'\b(Jr\.|Sr\.|II|III|IV)\b', original):
+                chair1_first, chair1_last = get_first_and_last_name(original)
+                return original, chair1_first, chair1_last, "", "", ""
+            result.append(name)
+            continue
+
+        # Fallback
+        result.append(part)
+
+    # Pad to two names
+    while len(result) < 2:
+        result.append("")
+
+    chair1 = result[0]
+    chair2 = result[1]
+    chair1_first, chair1_last = get_first_and_last_name(chair1)
+    chair2_first, chair2_last = get_first_and_last_name(chair2)
+
+    return chair1, chair1_first, chair1_last, chair2, chair2_first, chair2_last
+
+def split_and_add_chairs( df ):
+    """
+    Pull out the chair names to new column.
+    """
+    df = df.copy()
+    df[['chair1', 'chair1_first_name', 'chair1_last_name', \
+        'chair2', 'chair2_first_name', 'chair2_last_name']] = df['chair'].apply(lambda x: pd.Series(extract_chair_names(x)))
+    return df
 
 
 def split_address_and_host(df):
@@ -322,7 +493,7 @@ def split_address_parts(df):
     df = df.copy()
 
     # Pattern to match number, name, and type
-    street_type_pattern = r'(Ave\.?|St\.?|Blvd\.?|Dr\.?|Ct\.?|Rd\.?|Ln\.?|Way\.?|Cir\.?|Terr\.?|Pl\.?|Alley\.?)'
+    street_type_pattern = r'(Ave\.?|St\.?|Blvd\.?|Dr\.?|Ct\.?|Rd\.?|Ln\.?|Way\.?|Cir\.?|Terr\.?|Pl\.?|Alley\.?|Al\.?)'
 
 #    street_type_pattern = r'(Ave\.?|St\.?|Blvd\.?|Dr\.?|Ct\.?|Rd\.?|Ln\.?|Way\.?|Cir\.?|Terr\.?|Pl\.?)'
     pattern = rf'^\s*(\d+(?:-\w+)?)\s+(.*?)\s+{street_type_pattern}\s*$'
@@ -407,7 +578,7 @@ def recode_street_names(df):
         "West Franklin": "W. Franklin",
         "Harvie" : "N. Harvie",
         "Franklin": "W. Franklin",
-        "Strawberry": "N. Strawberry",
+        # "Strawberry": "N. Strawberry",
         "Broad": "W. Broad",
         "Main": "W. Main",
         "Addison": "S. Addison",
@@ -428,3 +599,64 @@ def recode_street_names(df):
     df["street_name"] = df["street_name"].replace(street_recode_map)
 
     return df
+
+
+def build_clean_address( df ):
+    df = df.copy()
+    df["clean_address"] = df["street_number"] + " " + df["street_name"] + " " + df["street_type"]
+    df["clean_address"] = df["clean_address"].fillna("")
+    return df
+
+
+def normalize_address(address):
+    """
+    Lowercase, strip, and replace common punctuation and abbreviations.
+    """
+
+    if not isinstance(address, str):
+        address = str(address) if pd.notna(address) else ""
+
+    return (address.lower()
+                  .replace('.', '')
+                  .replace(',', '')
+                  .replace('rear', '')  # Optional: remove trailing tags
+                  .replace('  ', ' ')
+                  .strip())
+
+
+def match_addresses(master_df, unmatched_df, threshold=90):
+    # Normalize address columns
+    master_df['normalized'] = master_df['AddressLabel'].apply(normalize_address)
+    unmatched_df['normalized'] = unmatched_df['clean_address'].apply(normalize_address)
+
+    # Map normalized master address to ID
+    master_dict = dict(zip(master_df['normalized'], master_df['AddressId']))
+
+    matched_rows = []
+    unmatched_rows = []
+
+    for i, row in unmatched_df.iterrows():
+        unmatched_addr = row['normalized']
+        original_addr = row['clean_address']
+        match, score, _ = process.extractOne(unmatched_addr, master_dict.keys(), scorer=fuzz.token_sort_ratio)
+
+        if score >= threshold:
+            matched_rows.append({
+                'unmatched_address': original_addr,
+                'matched_address': match,
+                'matched_id': master_dict[match],
+                'score': score
+            })
+        else:
+            unmatched_rows.append({
+                'unmatched_address': original_addr,
+                'matched_address': match,
+                'matched_id': master_dict[match],
+                'score': score
+            })
+
+    matched_df = pd.DataFrame(matched_rows)
+    unmatched_df = pd.DataFrame(unmatched_rows)
+
+    return matched_df, unmatched_df
+

@@ -4822,7 +4822,7 @@ vertical-align: -.125em;
 <h1>Cleaning</h1>
 <section id="load-the-excel-file" class="level2">
 <h2 class="anchored" data-anchor-id="load-the-excel-file">Load the excel file</h2>
-<div id="89d16588" class="cell" data-execution_count="2">
+<div id="4035ad5c" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="dv">0</span>):</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> load_csv_file(</span>
@@ -4838,15 +4838,15 @@ vertical-align: -.125em;
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        EXCEL_HHT_FILE,</span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        skip_rows<span class="op">=</span><span class="dv">3</span>,             <span class="co"># Skip first 3 rows (0-based index)</span></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        header_row<span class="op">=</span><span class="va">None</span>,         <span class="co"># No header row in the file</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        column_names<span class="op">=</span>[<span class="st">&quot;data&quot;</span>]    <span class="co"># Manually assign column name</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        column_names<span class="op">=</span>[<span class="st">&quot;data&quot;</span>],   <span class="co"># Manually assign column name</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        columns<span class="op">=</span>[<span class="dv">0</span>]</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>df.head(<span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[Info] No mojibake detected. No repair needed.</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="12">
+<div class="cell-output cell-output-display" data-execution_count="14">
 <div>
 
 
@@ -4987,8 +4987,8 @@ vertical-align: -.125em;
 </section>
 <section id="extract-and-fill-year-and-chair" class="level2">
 <h2 class="anchored" data-anchor-id="extract-and-fill-year-and-chair">Extract and fill year and chair</h2>
-<div id="eb8a64b9" class="cell" data-execution_count="3">
-<div class="cell-output cell-output-display" data-execution_count="13">
+<div id="cdcaada3" class="cell" data-execution_count="3">
+<div class="cell-output cell-output-display" data-execution_count="15">
 <div>
 
 
@@ -4997,7 +4997,9 @@ vertical-align: -.125em;
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">data</th>
+<th data-quarto-table-cell-role="th">extracted_note</th>
 <th data-quarto-table-cell-role="th">year_and_chair</th>
+<th data-quarto-table-cell-role="th">notes</th>
 <th data-quarto-table-cell-role="th">tour</th>
 </tr>
 </thead>
@@ -5005,31 +5007,41 @@ vertical-align: -.125em;
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>307 N. Allen Ave. – Mr. &amp; Mrs. Richard (Ann) Velz</td>
+<td>NaN</td>
 <td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>1825 Grove Ave. – Mr. &amp; Mrs. William (Anne) Ca...</td>
+<td>NaN</td>
 <td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>1914 Grove Ave. – Mrs. Louise Fowlkes &amp; Miss D...</td>
+<td>NaN</td>
 <td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2109 Hanover Ave. – Mr. &amp; Mrs. Charles (Jed) (...</td>
+<td>NaN</td>
 <td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>1714 Park Ave. – Mr. &amp; Mrs. Dallas (Elizabeth)...</td>
+<td>NaN</td>
 <td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td></td>
 <td>A</td>
 </tr>
 </tbody>
@@ -5041,8 +5053,8 @@ vertical-align: -.125em;
 </section>
 <section id="clean-columns" class="level2">
 <h2 class="anchored" data-anchor-id="clean-columns">Clean columns</h2>
-<div id="90a3efc9" class="cell" data-execution_count="4">
-<div class="cell-output cell-output-display" data-execution_count="14">
+<div id="d082277d" class="cell" data-execution_count="4">
+<div class="cell-output cell-output-display" data-execution_count="16">
 <div>
 
 
@@ -5051,7 +5063,9 @@ vertical-align: -.125em;
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">data</th>
+<th data-quarto-table-cell-role="th">extracted_note</th>
 <th data-quarto-table-cell-role="th">year_and_chair</th>
+<th data-quarto-table-cell-role="th">notes</th>
 <th data-quarto-table-cell-role="th">tour</th>
 </tr>
 </thead>
@@ -5059,121 +5073,161 @@ vertical-align: -.125em;
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>307 N. Allen Ave. – Mr. &amp; Mrs. Richard (Ann) Velz</td>
+<td>NaN</td>
 <td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>1825 Grove Ave. – Mr. &amp; Mrs. William (Anne) Ca...</td>
+<td>NaN</td>
 <td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>1914 Grove Ave. – Mrs. Louise Fowlkes &amp; Miss D...</td>
+<td>NaN</td>
 <td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2109 Hanover Ave. – Mr. &amp; Mrs. Charles (Jed) (...</td>
+<td>NaN</td>
 <td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>1714 Park Ave. – Mr. &amp; Mrs. Dallas (Elizabeth)...</td>
+<td>NaN</td>
 <td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>1725 Park Ave. – Mr. &amp; Mrs. James (Patricia) G...</td>
+<td>NaN</td>
 <td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>2108 Stuart Ave. -- Mr. &amp; Mrs. Mitchell (Mario...</td>
+<td>NaN</td>
 <td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">7</td>
 <td>1702 Grove Ave. – Mr. &amp; Mrs. Sam (Barbara) Perry</td>
+<td>NaN</td>
 <td>1964 - Chair, Mrs. Charles O. (Adella) Watlington</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">8</td>
 <td>1909 Hanover Ave. – Mr. &amp; Mrs. John (Suzanne) ...</td>
+<td>NaN</td>
 <td>1964 - Chair, Mrs. Charles O. (Adella) Watlington</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9</td>
 <td>1643 Monument Ave. – Mr. &amp; Mrs. Horace (Sarah...</td>
+<td>NaN</td>
 <td>1964 - Chair, Mrs. Charles O. (Adella) Watlington</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">10</td>
 <td>1301 Park Ave. – Mr. &amp; Mrs. John (Margaret) Synon</td>
+<td>NaN</td>
 <td>1964 - Chair, Mrs. Charles O. (Adella) Watlington</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">11</td>
 <td>2419 Park Ave. – Mr. &amp; Mrs. Charles (June) Weaver</td>
+<td>NaN</td>
 <td>1964 - Chair, Mrs. Charles O. (Adella) Watlington</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">12</td>
 <td>2214 Stuart Ave. – Mr. &amp; Mrs. Emmett (Jane) Reid</td>
+<td>NaN</td>
 <td>1964 - Chair, Mrs. Charles O. (Adella) Watlington</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">13</td>
 <td>2127 Floyd Ave. – Mr. Richard Duncan</td>
+<td>NaN</td>
 <td>1965 - Chair, Mrs. Raymond (Jacqueline) Hodges</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">14</td>
 <td>102 N. Shields Ave. – Mr. J. Henry Brown Jr.</td>
+<td>NaN</td>
 <td>1965 - Chair, Mrs. Raymond (Jacqueline) Hodges</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">15</td>
 <td>106 N. Shields Ave. – Mr. &amp; Mrs. Kenton (Marga...</td>
+<td>NaN</td>
 <td>1965 - Chair, Mrs. Raymond (Jacqueline) Hodges</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">16</td>
 <td>109 N. Shields Ave. – Mr. Vernon Jackson</td>
+<td>NaN</td>
 <td>1965 - Chair, Mrs. Raymond (Jacqueline) Hodges</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">17</td>
 <td>115 N. Shields Ave. – Mr. Jacques Van Caneghem</td>
+<td>NaN</td>
 <td>1965 - Chair, Mrs. Raymond (Jacqueline) Hodges</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">18</td>
 <td>117 N. Shields Ave. -- Mr. &amp; Mrs. Benjamin (Ma...</td>
+<td>NaN</td>
 <td>1965 - Chair, Mrs. Raymond (Jacqueline) Hodges</td>
+<td></td>
 <td>A</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">19</td>
 <td>121 N. Shields Ave. – Mr. J. L. Spiers, Jr.</td>
+<td>NaN</td>
 <td>1965 - Chair, Mrs. Raymond (Jacqueline) Hodges</td>
+<td></td>
 <td>A</td>
 </tr>
 </tbody>
@@ -5185,8 +5239,8 @@ vertical-align: -.125em;
 </section>
 <section id="split-year-and-chair" class="level2">
 <h2 class="anchored" data-anchor-id="split-year-and-chair">Split year and chair</h2>
-<div id="3d17199d" class="cell" data-execution_count="5">
-<div class="cell-output cell-output-display" data-execution_count="15">
+<div id="61953a8a" class="cell" data-execution_count="5">
+<div class="cell-output cell-output-display" data-execution_count="17">
 <div>
 
 
@@ -5195,7 +5249,9 @@ vertical-align: -.125em;
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">data</th>
+<th data-quarto-table-cell-role="th">extracted_note</th>
 <th data-quarto-table-cell-role="th">year_and_chair</th>
+<th data-quarto-table-cell-role="th">notes</th>
 <th data-quarto-table-cell-role="th">tour</th>
 <th data-quarto-table-cell-role="th">year</th>
 <th data-quarto-table-cell-role="th">chair</th>
@@ -5205,7 +5261,9 @@ vertical-align: -.125em;
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>307 N. Allen Ave. – Mr. &amp; Mrs. Richard (Ann) Velz</td>
+<td>NaN</td>
 <td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td></td>
 <td>A</td>
 <td>1963</td>
 <td>Mrs. Van Pelt (Virginia) Sessoms</td>
@@ -5213,7 +5271,9 @@ vertical-align: -.125em;
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>1825 Grove Ave. – Mr. &amp; Mrs. William (Anne) Ca...</td>
+<td>NaN</td>
 <td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td></td>
 <td>A</td>
 <td>1963</td>
 <td>Mrs. Van Pelt (Virginia) Sessoms</td>
@@ -5221,7 +5281,9 @@ vertical-align: -.125em;
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>1914 Grove Ave. – Mrs. Louise Fowlkes &amp; Miss D...</td>
+<td>NaN</td>
 <td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td></td>
 <td>A</td>
 <td>1963</td>
 <td>Mrs. Van Pelt (Virginia) Sessoms</td>
@@ -5229,7 +5291,9 @@ vertical-align: -.125em;
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2109 Hanover Ave. – Mr. &amp; Mrs. Charles (Jed) (...</td>
+<td>NaN</td>
 <td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td></td>
 <td>A</td>
 <td>1963</td>
 <td>Mrs. Van Pelt (Virginia) Sessoms</td>
@@ -5237,7 +5301,9 @@ vertical-align: -.125em;
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>1714 Park Ave. – Mr. &amp; Mrs. Dallas (Elizabeth)...</td>
+<td>NaN</td>
 <td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td></td>
 <td>A</td>
 <td>1963</td>
 <td>Mrs. Van Pelt (Virginia) Sessoms</td>
@@ -5245,7 +5311,9 @@ vertical-align: -.125em;
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
 <td>1725 Park Ave. – Mr. &amp; Mrs. James (Patricia) G...</td>
+<td>NaN</td>
 <td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td></td>
 <td>A</td>
 <td>1963</td>
 <td>Mrs. Van Pelt (Virginia) Sessoms</td>
@@ -5253,7 +5321,9 @@ vertical-align: -.125em;
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
 <td>2108 Stuart Ave. -- Mr. &amp; Mrs. Mitchell (Mario...</td>
+<td>NaN</td>
 <td>1963 - Chair, Mrs. Van Pelt (Virginia) Sessoms</td>
+<td></td>
 <td>A</td>
 <td>1963</td>
 <td>Mrs. Van Pelt (Virginia) Sessoms</td>
@@ -5261,7 +5331,9 @@ vertical-align: -.125em;
 <tr class="even">
 <td data-quarto-table-cell-role="th">7</td>
 <td>1702 Grove Ave. – Mr. &amp; Mrs. Sam (Barbara) Perry</td>
+<td>NaN</td>
 <td>1964 - Chair, Mrs. Charles O. (Adella) Watlington</td>
+<td></td>
 <td>A</td>
 <td>1964</td>
 <td>Mrs. Charles O. (Adella) Watlington</td>
@@ -5269,7 +5341,9 @@ vertical-align: -.125em;
 <tr class="odd">
 <td data-quarto-table-cell-role="th">8</td>
 <td>1909 Hanover Ave. – Mr. &amp; Mrs. John (Suzanne) ...</td>
+<td>NaN</td>
 <td>1964 - Chair, Mrs. Charles O. (Adella) Watlington</td>
+<td></td>
 <td>A</td>
 <td>1964</td>
 <td>Mrs. Charles O. (Adella) Watlington</td>
@@ -5277,7 +5351,9 @@ vertical-align: -.125em;
 <tr class="even">
 <td data-quarto-table-cell-role="th">9</td>
 <td>1643 Monument Ave. – Mr. &amp; Mrs. Horace (Sarah...</td>
+<td>NaN</td>
 <td>1964 - Chair, Mrs. Charles O. (Adella) Watlington</td>
+<td></td>
 <td>A</td>
 <td>1964</td>
 <td>Mrs. Charles O. (Adella) Watlington</td>
@@ -5289,10 +5365,245 @@ vertical-align: -.125em;
 </div>
 </div>
 </section>
+<section id="split-chair-names-out" class="level2">
+<h2 class="anchored" data-anchor-id="split-chair-names-out">Split chair names out</h2>
+<div id="5e3b1222" class="cell" data-execution_count="6">
+<div class="cell-output cell-output-display" data-execution_count="18">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">chair</th>
+<th data-quarto-table-cell-role="th">chair1</th>
+<th data-quarto-table-cell-role="th">chair2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1963</td>
+<td>Mrs. Van Pelt (Virginia) Sessoms</td>
+<td>Virginia Sessoms</td>
+<td></td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1963</td>
+<td>Mrs. Van Pelt (Virginia) Sessoms</td>
+<td>Virginia Sessoms</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1963</td>
+<td>Mrs. Van Pelt (Virginia) Sessoms</td>
+<td>Virginia Sessoms</td>
+<td></td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>1963</td>
+<td>Mrs. Van Pelt (Virginia) Sessoms</td>
+<td>Virginia Sessoms</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>1963</td>
+<td>Mrs. Van Pelt (Virginia) Sessoms</td>
+<td>Virginia Sessoms</td>
+<td></td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>1963</td>
+<td>Mrs. Van Pelt (Virginia) Sessoms</td>
+<td>Virginia Sessoms</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>1963</td>
+<td>Mrs. Van Pelt (Virginia) Sessoms</td>
+<td>Virginia Sessoms</td>
+<td></td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>1964</td>
+<td>Mrs. Charles O. (Adella) Watlington</td>
+<td>Adella Watlington</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>1964</td>
+<td>Mrs. Charles O. (Adella) Watlington</td>
+<td>Adella Watlington</td>
+<td></td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>1964</td>
+<td>Mrs. Charles O. (Adella) Watlington</td>
+<td>Adella Watlington</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>1964</td>
+<td>Mrs. Charles O. (Adella) Watlington</td>
+<td>Adella Watlington</td>
+<td></td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>1964</td>
+<td>Mrs. Charles O. (Adella) Watlington</td>
+<td>Adella Watlington</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>1964</td>
+<td>Mrs. Charles O. (Adella) Watlington</td>
+<td>Adella Watlington</td>
+<td></td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">13</td>
+<td>1965</td>
+<td>Mrs. Raymond (Jacqueline) Hodges</td>
+<td>Jacqueline Hodges</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>1965</td>
+<td>Mrs. Raymond (Jacqueline) Hodges</td>
+<td>Jacqueline Hodges</td>
+<td></td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>1965</td>
+<td>Mrs. Raymond (Jacqueline) Hodges</td>
+<td>Jacqueline Hodges</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>1965</td>
+<td>Mrs. Raymond (Jacqueline) Hodges</td>
+<td>Jacqueline Hodges</td>
+<td></td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>1965</td>
+<td>Mrs. Raymond (Jacqueline) Hodges</td>
+<td>Jacqueline Hodges</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>1965</td>
+<td>Mrs. Raymond (Jacqueline) Hodges</td>
+<td>Jacqueline Hodges</td>
+<td></td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">19</td>
+<td>1965</td>
+<td>Mrs. Raymond (Jacqueline) Hodges</td>
+<td>Jacqueline Hodges</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>1966</td>
+<td>Mrs. Drew (Ann) Carneal</td>
+<td>Ann Carneal</td>
+<td></td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>1966</td>
+<td>Mrs. Drew (Ann) Carneal</td>
+<td>Ann Carneal</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>1966</td>
+<td>Mrs. Drew (Ann) Carneal</td>
+<td>Ann Carneal</td>
+<td></td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>1966</td>
+<td>Mrs. Drew (Ann) Carneal</td>
+<td>Ann Carneal</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>1966</td>
+<td>Mrs. Drew (Ann) Carneal</td>
+<td>Ann Carneal</td>
+<td></td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25</td>
+<td>1966</td>
+<td>Mrs. Drew (Ann) Carneal</td>
+<td>Ann Carneal</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">26</td>
+<td>1966</td>
+<td>Mrs. Drew (Ann) Carneal</td>
+<td>Ann Carneal</td>
+<td></td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">27</td>
+<td>1967</td>
+<td>Mrs. Benjamin (Mary) Harrison</td>
+<td>Mary Harrison</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">28</td>
+<td>1967</td>
+<td>Mrs. Benjamin (Mary) Harrison</td>
+<td>Mary Harrison</td>
+<td></td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">29</td>
+<td>1967</td>
+<td>Mrs. Benjamin (Mary) Harrison</td>
+<td>Mary Harrison</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
 <section id="split-addresses-from-hosts" class="level2">
 <h2 class="anchored" data-anchor-id="split-addresses-from-hosts">Split addresses from hosts</h2>
-<div id="ca4ae098" class="cell" data-execution_count="6">
-<div class="cell-output cell-output-display" data-execution_count="16">
+<div id="59971583" class="cell" data-execution_count="7">
+<div class="cell-output cell-output-display" data-execution_count="19">
 <div>
 
 
@@ -5307,7 +5618,7 @@ vertical-align: -.125em;
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">60</td>
-<td>507 N. Lombardy St. - [St. John’s United Churc...</td>
+<td>503 Stuart Cir. - [St. John’s United Church of...</td>
 <td>St. John’s United Church of Christ</td>
 </tr>
 <tr class="even">
@@ -5349,8 +5660,8 @@ vertical-align: -.125em;
 </section>
 <section id="further-split-addresses" class="level2">
 <h2 class="anchored" data-anchor-id="further-split-addresses">Further split addresses</h2>
-<div id="3090879a" class="cell" data-execution_count="7">
-<div class="cell-output cell-output-display" data-execution_count="17">
+<div id="5cc4aa83" class="cell" data-execution_count="8">
+<div class="cell-output cell-output-display" data-execution_count="20">
 <div>
 
 
@@ -5618,7 +5929,7 @@ vertical-align: -.125em;
 </section>
 <section id="write-to-csv-file" class="level2">
 <h2 class="anchored" data-anchor-id="write-to-csv-file">Write to CSV file</h2>
-<div id="c5b24425" class="cell" data-execution_count="9">
+<div id="ccb4c2d0" class="cell" data-execution_count="10">
 <div class="cell-output cell-output-stdout">
 <pre><code>[Saved] Cleaned address data written to ../data/cleaned_hht_addresses.csv</code></pre>
 </div>
@@ -5629,42 +5940,53 @@ vertical-align: -.125em;
 <h1>Quick cleaning analysis</h1>
 <section id="tighten-up-street-names" class="level2">
 <h2 class="anchored" data-anchor-id="tighten-up-street-names">Tighten up street names</h2>
-<div id="ba8fe022" class="cell" data-execution_count="10">
+<div id="138e3a7d" class="cell" data-execution_count="11">
 <div class="cell-output cell-output-stdout">
-<pre><code>      street_name
-0           Floyd
-1           Grove
-2         Hanover
-3      Kensington
-4        Monument
-5      N. Addison
-6        N. Allen
-7        N. Davis
-8       N. Granby
-9     N. Harrison
-10      N. Harvie
-11      N. Linden
-12    N. Lombardy
-13      N. Meadow
-14      N. Morris
-15        N. Plum
-16     N. Rowland
-17     N. Shields
-18    N. Stafford
-19  N. Strawberry
-20           Park
-21         Stuart
-22     Trouvaille
-23       W. Broad
-24    W. Franklin
-25       W. Grace
-26        W. Main
-27           West</code></pre>
+<pre><code>    street_name
+0         Floyd
+1         Grove
+2       Hanover
+3    Kensington
+4      Monument
+5      N. Allen
+6      N. Davis
+7     N. Granby
+8   N. Harrison
+9     N. Harvie
+10    N. Linden
+11  N. Lombardy
+12    N. Meadow
+13    N. Morris
+14      N. Plum
+15   N. Rowland
+16   N. Shields
+17  N. Stafford
+18         Park
+19   Strawberry
+20       Stuart
+21   Trouvaille
+22     W. Broad
+23  W. Franklin
+24     W. Grace
+25      W. Main
+26         West</code></pre>
 </div>
 </div>
-
-
 </section>
+</section>
+<section id="match-addresses" class="level1">
+<h1>Match addresses</h1>
+<p>The following code matches HHT addresses with the city database of addresses. Some additional work on the original data set was performed to rename address locations as appropriate.</p>
+<div id="b36bc173" class="cell" data-execution_count="12">
+<div class="cell-output cell-output-stderr">
+<pre><code>/tmp/ipykernel_33012/2956146824.py:1: DtypeWarning:
+
+Columns (10,11,18,19) have mixed types. Specify dtype option on import or set low_memory=False.
+</code></pre>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->

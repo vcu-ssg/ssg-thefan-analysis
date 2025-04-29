@@ -10,14 +10,16 @@ import pandas as pd
 sys.path.append("..")
 from fandu.utils import load_excel_sheet, extract_and_fill_year_and_chair_column, \
         split_year_and_chair_columns, split_address_and_host, split_address_parts, \
-        perform_column_cleaning, load_csv_file, recode_street_names
+        perform_column_cleaning, load_csv_file, recode_street_names, match_addresses, \
+        build_clean_address, split_and_add_chairs
 
 EXCEL_HHT_FILE = '../data/1963-2024 HHT Homeowners_Adresses.xlsx'
 CSV_HHT_FILE = '../data/1963-2024 HHT Homeowners_Adresses.csv'
 CLEANED_HHT_ADDRESSES = "../data/cleaned_hht_addresses.csv"
+RVA_ADDRESSES = "../data/Addresses.csv"
+HHT_GEO_FILE = "../data/hht_addresses_with_geo.csv"
 
 ```
-
 
 # Cleaning
 
@@ -41,13 +43,14 @@ else:
         EXCEL_HHT_FILE,
         skip_rows=3,             # Skip first 3 rows (0-based index)
         header_row=None,         # No header row in the file
-        column_names=["data"]    # Manually assign column name
+        column_names=["data"],   # Manually assign column name
+        columns=[0]
     )
-
 
 df.head(30)
 
 ```
+
 
 ## Extract and fill year and chair
 
@@ -70,6 +73,13 @@ df = split_year_and_chair_columns( df )
 df.head(10)
 ```
 
+## Split chair names out
+
+```{python}
+df = split_and_add_chairs( df )
+df[["year","chair","chair1","chair2"]].head(30)
+```
+
 ## Split addresses from hosts
 
 ```{python}
@@ -90,9 +100,16 @@ df[["data", "street_number", "unit_number", "street_name", "street_type"]].head(
 new_column_order = [
     "data",
     "year_and_chair",
+    "notes",
     "year",
     "tour",
     "chair",
+    "chair1",
+    "chair1_first_name",
+    "chair1_last_name",
+    "chair2",
+    "chair2_first_name",
+    "chair2_last_name",
     "address",
     "street_number",
     "unit_number",  # <- moved here!
@@ -105,6 +122,7 @@ new_column_order = [
 df = df[new_column_order]
 
 df = recode_street_names( df )
+df = build_clean_address( df )
 
 ```
 
@@ -133,5 +151,67 @@ unique_street_names_df = pd.DataFrame(unique_street_names, columns=["street_name
 
 # Display
 click.echo(unique_street_names_df)
+
+```
+
+# Match addresses
+
+The following code matches HHT addresses with the city database of addresses.  Some
+additional work on the original data set was performed to rename address locations as appropriate.
+
+```{python}
+
+master_df = pd.read_csv("../data/Addresses.csv")       # columns: id, address
+hht_addresses_df = pd.read_csv(CLEANED_HHT_ADDRESSES)      # column: address
+
+matched, unmatched = match_addresses(master_df, hht_addresses_df,threshold=99.0)
+
+# Save to files if desired
+matched.to_csv("matched.csv", index=False)
+unmatched.to_csv("unmatched.csv", index=False)
+
+
+# remove duplicates from matched
+matched = matched.drop_duplicates(subset=["unmatched_address"])
+
+
+# Step 1: Merge hht_addresses_df with matched to get matched_id
+merged_hht = hht_addresses_df.merge(
+    matched,
+    left_on="clean_address",
+    right_on="unmatched_address",
+    how="left"
+)
+
+# Step 2: Merge in additional fields from master_df using matched_id
+columns_to_merge = [
+    'AddressId', 'ZipCode', 'X', 'Y',
+    'StatePlaneX', 'StatePlaneY', 'Latitude', 'Longitude'
+]
+
+merged_final = merged_hht.merge(
+    master_df[columns_to_merge],
+    left_on="matched_id",
+    right_on="AddressId",
+    how="left"
+)
+
+# Optional: drop helper columns if you want
+df = merged_final.drop(columns=["unmatched_address"])
+
+df = df.drop(columns=["X", "Y"])
+
+df = df.rename(columns={
+    "AddressId": "city_address_id",
+    "ZipCode": "zip_code",
+    "StatePlaneX": "state_plane_x",
+    "StatePlaneY": "state_plane_y",
+    "Latitude": "latitude",
+    "Longitude": "longitude"
+})
+
+
+# Save to file or continue processing
+df.to_csv(HHT_GEO_FILE, index=False)
 
 ```
