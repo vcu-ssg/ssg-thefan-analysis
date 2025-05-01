@@ -20,6 +20,8 @@ website:
         text: Home
       - href: cleaning.qmd
         text: Cleaning
+      - href: 30_holiday_house_tour.qmd
+        text: Holiday House Tour
       - href: dashboard.qmd
         text: Dashboard
       - href: mini_dashboard.qmd

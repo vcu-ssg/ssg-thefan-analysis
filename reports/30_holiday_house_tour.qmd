@@ -21,8 +21,9 @@ This document represents an analysis of the workbook and it's associated [cleane
 import os
 import sys
 
-import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 
 
 sys.path.append("..")
@@ -48,13 +49,20 @@ hht.annotated_years
 
 ## Years and Chairs
 
-summary listing:
+### summary listing:
 
 ```{python}
+pd.set_option("display.max_rows", None)
+pd.set_option("display.max_columns", None)
 hht.yearly_summary
 ```
 
-How often did we see tours of size X?
+### How often did we see tours of size X?
+
+Each year there are a specific number of homes on the tour.  The table below shows the number of homes on the tour, 
+and the number of years that had that number.
+
+The table gives a sense of how often a specific number of homes were on each tour.
 
 ```{python}
 summary = hht.yearly_summary
@@ -63,7 +71,7 @@ address_freq.columns = ["address_count", "num_years"]
 address_freq
 ```
 
-and plot
+### and plot
 
 ```{python}
 #| echo: false
@@ -89,4 +97,47 @@ plt.title("Holiday House Tour: Address Count by Year")
 plt.tight_layout()
 plt.show()
 
+```
+
+## Chair participation
+
+The table below shows each chair or co-chair and the number of times they served as chair or co-chair.
+```{python}
+hht.chair_summary
+```
+
+# Looking at the streets
+
+Lets take a look at the homes that were on the tour and where they are located.
+
+## Place summary
+
+Some homes on the tour have names, or place-names.  Below is a summary of these properties.
+
+```{python}
+hht.place_summary
+```
+
+
+## Street summary
+
+Here are the frequencies that homes appear from each street.
+
+```{python}
+hht.street_summary
+```
+
+## Number summary
+
+Here are the frequencies that homes appear from each block.
+```{python}
+hht.number_summary
+```
+
+## Address summary
+
+Here are the frequencies that homes appear from each address.
+
+```{python}
+hht.address_summary
 ```
