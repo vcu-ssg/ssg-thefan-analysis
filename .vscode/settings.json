@@ -1,3 +1,6 @@
 {
-    "liveServer.settings.port": 5501
+    "liveServer.settings.port": 5501,
+    "python.defaultInterpreterPath": "/home/john/.cache/pypoetry/virtualenvs/ssg-thefan-analysis-Md-w6cvw-py3.13/bin/python",
+    "python.InterpreterPath": "/home/john/.cache/pypoetry/virtualenvs/ssg-thefan-analysis-Md-w6cvw-py3.13/bin/python",
+
 }

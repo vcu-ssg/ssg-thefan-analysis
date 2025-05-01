@@ -4,6 +4,7 @@ Utilities for Fandu
 
 import os
 import re
+import json
 import click
 import pandas as pd
 from rapidfuzz import fuzz, process
@@ -660,3 +661,38 @@ def match_addresses(master_df, unmatched_df, threshold=90):
 
     return matched_df, unmatched_df
 
+
+def save_to_geojson(df, filename):
+    """
+    """
+    keep_props = [
+        "year", "chair1", "chair2", "clean_address", 
+        "host_name", "zip_code", "state_plane_x", "state_plane_y"
+    ]
+
+    features = []
+
+    for _, row in df.iterrows():
+        # Skip rows without valid coordinates
+        if pd.isna(row['latitude']) or pd.isna(row['longitude']):
+            continue
+
+        feature = {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [row["longitude"], row["latitude"]],
+            },
+            "properties": {
+                k: row[k] for k in keep_props if k in df.columns
+            }
+        }
+        features.append(feature)
+
+    geojson = {
+        "type": "FeatureCollection",
+        "features": features
+    }
+
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(geojson, f, ensure_ascii=False, indent=2)

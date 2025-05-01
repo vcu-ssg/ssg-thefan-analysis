@@ -3,11 +3,14 @@
 project:
   type: website
   output-dir: ../docs
+  resources:
+    - ./data
   render:
     - "*.qmd"
 
 execute:
   echo: false
+  kernel: python3  # or the name of your Jupyter kernel
 
 website:
   title: "The Fan"
@@ -24,7 +27,15 @@ website:
 
 format:
   html:
-    html-math-method: katex
     smooth-scroll: true
+    theme: default
+    toc: true
+    code-tools: true
+    # Enable interactive figures
+    fig-responsive: true
+    execute:
+      enabled: true
     embed-resources: true
+    html-math-method: katex
+    plotly: true
 
