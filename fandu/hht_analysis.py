@@ -34,7 +34,7 @@ class HHTAnalysis:
             .agg({"notes": lambda x: " | ".join(x.dropna().unique())})
         )
 
-        return result
+        return result.reset_index(drop=True)
         
     @property
     def yearly_summary(self):
@@ -55,7 +55,7 @@ class HHTAnalysis:
             .sort_values("year")
         )
 
-        return result
+        return result.reset_index(drop=True)
     
     @property
     def chair_summary(self):
@@ -82,7 +82,7 @@ class HHTAnalysis:
             .sort_values(by=["year_count", "chair_last_name", "chair_first_name"], ascending=[False, True, True])
         )
 
-        return summary
+        return summary.reset_index(drop=True)
 
 
     @property
@@ -100,7 +100,7 @@ class HHTAnalysis:
             .sort_values("count", ascending=False)
         )
 
-        return summary
+        return summary.reset_index(drop=True)
 
 
     @property
@@ -124,14 +124,14 @@ class HHTAnalysis:
             .sort_values("count", ascending=False)
         )
 
-        return summary
+        return summary.reset_index(drop=True)
 
     @property
     def address_summary(self):
         df = self.df
 
         # Filter out null addresses and ensure all required fields exist
-        valid = df[df["address"].notna()].copy()
+        valid = df[df["clean_address"].notna()].copy()
         valid["place_name"] = valid["place_name"].fillna("")
 
         # Group by address and place_name, count occurrences
@@ -143,7 +143,7 @@ class HHTAnalysis:
             .sort_values(by=["count", "street_name", "street_number"], ascending=[False, True, True])
         )
 
-        return summary[["address","place_name","count"]]
+        return summary[["address","place_name","count"]].reset_index(drop=True)
     
     @property
     def place_summary(self):
@@ -160,4 +160,4 @@ class HHTAnalysis:
             .sort_values("count", ascending=False)
         )
 
-        return summary
+        return summary.reset_index(drop=True)

@@ -24,6 +24,7 @@ import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from IPython.display import Markdown
 
 
 sys.path.append("..")
@@ -45,6 +46,7 @@ print("Missing years: ",hht.missing_years)
 
 ```{python}
 hht.annotated_years
+Markdown(hht.annotated_years.to_markdown(index=False))
 ```
 
 ## Years and Chairs
@@ -54,7 +56,7 @@ hht.annotated_years
 ```{python}
 pd.set_option("display.max_rows", None)
 pd.set_option("display.max_columns", None)
-hht.yearly_summary
+Markdown(hht.yearly_summary.to_markdown(index=False))
 ```
 
 ### How often did we see tours of size X?
