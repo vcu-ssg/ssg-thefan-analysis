@@ -133,6 +133,13 @@
     "text": "In some cases there are multiple chairs in a single year. We also want to pull out their first and last names.\n\n\n\n\n\n\n\n\n\nyear\nchair\nchair1\nchair2\n\n\n\n\n0\n1963\nMrs. Van Pelt (Virginia) Sessoms\nVirginia Sessoms\n\n\n\n1\n1963\nMrs. Van Pelt (Virginia) Sessoms\nVirginia Sessoms\n\n\n\n2\n1963\nMrs. Van Pelt (Virginia) Sessoms\nVirginia Sessoms\n\n\n\n3\n1963\nMrs. Van Pelt (Virginia) Sessoms\nVirginia Sessoms\n\n\n\n4\n1963\nMrs. Van Pelt (Virginia) Sessoms\nVirginia Sessoms\n\n\n\n5\n1963\nMrs. Van Pelt (Virginia) Sessoms\nVirginia Sessoms\n\n\n\n6\n1963\nMrs. Van Pelt (Virginia) Sessoms\nVirginia Sessoms\n\n\n\n7\n1964\nMrs. Charles O. (Adella) Watlington\nAdella Watlington\n\n\n\n8\n1964\nMrs. Charles O. (Adella) Watlington\nAdella Watlington\n\n\n\n9\n1964\nMrs. Charles O. (Adella) Watlington\nAdella Watlington\n\n\n\n10\n1964\nMrs. Charles O. (Adella) Watlington\nAdella Watlington\n\n\n\n11\n1964\nMrs. Charles O. (Adella) Watlington\nAdella Watlington\n\n\n\n12\n1964\nMrs. Charles O. (Adella) Watlington\nAdella Watlington\n\n\n\n13\n1965\nMrs. Raymond (Jacqueline) Hodges\nJacqueline Hodges\n\n\n\n14\n1965\nMrs. Raymond (Jacqueline) Hodges\nJacqueline Hodges\n\n\n\n15\n1965\nMrs. Raymond (Jacqueline) Hodges\nJacqueline Hodges\n\n\n\n16\n1965\nMrs. Raymond (Jacqueline) Hodges\nJacqueline Hodges\n\n\n\n17\n1965\nMrs. Raymond (Jacqueline) Hodges\nJacqueline Hodges\n\n\n\n18\n1965\nMrs. Raymond (Jacqueline) Hodges\nJacqueline Hodges\n\n\n\n19\n1965\nMrs. Raymond (Jacqueline) Hodges\nJacqueline Hodges\n\n\n\n20\n1966\nMrs. Drew (Ann) Carneal\nAnn Carneal\n\n\n\n21\n1966\nMrs. Drew (Ann) Carneal\nAnn Carneal\n\n\n\n22\n1966\nMrs. Drew (Ann) Carneal\nAnn Carneal\n\n\n\n23\n1966\nMrs. Drew (Ann) Carneal\nAnn Carneal\n\n\n\n24\n1966\nMrs. Drew (Ann) Carneal\nAnn Carneal\n\n\n\n25\n1966\nMrs. Drew (Ann) Carneal\nAnn Carneal\n\n\n\n26\n1966\nMrs. Drew (Ann) Carneal\nAnn Carneal\n\n\n\n27\n1967\nMrs. Benjamin (Mary) Harrison\nMary Harrison\n\n\n\n28\n1967\nMrs. Benjamin (Mary) Harrison\nMary Harrison\n\n\n\n29\n1967\nMrs. Benjamin (Mary) Harrison\nMary Harrison\n\n\n\n\n\n\n\n\nAnd a list combined.\n\n\n\n\n\n\n\n\n\nyear\ninformal_chairs\n\n\n\n\n0\n1963\nVirginia Sessoms\n\n\n1\n1963\nVirginia Sessoms\n\n\n2\n1963\nVirginia Sessoms\n\n\n3\n1963\nVirginia Sessoms\n\n\n4\n1963\nVirginia Sessoms"
   },
   {
+    "objectID": "11_hht_parsing.html#split-chair-names-out",
+    "href": "11_hht_parsing.html#split-chair-names-out",
+    "title": "Parsing and cleaning the HHC excel workbook",
+    "section": "",
+    "text": "year\nchair\nchair1\nchair2\n\n\n\n\n0\n1963\nMrs. Van Pelt (Virginia) Sessoms\nVirginia Sessoms\n\n\n\n1\n1963\nMrs. Van Pelt (Virginia) Sessoms\nVirginia Sessoms\n\n\n\n2\n1963\nMrs. Van Pelt (Virginia) Sessoms\nVirginia Sessoms\n\n\n\n3\n1963\nMrs. Van Pelt (Virginia) Sessoms\nVirginia Sessoms\n\n\n\n4\n1963\nMrs. Van Pelt (Virginia) Sessoms\nVirginia Sessoms\n\n\n\n5\n1963\nMrs. Van Pelt (Virginia) Sessoms\nVirginia Sessoms\n\n\n\n6\n1963\nMrs. Van Pelt (Virginia) Sessoms\nVirginia Sessoms\n\n\n\n7\n1964\nMrs. Charles O. (Adella) Watlington\nAdella Watlington\n\n\n\n8\n1964\nMrs. Charles O. (Adella) Watlington\nAdella Watlington\n\n\n\n9\n1964\nMrs. Charles O. (Adella) Watlington\nAdella Watlington\n\n\n\n10\n1964\nMrs. Charles O. (Adella) Watlington\nAdella Watlington\n\n\n\n11\n1964\nMrs. Charles O. (Adella) Watlington\nAdella Watlington\n\n\n\n12\n1964\nMrs. Charles O. (Adella) Watlington\nAdella Watlington\n\n\n\n13\n1965\nMrs. Raymond (Jacqueline) Hodges\nJacqueline Hodges\n\n\n\n14\n1965\nMrs. Raymond (Jacqueline) Hodges\nJacqueline Hodges\n\n\n\n15\n1965\nMrs. Raymond (Jacqueline) Hodges\nJacqueline Hodges\n\n\n\n16\n1965\nMrs. Raymond (Jacqueline) Hodges\nJacqueline Hodges\n\n\n\n17\n1965\nMrs. Raymond (Jacqueline) Hodges\nJacqueline Hodges\n\n\n\n18\n1965\nMrs. Raymond (Jacqueline) Hodges\nJacqueline Hodges\n\n\n\n19\n1965\nMrs. Raymond (Jacqueline) Hodges\nJacqueline Hodges\n\n\n\n20\n1966\nMrs. Drew (Ann) Carneal\nAnn Carneal\n\n\n\n21\n1966\nMrs. Drew (Ann) Carneal\nAnn Carneal\n\n\n\n22\n1966\nMrs. Drew (Ann) Carneal\nAnn Carneal\n\n\n\n23\n1966\nMrs. Drew (Ann) Carneal\nAnn Carneal\n\n\n\n24\n1966\nMrs. Drew (Ann) Carneal\nAnn Carneal\n\n\n\n25\n1966\nMrs. Drew (Ann) Carneal\nAnn Carneal\n\n\n\n26\n1966\nMrs. Drew (Ann) Carneal\nAnn Carneal\n\n\n\n27\n1967\nMrs. Benjamin (Mary) Harrison\nMary Harrison\n\n\n\n28\n1967\nMrs. Benjamin (Mary) Harrison\nMary Harrison\n\n\n\n29\n1967\nMrs. Benjamin (Mary) Harrison\nMary Harrison"
+  },
+  {
     "objectID": "11_hht_parsing.html#split-addresses-from-hosts",
     "href": "11_hht_parsing.html#split-addresses-from-hosts",
     "title": "Parsing and cleaning the HHC excel workbook",
@@ -161,6 +168,7 @@
     "text": "Tighten up street names\n\n\n    street_name\n0         Floyd\n1         Grove\n2       Hanover\n3    Kensington\n4      Monument\n5      N. Allen\n6      N. Davis\n7     N. Granby\n8   N. Harrison\n9     N. Harvie\n10    N. Linden\n11  N. Lombardy\n12    N. Meadow\n13    N. Morris\n14      N. Plum\n15   N. Rowland\n16   N. Shields\n17  N. Stafford\n18         Park\n19   Strawberry\n20       Stuart\n21   Trouvaille\n22     W. Broad\n23  W. Franklin\n24     W. Grace\n25      W. Main\n26         West"
   },
   {
+<<<<<<< HEAD
     "objectID": "11_hht_parsing.html#save-final-data",
     "href": "11_hht_parsing.html#save-final-data",
     "title": "Parsing and cleaning the HHC excel workbook",
@@ -168,6 +176,8 @@
     "text": "Save final data\nStore the final data as CSV and JSON for later use.\n\n\n'./data/1963-2024 HHT Homeowners_Adresses_modified.xlsx'"
   },
   {
+=======
+>>>>>>> b01de404d2aedf8afcddcd2da25780ec0bee689a
     "objectID": "10_hhc_cleaning.html",
     "href": "10_hhc_cleaning.html",
     "title": "Cleaning the Holiday House Tour data",
@@ -186,6 +196,7 @@
     "href": "30_holiday_house_tour.html",
     "title": "Holiday House Tour",
     "section": "",
+<<<<<<< HEAD
     "text": "The Fan District Association’s annual Holiday House Tour in Richmond, Virginia, is a cherished tradition that invites visitors to explore the neighborhood’s historic homes adorned in festive holiday decor. Held each December, the self-guided walking tour showcases a variety of architectural styles, including Queen Anne, Italianate, Tudor Revival, and Colonial Revival, reflecting the area’s development between 1890 and 1930. richmondmagazine.com\nThe 2024 tour featured eight properties, seven of which were open to the public for the first time, offering a unique glimpse into the district’s rich architectural tapestry . Attendees could stroll through the neighborhood or utilize complimentary tuk-tuk rides provided along the route.​ richmondmagazine.com\nProceeds from the event support the Fan District Association’s initiatives, including neighborhood preservation, restoration projects, and community enhancements. This festive tour not only celebrates the holiday season but also fosters community spirit and appreciation for Richmond’s historic charm.\nThe Fan District Association maintains a workbook documenting previous holiday house tours.\nThis document represents an analysis of the workbook and it’s associated cleaned data file."
   },
   {
@@ -201,5 +212,8 @@
     "title": "Holiday House Tour",
     "section": "Years and Chairs",
     "text": "Years and Chairs\nsummary listing:\n\n\n\n\n\n\n\n\n\nyear\ninformal_chairs\naddress_count\nnotes\n\n\n\n\n0\n1963\nVirginia Sessoms\n7\n\n\n\n1\n1964\nAdella Watlington\n6\n\n\n\n2\n1965\nJacqueline Hodges\n7\n\n\n\n3\n1966\nAnn Carneal\n7\n\n\n\n4\n1967\nMary Harrison\n6\n\n\n\n...\n...\n...\n...\n...\n\n\n56\n2020\nKimberly Hitchens\n21\nOutdoor Gardens due to Covid\n\n\n57\n2021\nKimberly Hitchens\n11\nOutdoor Gardens due to Covid\n\n\n58\n2022\nPriscilla George & Tom George\n11\n\n\n\n59\n2023\nHeather Williams & Marlene Beck\n10\n\n\n\n60\n2024\nRebecca Keller & Kimberly Vullo\n8\n\n\n\n\n\n61 rows × 4 columns\n\n\n\nHow often did we see tours of size X?\n\n\n\n\n\n\n\n\n\naddress_count\nnum_years\n\n\n\n\n0\n5\n1\n\n\n1\n6\n4\n\n\n2\n7\n6\n\n\n3\n8\n7\n\n\n4\n9\n9\n\n\n5\n10\n11\n\n\n6\n11\n8\n\n\n7\n12\n10\n\n\n8\n13\n3\n\n\n9\n15\n1\n\n\n10\n21\n1\n\n\n\n\n\n\n\nand plot"
+=======
+    "text": "this is a test"
+>>>>>>> b01de404d2aedf8afcddcd2da25780ec0bee689a
   }
 ]
