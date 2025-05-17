@@ -1,0 +1,276 @@
+---
+title: Data Sources
+---
+
+The City of Richmond maintains an arcgis geodata repository called [Richmond GeoHub](https://richmond-geo-hub-cor.hub.arcgis.com).
+
+Data on the geohub are organized into key areas.  For our analysis, we'll be using the 
+following data sources.
+
+[Addresses](https://richmond-geo-hub-cor.hub.arcgis.com/datasets/674d645c444f4191998f0ebb96e56047_0/explore?location=37.527383%2C-77.493413%2C10.99)
+: All of the official, mapped inventory of all unit and non-unit-based addresses in the City. Includes only active addresses.
+
+[Parcels](https://richmond-geo-hub-cor.hub.arcgis.com/datasets/fbfce2aab2a44c05bc0abc2d6ea7e54a_0/explore?location=37.525465%2C-77.493422%2C10.60)
+: City of Richmond property ownership information, mapped by land ownership (parcels).
+
+[Civic Associations](https://richmond-geo-hub-cor.hub.arcgis.com/datasets/be39ce592f3e4419babe11d1b967e2f3_0/explore?location=37.528836%2C-77.494197%2C10.96)
+: Represents civic organization boundaries in the city of Richmond, Virginia.
+
+[National Historic Districts](https://richmond-geo-hub-cor.hub.arcgis.com/datasets/38bd0df47c6440528c2ef22daaf81883_0/explore?location=37.550339%2C-77.468606%2C14.93)
+: Represents districts and sites that are listed on the National Register of Historic Places (Federal designation) and the Virginia Landmarks Register (State designation).
+
+[Neighborhoods](https://richmond-geo-hub-cor.hub.arcgis.com/datasets/7a0ffef23d16461e9728c065f27b2790_0/explore?location=37.525021%2C-77.493427%2C10.73)
+: City of Richmond Neighborhoods.
+
+
+```{python}
+
+import os
+import sqlite3
+import requests
+import pandas as pd
+import geopandas as gpd
+import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
+from matplotlib.lines import Line2D
+
+pd.set_option("display.max_rows", None)
+
+
+def rva_geohub_url( feature ):
+    return f"https://services1.arcgis.com/k3vhq11XkBNeeOfM/arcgis/rest/services/{feature}/FeatureServer/0/query?where=1=1&outFields=*&f=geojson"
+
+def local_geohub_filename( feature ):
+    return f"{feature}.geojson"
+
+features = ["Addresses","Parcels","Neighborhoods"]
+selector = "Civic_Associations"
+key = "Fan District Association"
+
+
+## This code doesn't work.  Download the files manually from the interface!
+
+if 0:
+    for feature in features:
+        filename = local_geohub_filename(feature)
+
+        if os.path.exists(filename):
+            print(f"{filename} already exists — skipping download.")
+            continue
+
+        url = rva_geohub_url(feature)
+        print(f"Downloading {feature} from {url}...")
+
+        response = requests.get(url)
+        if response.status_code == 200:
+            with open(filename, 'wb') as f:
+                f.write(response.content)
+            print(f"Saved to {filename}")
+        else:
+            print(f"Failed to download {feature}: HTTP {response.status_code}")
+
+```
+
+# Working with the data
+
+## Neighborhoods
+
+```{python}
+# Load the neighborhoods GeoJSON
+
+data = {}
+for feature in [selector]+features:
+    data[feature] = gpd.read_file( local_geohub_filename(feature) )
+    if feature==selector:
+        data[key] = data[selector][ data[selector]["Name"] == key ]
+    else:
+        data[feature] = data[feature].to_crs( data[selector].crs )
+
+for feature in features:
+    predicate = "overlaps" if feature=="Neighborhoods" else "within"
+    data[feature+"_in_fan"] = gpd.sjoin(data[feature], data[key], predicate=predicate, how="inner")
+
+for feature in features:
+    feature_name = feature+"_in_fan"
+    print(f"{feature_name}: {len(data[feature_name])}")
+    print(f"{feature_name}:columns: {data[feature_name].columns.to_list()}")
+
+    if "AddressId" in data[feature_name].columns:
+        data[feature_name] = data[feature_name].drop_duplicates(subset="AddressId")
+        print(f"{feature_name}: {len(data[feature_name])} (after dropping duplicates)")
+
+
+    for idx, row in data[feature_name].head(5).iterrows():
+        properties = row.drop(labels="geometry")  # Optional: remove geometry
+        print(f"Feature {idx}:")
+        print(properties.to_dict())
+        print("---")
+
+
+    df = data[feature_name].drop(columns="geometry")
+    df.to_csv(f"{feature_name}.csv", index=False)
+    
+
+```
+
+
+
+```{python}
+
+if 1:
+    # Connect to or create a database file
+    conn = sqlite3.connect("fda-data.sqlite")
+
+    for feature in [selector]+features:
+
+    # Write the DataFrame to a new table (overwrite if it exists)
+        temp_copy = data[feature].copy()
+        temp_copy = temp_copy.drop(columns=['geometry'])
+        print(f" feature: {feature} : columns: {temp_copy.columns}")
+
+        temp_copy.to_sql(feature.lower(), conn, if_exists="replace", index=False)
+
+        # Optional: verify table
+        print(pd.read_sql(f"SELECT COUNT(*) FROM {feature.lower()}", conn))
+
+    for feature in features:
+
+    # Write the DataFrame to a new table (overwrite if it exists)
+        feature_name = feature + "_in_fan"
+        temp_copy = data[feature_name].copy()
+        temp_copy = temp_copy.drop(columns=['geometry'])
+        print(f" feature: {feature_name} : columns: {temp_copy.columns}")
+
+        temp_copy.to_sql(feature_name.lower(), conn, if_exists="replace", index=False)
+
+        # Optional: verify table
+        print(pd.read_sql(f"SELECT COUNT(*) FROM {feature_name.lower()}", conn))
+
+    conn.close()
+
+```
+
+## Matplot lib map
+
+::: {.column-screen-inset-right}
+```{python}
+# Plotting
+fig, ax = plt.subplots(figsize=(10, 10))
+
+data[key].boundary.plot(ax=ax, color="black", linewidth=3, label="The Fan boundary")
+data["Parcels_in_fan"].plot(ax=ax, color="lightgray", edgecolor="gray", alpha=0.7, label="Parcels")
+data["Addresses_in_fan"].plot(ax=ax, color="red", markersize=5, label="Addresses")
+data["Neighborhoods_in_fan"].plot(ax=ax, facecolor='none', edgecolor="lightblue", markersize=5, label="Neighborhoods")
+
+legend_elements = [
+    Line2D([0], [0], color="black", lw=3, label="The Fan boundary"),
+    Patch(facecolor="lightgray", edgecolor="gray", label="Parcels"),
+    Line2D([0], [0], marker='o', color='w', label="Addresses", markerfacecolor='red', markersize=6),
+    Line2D([0], [0], color="lightblue", lw=1.5, label="Neighborhoods boundary")
+]
+
+ax.legend(handles=legend_elements)
+
+ax.set_title("Addresses and Parcels in The Fan")
+ax.axis("off")
+plt.tight_layout()
+
+ax.set_title("Addresses and Parcels in The Fan")
+ax.axis("off")
+plt.tight_layout()
+```
+:::
+
+
+## Interactive Map: Addresses and Parcels in The Fan
+
+```{python}
+import folium
+from shapely.geometry import mapping
+import geopandas as gpd
+
+# Create a base map centered on The Fan
+projected = data[key].to_crs(epsg=2283)
+
+# Compute centroid in projected CRS (accurate)
+centroid = projected.geometry.centroid.iloc[0]
+
+# Convert back to geographic CRS (WGS84) for Folium
+centroid_latlon = gpd.GeoSeries([centroid], crs=2283).to_crs(epsg=4326).geometry.iloc[0]
+fan_center = centroid_latlon.coords[0][::-1]  # (lat, lon)
+
+# Create map
+m = folium.Map(location=fan_center, zoom_start=15, tiles="cartodbpositron")
+
+```
+```{python}
+# Add neighborhood boundary
+x = folium.GeoJson(
+    data[key].geometry,
+    name="The Fan Boundary",
+    style_function=lambda x: {
+        "color": "black",
+        "weight": 3,
+        "fillOpacity": 0,
+    }
+).add_to(m)
+
+```
+```{python}
+
+# Add parcels (lighter gray polygons)
+x = folium.GeoJson(
+    data["Parcels_in_fan"].geometry,
+    name="Parcels",
+    style_function=lambda x: {
+        "color": "#999999",
+        "weight": 0.5,
+        "fillOpacity": 0.4,
+    },
+).add_to(m)
+
+# Add addresses (red points)
+
+```
+```{python}
+
+from shapely.geometry import Point
+
+for _, row in data["Addresses_in_fan"].iterrows():
+    pt = row.geometry
+
+    # Only plot if geometry is a valid Point
+    if not isinstance(pt, Point):
+        print(f"Skipping non-Point geometry at index {_}: {type(pt)}")
+        continue
+
+    label = row.get("AddressLabel", "")
+    if pd.isna(label):
+        label = ""
+    else:
+        label = str(label)
+
+    folium.CircleMarker(
+        location=[pt.y, pt.x],
+        radius=2,
+        color='red',
+        fill=True,
+        fill_opacity=0.8,
+        tooltip=folium.Tooltip(label),  # Explicit safe wrapper
+    ).add_to(m)
+
+
+```
+```{python}
+
+# Add layer control and display map
+folium.LayerControl().add_to(m)
+
+m.save("../docs/fan_map.html")
+#m.save("./fan_map.html")
+#m
+```
+
+::: {.column-screen-inset-right}
+<iframe src="./fan_map.html" width="100%" height="600px" style="border:none;" data-external="1" ></iframe>
+:::

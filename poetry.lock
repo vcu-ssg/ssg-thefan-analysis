@@ -691,6 +691,28 @@ files = [
 devel = ["colorama", "json-spec", "jsonschema", "pylint", "pytest", "pytest-benchmark", "pytest-cache", "validictory"]
 
 [[package]]
+name = "folium"
+version = "0.19.6"
+description = "Make beautiful maps with Leaflet.js & Python"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "folium-0.19.6-py2.py3-none-any.whl", hash = "sha256:aeab67fbc7e2cc1d2721cba5a00320f25ad885d4915c7f2654c183913a48527f"},
+    {file = "folium-0.19.6.tar.gz", hash = "sha256:be21b1e492b09a81b949cb4c860503e683cbe91951825faf4d4ef27ab4913201"},
+]
+
+[package.dependencies]
+branca = ">=0.6.0"
+jinja2 = ">=2.9"
+numpy = "*"
+requests = "*"
+xyzservices = "*"
+
+[package.extras]
+testing = ["pytest"]
+
+[[package]]
 name = "fonttools"
 version = "4.56.0"
 description = "Tools to manipulate font files"
@@ -3542,4 +3564,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13"
-content-hash = "589f67f40463ca58bde1337bcd16412eaee0f85459dacbaf5851c6db5a78e5df"
+content-hash = "22848c27d600a8e21320772b696fc15067a5aab1d700bedff5f648dc0037f149"
