@@ -22,6 +22,12 @@ following data sources.
 [Neighborhoods](https://richmond-geo-hub-cor.hub.arcgis.com/datasets/7a0ffef23d16461e9728c065f27b2790_0/explore?location=37.525021%2C-77.493427%2C10.73)
 : City of Richmond Neighborhoods.
 
+For our Fan District analysis we will be working with [Civic Associations](https://richmond-geo-hub-cor.hub.arcgis.com/datasets/be39ce592f3e4419babe11d1b967e2f3_0/explore?location=37.528836%2C-77.494197%2C10.96)
+to get the formal boundary of the *Fan District Association*.
+
+We then use that boundary to determine [Addresses](https://richmond-geo-hub-cor.hub.arcgis.com/datasets/674d645c444f4191998f0ebb96e56047_0/explore?location=37.527383%2C-77.493413%2C10.99)
+and [Parcels](https://richmond-geo-hub-cor.hub.arcgis.com/datasets/fbfce2aab2a44c05bc0abc2d6ea7e54a_0/explore?location=37.525465%2C-77.493422%2C10.60)
+in the *Fan District Association*
 
 ```{python}
 
@@ -36,17 +42,18 @@ from matplotlib.lines import Line2D
 
 pd.set_option("display.max_rows", None)
 
-
 def rva_geohub_url( feature ):
     return f"https://services1.arcgis.com/k3vhq11XkBNeeOfM/arcgis/rest/services/{feature}/FeatureServer/0/query?where=1=1&outFields=*&f=geojson"
 
 def local_geohub_filename( feature ):
     return f"{feature}.geojson"
 
-features = ["Addresses","Parcels","Neighborhoods"]
+## These are the names associated with feature files on the RVA GeoHub.
+
+features = ["Addresses","Parcels","Civic_Associations]
+
 selector = "Civic_Associations"
 key = "Fan District Association"
-
 
 ## This code doesn't work.  Download the files manually from the interface!
 

@@ -31,3 +31,11 @@ def load_shapefile_from_zip(zip_path="../data/neighborhoods-shp.zip" ):
     gdf = gpd.read_file(shp_file)
     return gdf
 
+def rva_geohub_url( feature ):
+    """ API URL for RVA geohub"""
+    return f"https://services1.arcgis.com/k3vhq11XkBNeeOfM/arcgis/rest/services/{feature}/FeatureServer/0/query?where=1=1&outFields=*&f=geojson"
+
+def local_geohub_filename( feature ):
+    """ Given an input feature file (Addresses, Parcels, Civic_Associations ) return """
+    return f"{feature}.geojson".lower()
+
