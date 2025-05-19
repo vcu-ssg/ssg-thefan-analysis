@@ -56,7 +56,7 @@ columns = ["ID", "Name", "District", "Class"]
 table_data = gdf[columns].values.tolist()
 
 # Generate a Markdown table
-Markdown(tabulate(table_data, headers=columns ) )dir .
+Markdown(tabulate(table_data, headers=columns ) )
 
 
 ```

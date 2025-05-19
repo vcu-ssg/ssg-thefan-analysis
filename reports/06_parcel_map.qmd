@@ -1,0 +1,218 @@
+---
+title: Interactive map
+---
+
+
+```{python}
+
+import geopandas as gpd
+import os
+import matplotlib as plt
+
+import folium
+from shapely.geometry import mapping
+import geopandas as gpd
+
+# List of base names
+base_names = ["Fan District Association","Civic_Associations", "Addresses_in_fan", "Parcels_in_fan"]
+
+# Folder where GeoJSON files are located
+geojson_folder = "../precious/"
+features = ["Addresses","Parcels"]
+selector = "Civic_Associations"
+selector_key = "Fan District Association"
+
+input_folder = "../data"
+
+# Load files into a dictionary
+data = {}
+
+for name in base_names:
+    file_path = os.path.join(input_folder, f"{name}.geojson")
+    if os.path.exists(file_path):
+        data[name] = gpd.read_file(file_path)
+    else:
+        print(f"⚠️ File not found: {file_path}")
+
+```
+
+
+## Interactive Map: Parcels and UnitCounts
+
+```{python}
+# Step 1: Filter addresses with UnitType == None
+addresses = data["Addresses_in_fan"]
+addresses = addresses[addresses["UnitType"].isna()].copy()
+
+# Ensure both are in the same CRS
+addresses = addresses.to_crs(data["Parcels_in_fan"].crs)
+
+# Step 2: Perform spatial join - match addresses within parcels
+joined = gpd.sjoin(addresses, data["Parcels_in_fan"], how="inner", predicate="within")
+
+# Step 3: Group by Parcel ID (or index) and sum UnitCount
+# Choose a unique key to group by — use index_right if no parcel ID is available
+parcel_unit_counts = (
+    joined.groupby("index_right")["UnitCount"]
+    .sum()
+    .rename("SummedUnitCount")
+)
+
+# Step 4: Join the result back to Parcels GeoDataFrame
+parcels_with_units = data["Parcels_in_fan"].copy()
+parcels_with_units["SummedUnitCount"] = parcel_unit_counts
+
+# Optional: fill NaN with 0 for parcels without addresses
+parcels_with_units["SummedUnitCount"] = parcels_with_units["SummedUnitCount"].fillna(0).astype(int)
+
+```
+
+
+```{python}
+fan_shape = data[selector_key].to_crs(epsg=4326)  # Folium uses WGS84
+
+# Compute bounds: [[south, west], [north, east]]
+minx, miny, maxx, maxy = fan_shape.total_bounds
+bounds = [[miny, minx], [maxy, maxx]]
+
+# Center for initial rendering (optional fallback)
+center = [(miny + maxy) / 2, (minx + maxx) / 2]
+
+# Create map and set bounds
+m = folium.Map(location=center, zoom_start=15, tiles="cartodbpositron")
+m.fit_bounds(bounds)
+
+# Add neighborhood boundary
+x = folium.GeoJson(
+    data[selector_key].geometry,
+    name="The Fan Boundary",
+    style_function=lambda x: {
+        "color": "black",
+        "weight": 3,
+        "fillOpacity": 0,
+    }
+).add_to(m)
+
+# Add parcels (lighter gray polygons)
+x = folium.GeoJson(
+    data["Parcels_in_fan"].geometry,
+    name="Parcels",
+    style_function=lambda x: {
+        "color": "#999999",
+        "weight": 0.5,
+        "fillOpacity": 0.4,
+    },
+).add_to(m)
+
+if 0:
+
+    # Step 1: Clip values (saturate above 100)
+    clip_max = 100
+    parcels_with_units["ClippedUnits"] = parcels_with_units["SummedUnitCount"].clip(upper=clip_max)
+
+    # Step 2: Create colormap from 0 to clip_max
+    clipped_colormap = cm.linear.YlOrRd_09.scale(0, clip_max)
+    clipped_colormap.caption = f"Units per Parcel (capped at {clip_max})"
+    clipped_colormap.add_to(m)
+
+    # Step 3: Add to map
+    folium.GeoJson(
+        parcels_with_units,
+        name=f"Units per Parcel (max {clip_max})",
+        style_function=lambda feature: {
+            "fillColor": clipped_colormap(feature["properties"]["ClippedUnits"])
+            if feature["properties"]["ClippedUnits"] else "#ffffff",
+            "color": "#666666",
+            "weight": 0.5,
+            "fillOpacity": 0.7,
+        },
+#        tooltip=folium.GeoJsonTooltip(
+#            fields=["SummedUnitCount", "ClippedUnits"],
+#            aliases=["Total Units", f"Clipped to {clip_max}"],
+#            localize=True
+#        )
+    ).add_to(m)
+
+if 0:
+
+    import branca.colormap as cm
+
+    colormap = cm.linear.YlOrRd_09.scale(0, parcels_with_units["SummedUnitCount"].max())
+    colormap.caption = "Units per Parcel (filtered by UnitType=None)"
+    colormap.add_to(m)
+
+    x = folium.GeoJson(
+        parcels_with_units,
+        name="Filtered Unit Density",
+        style_function=lambda feature: {
+            "fillColor": colormap(feature["properties"]["SummedUnitCount"]) if feature["properties"]["SummedUnitCount"] else "#ffffff",
+            "color": "#333333",
+            "weight": 0.5,
+            "fillOpacity": 0.7,
+        },
+        tooltip=folium.GeoJsonTooltip(
+            fields=["ParcelID", "SummedUnitCount"],
+            aliases=["Parcel", "Total Units"],
+        )
+    ).add_to(m)
+
+if 1:
+
+    def classify_unit_bin(unit_count):
+        if unit_count == 0:
+            return '0'
+        elif unit_count == 1:
+            return '1'
+        elif unit_count == 2:
+            return '2'
+        elif unit_count <= 4:
+            return '3-4'
+        elif unit_count <= 10:
+            return '5-10'
+        elif unit_count <= 20:
+            return '11-20'
+        elif unit_count <= 35:
+            return '21-35'
+        else:
+            return '36+'
+
+    # Apply to DataFrame
+    parcels_with_units["UnitBin"] = parcels_with_units["SummedUnitCount"].apply(classify_unit_bin)
+
+    # format dollar values
+    parcels_with_units["FormattedValue"] = parcels_with_units["TotalValue"].apply( lambda x: f"${int(x/1000)}k" if x else "$0k" )
+
+    # Define bin colors
+    bin_colors = {
+        '0':     '#ffffff',   # white
+        '1':     '#ffffcc',   # light yellow
+        '2':     '#fd8d3c',   # orange
+        '3-4':   '#fc4e2a',   # darker orange
+        '5-10':  '#e31a1c',   # red
+        '11-20': '#bd0026',   # dark red
+        '21-35': '#800026',   # deeper red
+        '36+':   '#4d0018',   # very dark red
+    }
+    folium.GeoJson(
+        parcels_with_units,
+        name="Binned Unit Density",
+        style_function=lambda feature: {
+            "fillColor": bin_colors.get(feature["properties"]["UnitBin"], "#cccccc"),
+            "color": "#666666",
+            "weight": 0.5,
+            "fillOpacity": 0.7,
+        },
+        tooltip=folium.GeoJsonTooltip(
+            fields=["ParcelID","SummedUnitCount", "UnitBin"],
+            aliases=["ParcelID","Total Units", "Bin"],
+            localize=False
+        )
+    ).add_to(m)
+```
+
+::: {.column-page-inset-right}
+```{python}
+m
+```
+:::
+

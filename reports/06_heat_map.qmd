@@ -1,0 +1,131 @@
+---
+title: Interactive map
+---
+
+
+```{python}
+
+import geopandas as gpd
+import os
+import matplotlib as plt
+
+import folium
+from shapely.geometry import mapping
+import geopandas as gpd
+
+# List of base names
+base_names = ["Fan District Association","Civic_Associations", "Addresses_in_fan", "Parcels_in_fan"]
+
+# Folder where GeoJSON files are located
+geojson_folder = "../precious/"
+features = ["Addresses","Parcels"]
+selector = "Civic_Associations"
+selector_key = "Fan District Association"
+
+input_folder = "../data"
+
+# Load files into a dictionary
+data = {}
+
+for name in base_names:
+    file_path = os.path.join(input_folder, f"{name}.geojson")
+    if os.path.exists(file_path):
+        data[name] = gpd.read_file(file_path)
+    else:
+        print(f"⚠️ File not found: {file_path}")
+
+```
+
+## Interactive Map: Heatmap of Addresses and Unitcounts
+
+```{python}
+
+# Project and compute bounding box in WGS84
+fan_shape = data[selector_key].to_crs(epsg=4326)  # Folium uses WGS84
+
+# Compute bounds: [[south, west], [north, east]]
+minx, miny, maxx, maxy = fan_shape.total_bounds
+bounds = [[miny, minx], [maxy, maxx]]
+
+# Center for initial rendering (optional fallback)
+center = [(miny + maxy) / 2, (minx + maxx) / 2]
+
+# Create map and set bounds
+m = folium.Map(location=center, zoom_start=15, tiles="cartodbpositron")
+m.fit_bounds(bounds)
+
+# Add neighborhood boundary
+x = folium.GeoJson(
+    data[selector_key].geometry,
+    name="The Fan Boundary",
+    style_function=lambda x: {
+        "color": "black",
+        "weight": 3,
+        "fillOpacity": 0,
+    }
+).add_to(m)
+
+# Add parcels (lighter gray polygons)
+x = folium.GeoJson(
+    data["Parcels_in_fan"].geometry,
+    name="Parcels",
+    style_function=lambda x: {
+        "color": "#999999",
+        "weight": 0.5,
+        "fillOpacity": 0.4,
+    },
+).add_to(m)
+
+# Add intensities for heatmap layer
+
+from folium.plugins import HeatMap
+
+# Step 1: Project to WGS84 (if not already)
+addresses = data["Addresses_in_fan"].to_crs(epsg=4326)
+
+# Step 2: Build heatmap data: [[lat, lon, intensity], ...]
+# Clip UnitCount at 150 to suppress outlier skew
+
+clip_value = 90
+addresses["ClippedUnitCount"] = addresses["UnitCount"].clip(upper=clip_value)
+
+# Normalize
+heat_data = [
+    [geom.y, geom.x, row.ClippedUnitCount / clip_value]
+    for geom, row in zip(addresses.geometry, addresses.itertuples())
+    if geom is not None and row.ClippedUnitCount > 0 and row.UnitType is None
+]
+
+# Step 3: Add HeatMap layer
+
+x = HeatMap(
+    heat_data,
+    radius=12,
+    blur=10,
+    max_zoom=15,
+    name="High-Density Housing"
+).add_to(m)
+
+```
+::: {.column-page-inset-right}
+```{python}
+m
+```
+:::
+
+
+
+```{python}
+
+
+#m.save("../docs/fan_map.html")
+#m.save("./fan_map.html")
+#m
+```
+
+<!-- see: https://quarto.org/docs/authoring/article-layout.html -->
+<!--
+::: {.column-page-inset-right}
+<iframe src="./fan_map.html" width="100%" height="750px" style="border:none;" data-external="1" ></iframe>
+:::
+-->
