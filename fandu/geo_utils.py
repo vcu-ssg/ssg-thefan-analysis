@@ -1,11 +1,48 @@
 """
 Geospatial Utilities for Fandu
 """
+import os
+import re
 
+import zipfile
 import geopandas as gpd
 import matplotlib.pyplot as plt
-import zipfile
-import os
+
+from datetime import datetime
+from typing import Optional
+
+
+def get_newest_feature_file(path: str, feature: str) -> Optional[str]:
+    """
+    Finds the newest .geojson file matching the pattern 'feature-YYYY-MM-DD*.geojson' in the given path.
+    Returns the absolute file path, or None if no matching files are found.
+
+    Parameters:
+        path (str): Relative directory path to search in.
+        feature (str): Feature name prefix, e.g., 'Addresses' or 'Parcels'.
+
+    Returns:
+        Optional[str]: Absolute file path of the newest feature file, or None.
+    """
+    pattern = re.compile(rf"^{re.escape(feature)}-(\d{{4}}-\d{{2}}-\d{{2}}).*\.geojson$", re.IGNORECASE)
+
+    newest_file = None
+    newest_date = None
+
+    for filename in os.listdir(path):
+        match = pattern.match(filename)
+        if match:
+            try:
+                file_date = datetime.strptime(match.group(1), "%Y-%m-%d")
+                if newest_date is None or file_date > newest_date:
+                    newest_date = file_date
+                    newest_file = filename
+            except ValueError:
+                continue
+
+    if newest_file:
+        return os.path.abspath(os.path.join(path, newest_file))
+    return None
 
 def load_shapefile_from_zip(zip_path="../data/neighborhoods-shp.zip" ):
     """Extracts, loads a shapefile from a ZIP archive."""
@@ -35,7 +72,4 @@ def rva_geohub_url( feature ):
     """ API URL for RVA geohub"""
     return f"https://services1.arcgis.com/k3vhq11XkBNeeOfM/arcgis/rest/services/{feature}/FeatureServer/0/query?where=1=1&outFields=*&f=geojson"
 
-def local_geohub_filename( feature ):
-    """ Given an input feature file (Addresses, Parcels, Civic_Associations ) return """
-    return f"{feature}.geojson".lower()
 
