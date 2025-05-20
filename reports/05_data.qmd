@@ -108,7 +108,6 @@ for feature in features:
     df.to_csv(f"{feature_name}.csv", index=False)
 
 
-
 ```
 
 ## FDA - Key measures
@@ -415,10 +414,220 @@ top_bases = (
 print(top_bases[["AddressLabel", "BaseAddressLabel", "UnitCount","UnitType"]])
 ```
 
+### Delete parcels with duplicate geometries
+
+
+```{python}
+import geopandas as gpd
+
+# Load your GeoDataFrame
+gdf = data["Parcels_in_fan"]
+
+# Convert geometries to a hashable form for comparison
+gdf["geom_wkt"] = gdf.geometry.to_wkt()
+
+# Keep only the first occurrence of each geometry
+gdf_unique = gdf.drop_duplicates(subset="geom_wkt", keep="first").copy()
+
+# Drop the helper column
+gdf_unique.drop(columns=["geom_wkt"], inplace=True)
+
+data["Parcels_in_fan"] = gdf_unique
+
+# Or inspect
+print(f"Original count: {len(gdf)}, After deduplication: {len(gdf_unique)}")
+
+```
+
+List out duplicate parcels
+
+```{python}
+# Step 1: Load your parcel GeoDataFrame
+gdf = data["Parcels_in_fan"]
+
+# Step 2: Convert geometry to WKT for exact-match comparison
+gdf["geom_wkt"] = gdf.geometry.to_wkt()
+
+# Step 3: Count duplicate geometries
+geom_counts = gdf["geom_wkt"].value_counts()
+
+# Step 4: Add back the count to the original GeoDataFrame
+gdf["geom_count"] = gdf["geom_wkt"].map(geom_counts)
+
+# Step 5 (Optional): See only duplicates
+duplicates = gdf[gdf["geom_count"] > 1]
+
+# Print or inspect
+print(duplicates[["ParcelID", "PIN", "geom_count"]])
+
+```
+
+### Merge addresses to parcels
 
 ```{python}
 
-if 1:
+import geopandas as gpd
+
+# 1. Reproject to a common CRS if necessary
+
+parcels_gdf = data["Parcels_in_fan"]
+addresses = data["Addresses_in_fan"].to_crs(parcels_gdf.crs)
+
+# 🔍 Filter to include only addresses with UnitType not null (unit addresses)
+addresses = addresses[addresses["UnitType"].notnull()]
+
+# Step 2: Perform spatial join: which addresses fall within which parcel
+joined = gpd.sjoin(addresses, parcels_gdf, predicate="within", how="left")
+
+# Step 3: Group addresses by parcel index and aggregate
+address_groups = (
+    joined.groupby("index_right")
+    .agg({
+        "AddressLabel": lambda x: list(x.dropna()),
+        "AddressId": lambda x: list(x.dropna())
+    })
+    .rename(columns={"AddressLabel": "AddressList", "AddressId": "AddressIdList"})
+)
+
+# Step 4: Merge back into parcels
+parcels_with_addresses = parcels_gdf.join(address_groups)
+
+# Step 5: Fill missing lists as empty
+parcels_with_addresses["AddressList"] = parcels_with_addresses["AddressList"].apply(
+    lambda x: x if isinstance(x, list) else []
+)
+parcels_with_addresses["AddressIdList"] = parcels_with_addresses["AddressIdList"].apply(
+    lambda x: x if isinstance(x, list) else []
+)
+
+# Step 6: Store result back into data
+data["Parcels_in_fan"] = parcels_with_addresses
+
+```
+
+### Frequency of addresses counts in parcels
+
+```{python}
+# Step 1: Get number of addresses per parcel
+address_counts = data["Parcels_in_fan"]["AddressList"].apply(len)
+
+# Step 2: Create frequency table
+frequency_table = address_counts.value_counts().sort_index()
+
+# Step 3: Print result
+print("📊 Frequency of address counts per parcel:")
+print(frequency_table)
+
+```
+
+### Why so many odd parcel counts?
+
+let's look at a few parcels with 12 addresses.
+
+```{python}
+
+# Step 1: Get parcels with exactly 12 addresses
+parcels_with_12 = data["Parcels_in_fan"][data["Parcels_in_fan"]["AddressList"].apply(len) == 12]
+
+# Step 2: Display first few (e.g., 5) with their addresses
+print("📦 Parcels with exactly 12 addresses:\n")
+for idx, row in parcels_with_12.head(5).iterrows():
+    print(f"Parcel Index: {idx}")
+    print("Addresses:")
+    for addr in row["AddressList"]:
+        print(f"  - {addr}")
+    print("-" * 40)
+
+
+```
+
+### Any now digging into 2710 Stuart
+
+```{python}
+
+# Helper function: check if any address in the list starts with "2710 Stuart Ave"
+def has_stuart_ave(addresses):
+    return any(addr.startswith("2710 Stuart Ave") for addr in addresses)
+
+# Step 1: Filter parcels with at least one address matching "2710 Stuart Ave"
+stuart_parcels = data["Parcels_in_fan"][data["Parcels_in_fan"]["AddressList"].apply(has_stuart_ave)]
+
+# Step 2: Show full info for each parcel
+print("📦 Parcels containing addresses for '2710 Stuart Ave':\n")
+for idx, row in stuart_parcels.iterrows():
+    print(f"Parcel Index: {idx}")
+    for key, value in row.items():
+        if isinstance(value, list):
+            print(f"{key}:")
+            for item in value:
+                print(f"  - {item}")
+        else:
+            print(f"{key}: {value}")
+    print("-" * 80)
+
+```
+
+### All the duplicate parcels
+
+```{python}
+
+import pandas as pd
+
+if 0:
+    # Step 1: Normalize AddressList for comparison — sort and convert to tuple
+    def normalized_address_list(addresses):
+        return tuple(sorted(addresses)) if isinstance(addresses, list) else ()
+
+    # Step 2: Create a normalized column
+    parcels = data["Parcels_in_fan"].copy()
+    parcels["AddressListKey"] = parcels["AddressList"].apply(normalized_address_list)
+
+    # Step 3: Group by the normalized address list
+    grouped = parcels.groupby("AddressListKey")
+
+    # Step 4: Identify groups with duplicates (2 or more parcels sharing the same address list)
+    duplicate_groups = {k: g for k, g in grouped if len(g) > 1}
+
+    # Step 5: Print full info for each group of duplicated parcels
+    print("📦 Duplicate parcels with identical address lists:\n")
+    for key, group in duplicate_groups.items():
+        print(f"🧵 Shared Address List ({len(group)} parcels):")
+        for addr in key:
+            print(f"  - {addr}")
+        print("🔍 Full parcel records:\n")
+        print(group.drop(columns=["AddressListKey"]).to_string(index=False))
+        print("-" * 80)
+
+
+```
+
+
+### Exploring parcels with more than one address
+
+These lists can be used later in tool tips.
+
+```{python}
+
+# Filter parcels that have more than one address
+multi_address_parcels = parcels_with_addresses[parcels_with_addresses["AddressList"].apply(lambda x: isinstance(x, list) and len(x) > 1)]
+
+# Print a few examples
+print("📦 Parcels with multiple addresses:\n")
+
+for idx, row in multi_address_parcels.head(5).iterrows():
+    print(f"Parcel Index: {idx}")
+    print(f"Address Count: {len(row['AddressList'])}")
+    print("Addresses:")
+    for addr in row["AddressList"]:
+        print(f"  - {addr}")
+    print("-" * 40)
+
+```
+
+
+```{python}
+
+if 0:
     # Connect to or create a database file
     conn = sqlite3.connect("fda-data.sqlite")
 
