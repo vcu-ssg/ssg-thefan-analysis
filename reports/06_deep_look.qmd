@@ -1,0 +1,246 @@
+---
+title: Interactive map
+resources:
+  - fan_map.html
+---
+
+
+```{python}
+
+import pandas as pd
+import geopandas as gpd
+import os
+import numpy as np
+import matplotlib as plt
+from datetime import datetime
+
+# List of base names
+base_names = ["Fan District Association","Civic_Associations", "Addresses_in_fan", "Parcels_in_fan"]
+
+# Folder where GeoJSON files are located
+geojson_folder = "../precious/"
+features = ["Addresses","Parcels"]
+selector = "Civic_Associations"
+selector_key = "Fan District Association"
+
+input_folder = "../data"
+
+# Load files into a dictionary
+data = {}
+
+for name in base_names:
+    file_path = os.path.join(input_folder, f"{name}.geojson")
+    if os.path.exists(file_path):
+        data[name] = gpd.read_file(file_path)
+    else:
+        print(f"⚠️ File not found: {file_path}")
+
+
+def drop_timestamp_columns(gdf):
+    """Remove columns that contain datetime-like values."""
+    gdf_clean = gdf.copy()
+    cols_to_drop = []
+
+    for col in gdf_clean.columns:
+        sample = gdf_clean[col].dropna().head(10)  # sample non-null values
+        if sample.empty:
+            continue
+        if any(isinstance(val, (pd.Timestamp, datetime, np.datetime64)) for val in sample):
+            cols_to_drop.append(col)
+
+    return gdf_clean.drop(columns=cols_to_drop)
+
+data["Parcels_in_fan"] = drop_timestamp_columns(data["Parcels_in_fan"])
+data["Addresses_in_fan"] = drop_timestamp_columns(data["Addresses_in_fan"])
+data[selector] = drop_timestamp_columns( data[selector])
+
+# Keep only necessary columns
+data["Addresses_in_fan"] = data["Addresses_in_fan"][["geometry", "AddressId", "AddressLabel","UnitCount"]]
+data["Parcels_in_fan"] = data["Parcels_in_fan"][["geometry", "ParcelID", "PropertyClass"]]
+data["Civic_Associations"] = data["Civic_Associations"][["geometry", "Name"]]
+data["Fan District Association"] = data["Civic_Associations"][["geometry", "Name"]]
+
+```
+
+## Interactive Map: Addresses and Parcels in The Fan
+
+Below is an interactive map of the Fan District Association.  You can
+zoom and scroll.
+
+
+```{python}
+import folium
+from shapely.geometry import mapping
+import geopandas as gpd
+
+import folium
+from shapely.geometry import Point
+
+fan_shape = data["Fan District Association"].to_crs(epsg=4326)
+minx, miny, maxx, maxy = fan_shape.total_bounds
+center = [(miny + maxy) / 2, (minx + maxx) / 2]
+bounds = [[miny, minx], [maxy, maxx]]
+
+# Create map
+m = folium.Map(location=center, zoom_start=15, tiles="cartodbpositron")
+m.fit_bounds(bounds)
+
+# Add fan boundary
+x = folium.GeoJson(
+    data["Fan District Association"],
+    name="The Fan Boundary",
+    style_function=lambda x: {
+        "color": "black",
+        "weight": 3,
+        "fillOpacity": 0,
+    },
+).add_to(m)
+
+# Add parcels (with properties)
+x = folium.GeoJson(
+    data["Parcels_in_fan"],
+    name="Parcels",
+    style_function=lambda x: {
+        "color": "#999999",
+        "weight": 0.5,
+        "fillOpacity": 0.4,
+    }
+).add_to(m)
+
+# Add addresses (with properties)
+x = folium.GeoJson(
+    data["Addresses_in_fan"],
+    name="Addresses",
+    marker=folium.CircleMarker(radius=3, color="red", fill=True, fill_opacity=0.8),
+    tooltip=folium.GeoJsonTooltip(fields=["AddressLabel", "UnitCount"]),
+).add_to(m)
+
+# Layer control
+x = folium.LayerControl().add_to(m)
+
+```
+
+```{=html}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  setTimeout(() => {
+    const iframe = document.querySelector("iframe");
+    const map = iframe?.contentWindow?.map;
+    const L = iframe?.contentWindow?.L;
+    if (!map || !L) return;
+
+    const allLayers = [];
+
+    map.eachLayer(layer => {
+      if (layer instanceof L.GeoJSON) {
+        layer.eachLayer(subLayer => {
+          if (subLayer.feature && subLayer.getBounds) {
+            allLayers.push(subLayer);
+          }
+        });
+      }
+    });
+
+    map.on('click', function (e) {
+      const latlng = e.latlng;
+      const matches = [];
+
+      for (const f of allLayers) {
+        if (f.getBounds().contains(latlng)) {
+          matches.push(f.feature.properties);
+        }
+      }
+
+      if (matches.length > 0) {
+        const content = matches.map((props, i) => {
+          const label =
+            props.AddressLabel ||
+            props.ParcelID ||
+            props.Name ||
+            `Feature ${i + 1}`;
+          const units = props.UnitCount ? ` (${props.UnitCount})` : "";
+          return `<div><b>${label}</b>${units}</div>`;
+        }).join("");
+
+        L.popup()
+          .setLatLng(latlng)
+          .setContent(content)
+          .openOn(map);
+      }
+    });
+  }, 500);
+});
+</script>
+
+```
+
+```{python}
+# Save map to disk so we can iframe it
+
+from folium import MacroElement
+from jinja2 import Template
+
+popup_script = """
+{% macro script(this, kwargs) %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const map = {{this._parent.get_name()}};
+  const L = window.L;
+
+  const allLayers = [];
+
+  map.eachLayer(layer => {
+    if (layer instanceof L.GeoJSON) {
+      layer.eachLayer(subLayer => {
+        if (subLayer.feature && subLayer.getBounds) {
+          allLayers.push(subLayer);
+        }
+      });
+    }
+  });
+
+  map.on('click', function (e) {
+    const latlng = e.latlng;
+    const matches = [];
+
+    for (const f of allLayers) {
+      if (f.getBounds().contains(latlng)) {
+        matches.push(f.feature.properties);
+      }
+    }
+
+    if (matches.length > 0) {
+      const content = matches.map((props, i) => {
+        return Object.entries(props).map(
+          ([key, val]) => `<b>${key}</b>: ${val}`
+        ).join("<br>");
+      }).join("<hr>");
+
+      L.popup()
+        .setLatLng(latlng)
+        .setContent(content)
+        .openOn(map);
+    }
+  });
+});
+</script>
+{% endmacro %}
+"""
+
+class PopupMacro(MacroElement):
+    def __init__(self):
+        super().__init__()
+        self._template = Template(popup_script)
+
+m.get_root().add_child(PopupMacro())
+
+
+m.save("./fan_map.html")
+m.save("../docs/fan_map.html")
+```
+
+
+::: {.column-page-inset-right}
+<iframe src="fan_map.html" width="100%" height="600px" style="border: none;" data-external="1" loading="lazy"></iframe>
+
+:::

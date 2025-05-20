@@ -37,7 +37,7 @@ format:
     fig-responsive: true
     execute:
       enabled: true
-    embed-resources: true
+#    embed-resources: true
     html-math-method: katex
     plotly: true
     raw-html:

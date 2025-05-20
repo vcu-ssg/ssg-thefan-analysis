@@ -299,5 +299,19 @@
     "title": "Fan District Association",
     "section": "Interactive Map: Parcels and UnitCounts",
     "text": "Interactive Map: Parcels and UnitCounts\n\n\n\nMake this Notebook Trusted to load map: File -&gt; Trust Notebook"
+  },
+  {
+    "objectID": "06_deep_look.html",
+    "href": "06_deep_look.html",
+    "title": "Interactive map",
+    "section": "",
+    "text": "Skipping field AddressList: unsupported OGR type: 5\nSkipping field AddressIdList: unsupported OGR type: 5"
+  },
+  {
+    "objectID": "06_deep_look.html#interactive-map-addresses-and-parcels-in-the-fan",
+    "href": "06_deep_look.html#interactive-map-addresses-and-parcels-in-the-fan",
+    "title": "Interactive map",
+    "section": "Interactive Map: Addresses and Parcels in The Fan",
+    "text": "Interactive Map: Addresses and Parcels in The Fan\nBelow is an interactive map of the Fan District Association. You can zoom and scroll."
   }
 ]
