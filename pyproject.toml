@@ -26,7 +26,8 @@ dependencies = [
     "folium (>=0.19.6,<0.20.0)",
     "ipykernel (>=6.29.5,<7.0.0)",
     "loguru (>=0.7.3,<0.8.0)",
-    "numpy (>=2.2.6,<3.0.0)"
+    "numpy (>=2.2.6,<3.0.0)",
+    "ssg-wild-apricot-tools @ file:///home/john/projects/ssg-thefan-analysis/wheels/ssg_wild_apricot_tools-0.1.0-py3-none-any.whl"
 ]
 
 
