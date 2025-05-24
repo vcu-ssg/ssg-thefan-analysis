@@ -6,8 +6,12 @@ import os
 import re
 import json
 import click
+import numpy as np
 import pandas as pd
 from rapidfuzz import fuzz, process
+
+from tabulate import tabulate
+from IPython.display import Markdown
 
 
 def test_function():
@@ -696,3 +700,246 @@ def save_to_geojson(df, filename):
 
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(geojson, f, ensure_ascii=False, indent=2)
+
+
+def load_contacts_csv(filepath):
+    df = pd.read_csv(filepath, skiprows=[1])  # Skip 2nd row with SystemCode
+    return df
+
+
+def cross_tab_markdown(contacts, row_variable, col_variable, show_row_totals=False, show_col_totals=False):
+    """
+    Create a markdown cross-tabulation of two columns in the contacts DataFrame.
+
+    Parameters:
+        contacts (pd.DataFrame): The contacts DataFrame.
+        row_variable (str): The column to group as rows.
+        col_variable (str): The column to group as columns.
+        show_row_totals (bool): Whether to include a totals row.
+        show_col_totals (bool): Whether to include a totals column.
+
+    Returns:
+        Markdown: A GitHub-flavored Markdown table for use in Jupyter or Quarto.
+    """
+
+    def safe_fillna(column, value):
+        # Add value to categories first if the column is categorical
+        if isinstance(column.dtype, pd.CategoricalDtype):
+            if value not in column.cat.categories:
+                column = column.cat.add_categories([value])
+        return column.fillna(value)
+
+    # Safely handle missing values in both axes
+    contacts[row_variable] = safe_fillna(contacts[row_variable], "Unknown")
+    contacts[col_variable] = safe_fillna(contacts[col_variable], "None")
+
+    # Determine whether to add totals
+    add_margins = show_row_totals or show_col_totals
+    margins_name = "Total"
+
+    # Generate crosstab
+    crosstab = pd.crosstab(
+        contacts[row_variable],
+        contacts[col_variable],
+        margins=add_margins,
+        margins_name=margins_name
+    )
+
+    # Remove unwanted total rows/cols if needed
+    if add_margins:
+        if not show_row_totals:
+            crosstab = crosstab.drop(index=margins_name, errors="ignore")
+        if not show_col_totals:
+            crosstab = crosstab.drop(columns=margins_name, errors="ignore")
+
+    # Format table
+    markdown_table = tabulate(crosstab, headers="keys", tablefmt="github")
+
+    return Markdown(markdown_table)
+
+def filter_contacts(contacts, criteria, logic="and"):
+    """
+    Filters the contacts DataFrame based on column-value criteria, including support for blank values.
+
+    Parameters:
+        contacts (pd.DataFrame): The full contacts dataset.
+        criteria (dict): A dictionary where each key is a column and value is the value to match.
+                         If value is None or "", matches blank/missing/whitespace cells.
+        logic (str): 'and' (default) or 'or' — determines how to combine multiple filters.
+
+    Returns:
+        pd.DataFrame: Filtered subset.
+    """
+    if not criteria:
+        return contacts
+
+    masks = []
+
+    for key, value in criteria.items():
+        if key not in contacts.columns:
+            raise KeyError(f"Column '{key}' not found in contacts DataFrame.")
+
+        # Normalize text before comparison
+        col = contacts[key].astype(str).str.strip()
+
+        if value in (None, ""):
+            # Match blanks and missing values
+            mask = col.isna() | (col == "") | (col == "nan")
+        else:
+            mask = col == str(value).strip()
+
+        masks.append(mask)
+
+    if logic == "and":
+        combined_mask = masks[0]
+        for m in masks[1:]:
+            combined_mask &= m
+    elif logic == "or":
+        combined_mask = masks[0]
+        for m in masks[1:]:
+            combined_mask |= m
+    else:
+        raise ValueError("logic must be either 'and' or 'or'")
+
+    return contacts[combined_mask]
+
+
+def list_contacts_markdown(contacts, columns, max_rows=20, sort_columns=None):
+    """
+    Returns a Markdown-formatted table of selected columns from the contacts DataFrame,
+    optionally allowing custom column labels and case-insensitive sorting.
+
+    Parameters:
+        contacts (pd.DataFrame): The full contacts dataset.
+        columns (list of str or dict): Columns to include. Dicts map real column -> display label.
+        max_rows (int): Maximum number of rows to show in the Markdown table.
+        sort_columns (list of str or dict): Optional sort order. Strings default to ascending.
+            Dicts must be of form {column: "asc" or "desc"}.
+
+    Returns:
+        Markdown: A GitHub-flavored Markdown table.
+    """
+    column_keys = []
+    column_labels = []
+
+    for col in columns:
+        if isinstance(col, str):
+            if col not in contacts.columns:
+                raise KeyError(f"Column '{col}' not found in contacts DataFrame.")
+            column_keys.append(col)
+            column_labels.append(col)
+        elif isinstance(col, dict):
+            for key, label in col.items():
+                if key not in contacts.columns:
+                    raise KeyError(f"Column '{key}' not found in contacts DataFrame.")
+                column_keys.append(key)
+                column_labels.append(label)
+        else:
+            raise TypeError("Each column must be a string or a single-key dictionary.")
+
+    # Create a DataFrame with only the selected columns
+    subset = contacts[column_keys].copy()
+
+    # Handle sorting (case-insensitive where applicable)
+    if sort_columns:
+        sort_keys = []
+        ascending_flags = []
+
+        for item in sort_columns:
+            if isinstance(item, str):
+                key = item
+                order = "asc"
+            elif isinstance(item, dict):
+                key, order = next(iter(item.items()))
+            else:
+                raise TypeError("sort_columns must be a list of strings or single-key dictionaries.")
+
+            if key not in column_keys:
+                raise ValueError(f"Sort column '{key}' must also be in the columns list.")
+            if order.lower() not in ["asc", "desc"]:
+                raise ValueError(f"Invalid sort order '{order}' for column '{key}'. Use 'asc' or 'desc'.")
+
+            sort_keys.append(key)
+            ascending_flags.append(order.lower() == "asc")
+
+            # Convert string columns to lowercase temporarily for sorting
+            if subset[key].dtype == object:
+                subset[key + "_sortkey"] = subset[key].str.lower()
+            else:
+                subset[key + "_sortkey"] = subset[key]
+
+        # Sort by sortkey columns
+        sortkey_columns = [k + "_sortkey" for k in sort_keys]
+        subset = subset.sort_values(by=sortkey_columns, ascending=ascending_flags)
+
+        # Drop temporary sort columns
+        subset = subset.drop(columns=sortkey_columns)
+
+    # Apply column renaming
+    subset.columns = column_labels
+
+    # Limit rows
+    subset = subset.head(max_rows)
+
+    # Generate markdown
+    markdown_table = tabulate(subset, headers="keys", tablefmt="github", showindex=False)
+    return Markdown(markdown_table)
+
+
+def find_duplicate_contacts(contacts, key_columns=["FirstName", "LastName"]):
+    """
+    Finds potential duplicate contacts based on matching values in key columns.
+
+    Parameters:
+        contacts (pd.DataFrame): The full contacts dataset.
+        key_columns (list of str): Columns to use for identifying duplicates.
+
+    Returns:
+        pd.DataFrame: Subset of contacts that share duplicate key values.
+    """
+    # Normalize text (strip whitespace, lowercase)
+    for col in key_columns:
+        contacts[col] = contacts[col].astype(str).str.strip().str.lower()
+
+    # Find duplicated rows based on the key columns
+    duplicate_mask = contacts.duplicated(subset=key_columns, keep=False)
+
+    return contacts[duplicate_mask].sort_values(by=key_columns)
+
+def filter_contains(contacts, criteria, logic="or"):
+    """
+    Filters the contacts DataFrame where column values contain given substrings.
+
+    Parameters:
+        contacts (pd.DataFrame): The full contacts dataset.
+        criteria (dict): Dictionary of {column: substring_to_search}.
+        logic (str): 'or' (default) or 'and' — how to combine multiple filters.
+
+    Returns:
+        pd.DataFrame: Filtered contacts matching the substring criteria.
+    """
+    if not criteria:
+        return contacts
+
+    masks = []
+
+    for key, substring in criteria.items():
+        if key not in contacts.columns:
+            raise KeyError(f"Column '{key}' not found in contacts DataFrame.")
+        # Create a case-insensitive containment check
+        mask = contacts[key].astype(str).str.contains(substring, case=False, na=False)
+        masks.append(mask)
+
+    if logic == "or":
+        combined_mask = masks[0]
+        for m in masks[1:]:
+            combined_mask |= m
+    elif logic == "and":
+        combined_mask = masks[0]
+        for m in masks[1:]:
+            combined_mask &= m
+    else:
+        raise ValueError("logic must be either 'or' or 'and'")
+
+    return contacts[combined_mask]
+
