@@ -15,7 +15,7 @@ from fandu.utils import load_contacts_csv, filter_contains, list_contacts_markdo
     find_duplicate_contacts, filter_contacts, cross_tab_markdown
 
 
-contacts_csv_filename = "contacts-2025-05-22.csv"
+contacts_csv_filename = "contacts-2025-05-27.csv"
 
 list_contacts_columns = ["Id","Member","Status",{"MembershipLevelName":"Level"},"DisplayName","Email",{"LoginRecency":"Last login"},{"Creation date":"Created"}]
 
