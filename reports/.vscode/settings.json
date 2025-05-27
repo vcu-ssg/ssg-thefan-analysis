@@ -1,0 +1,19 @@
+{
+    "sqltools.connections": [
+        {
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": false
+                }
+            },
+            "previewLimit": 50,
+            "server": "db.gmbzksqmzbqewysyxbty.supabase.co",
+            "driver": "PostgreSQL",
+            "name": "Supa-Fan",
+            "database": "postgres",
+            "username": "postgres",
+            "password": "eg5iRkglbtuEHlpR",
+            "connectString": "postgresql://postgres.gmbzksqmzbqewysyxbty:OjrFxz7gObIVM5fY@aws-0-us-east-2.pooler.supabase.com:5432/postgres"
+        }
+    ]
+}
