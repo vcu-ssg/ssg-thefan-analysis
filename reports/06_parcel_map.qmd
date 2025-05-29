@@ -21,6 +21,7 @@ geojson_folder = "../precious/"
 features = ["Addresses","Parcels"]
 selector = "Civic_Associations"
 selector_key = "Fan District Association"
+#selector_key = "West Avenue Improvement Association"
 
 input_folder = "../data"
 
@@ -33,6 +34,8 @@ for name in base_names:
         data[name] = gpd.read_file(file_path)
     else:
         print(f"⚠️ File not found: {file_path}")
+
+#data[selector_key] = data[selector][ data[selector]["Name"]==selector_key]
 
 ```
 
