@@ -53,14 +53,20 @@ addresses = addresses.to_crs(data["Parcels_in_fan"].crs)
 # Step 2: Perform spatial join - match addresses within parcels
 joined = gpd.sjoin(addresses, data["Parcels_in_fan"], how="inner", predicate="within")
 
+```
+
+```{python}
 # Step 3: Group by Parcel ID (or index) and sum UnitCount
 # Choose a unique key to group by — use index_right if no parcel ID is available
 parcel_unit_counts = (
-    joined.groupby("index_right")["UnitCount"]
+    joined.groupby("ParcelID")["UnitCount"]
     .sum()
     .rename("SummedUnitCount")
 )
 
+```
+
+```{python}
 # Step 4: Join the result back to Parcels GeoDataFrame
 parcels_with_units = data["Parcels_in_fan"].copy()
 parcels_with_units["SummedUnitCount"] = parcel_unit_counts
@@ -215,6 +221,7 @@ if 1:
 
 ::: {.column-page-inset-right}
 ```{python}
+m.save("../docs/thefan_parcels.html")
 m
 ```
 :::
