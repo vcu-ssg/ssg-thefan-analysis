@@ -8,14 +8,4 @@ title: Welcome!
 of neighborhoods in the City.  The boundary for The Fan can be pulled from
 here and used to find addresses and parcels located within The fan.
 
-* [Sample Dashboard](dashboard.qmd) - A quick dashboard highlighting some of the dashboard features built into Quarto.
-	- The top left panel contains a leaflet map of the fan. One can zoom in and out and pan around to explore the city or world.
-	- The top right panel contains a display of the *neighborhood* shapefile downloaded from City of Richmond.  Look at the report above for more details.
-	- the cards across the bottom contain dummy data and in the code present different ways to create *cards*.
-
-* [Mini Dashboard](mini_dashboard.qmd) - A mini project based on the homes that served as hosts for the "Holiday House Tour" since 1963.
-	- Includes:
-		- Pins on a map highlighting all the addresses
-	- List of addresses sorted by street
-	- Search bar to look for specific properties, people, and years
-	- Number cards with the number of years, number of homes, and number of homes that participated two or more times.
+* [Address analysis](06_addresses.qmd) - An interactive map of addresses mapped to parcels using City of Richmond GIS data.
