@@ -68,6 +68,7 @@ data = {}
 for feature in [selector] + features:
     geofile = get_newest_feature_file( geojson_folder, feature )
     #logger.debug(geofile)
+    print(f"Found {feature}:  {geofile}" )
     data[feature] = gpd.read_file( geofile )
 
 for feature in features:
@@ -106,6 +107,7 @@ for feature in features:
     feature_name = feature+"_in_fan"
     df = data[feature_name].drop(columns="geometry")
     df.to_csv(f"{feature_name}.csv", index=False)
+    print(f"Saving: {feature_name}.csv" )
 
 
 ```

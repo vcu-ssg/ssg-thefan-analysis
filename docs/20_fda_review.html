@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.42">
+<meta name="generator" content="quarto-1.7.33">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -21,8 +21,9 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 /* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -33,7 +34,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -64,15 +65,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-2cd9530a3603061af06c1a18fcdba478.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dae3192f81785cf0e6fe7ca13257d296.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -105,7 +107,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </head>
 
-<body class="nav-fixed">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -185,7 +187,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="fandistrict-emails">Fandistrict emails</h2>
 <p>This table lists the email addresses with “fandistrict.org”.</p>
 <p>We’ll want to verify that these emails exist at our domain, and that they’re being routed to the appropriate person or mail box.</p>
-<div id="7e1fd8f3" class="cell" data-execution_count="3">
+<div id="ed04f3d0" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display cell-output-markdown" data-execution_count="3">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -228,7 +230,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>nan</td>
 <td>Webmaster</td>
 <td>webmaster@fandistrict.org</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2015-12-12T04:11:26+00:00</td>
 </tr>
 <tr class="odd">
@@ -249,7 +251,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="membership-level-vs-status" class="level2">
 <h2 class="anchored" data-anchor-id="membership-level-vs-status">Membership Level vs Status</h2>
 <p>This table should match the summary membership dashboard on the wild apricot admin interface.</p>
-<div id="ba68642e" class="cell" data-execution_count="4">
+<div id="affc7aed" class="cell" data-execution_count="4">
 <div class="cell-output cell-output-display cell-output-markdown" data-execution_count="4">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -371,24 +373,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="status-vs-login-recency" class="level2">
 <h2 class="anchored" data-anchor-id="status-vs-login-recency">Status vs Login recency</h2>
 <p>How often do people log in? The next view tables categorize the most recent login date.</p>
-<div id="ed4c60f9" class="cell" data-execution_count="5">
+<div id="e6578693" class="cell" data-execution_count="5">
 <div class="cell-output cell-output-display cell-output-markdown" data-execution_count="5">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
-<col style="width: 14%">
-<col style="width: 11%">
-<col style="width: 12%">
+<col style="width: 18%">
+<col style="width: 17%">
+<col style="width: 18%">
 <col style="width: 13%">
-<col style="width: 14%">
+<col style="width: 21%">
 <col style="width: 10%">
-<col style="width: 16%">
-<col style="width: 7%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>Status</th>
-<th>0–30 days</th>
-<th>31–90 days</th>
 <th>91–180 days</th>
 <th>181–365 days</th>
 <th>1+ years</th>
@@ -399,61 +397,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>Active</td>
-<td>58</td>
-<td>148</td>
-<td>106</td>
-<td>95</td>
-<td>274</td>
+<td>198</td>
+<td>162</td>
+<td>321</td>
 <td>156</td>
 <td>837</td>
 </tr>
 <tr class="even">
 <td>Lapsed</td>
-<td>2</td>
-<td>6</td>
-<td>10</td>
-<td>2</td>
-<td>68</td>
+<td>7</td>
+<td>12</td>
+<td>69</td>
 <td>30</td>
 <td>118</td>
 </tr>
 <tr class="odd">
 <td>PendingNew</td>
-<td>2</td>
-<td>2</td>
-<td>2</td>
-<td>1</td>
+<td>4</td>
+<td>3</td>
 <td>3</td>
 <td>9</td>
 <td>19</td>
 </tr>
 <tr class="even">
 <td>PendingRenewal</td>
-<td>2</td>
-<td>1</td>
-<td>1</td>
 <td>3</td>
-<td>19</td>
+<td>2</td>
+<td>21</td>
 <td>16</td>
 <td>42</td>
 </tr>
 <tr class="odd">
 <td>nan</td>
-<td>6</td>
-<td>67</td>
-<td>63</td>
-<td>0</td>
+<td>59</td>
+<td>77</td>
 <td>24</td>
 <td>10</td>
 <td>170</td>
 </tr>
 <tr class="even">
 <td>Total</td>
-<td>70</td>
-<td>224</td>
-<td>182</td>
-<td>101</td>
-<td>388</td>
+<td>271</td>
+<td>256</td>
+<td>438</td>
 <td>221</td>
 <td>1186</td>
 </tr>
@@ -464,24 +450,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="membership-level-vs-login-recency" class="level2">
 <h2 class="anchored" data-anchor-id="membership-level-vs-login-recency">Membership level vs Login recency</h2>
-<div id="b42d2f53" class="cell" data-execution_count="6">
+<div id="b816972c" class="cell" data-execution_count="6">
 <div class="cell-output cell-output-display cell-output-markdown" data-execution_count="6">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
-<col style="width: 32%">
-<col style="width: 8%">
-<col style="width: 9%">
-<col style="width: 10%">
-<col style="width: 11%">
-<col style="width: 8%">
+<col style="width: 39%">
+<col style="width: 12%">
 <col style="width: 13%">
-<col style="width: 6%">
+<col style="width: 10%">
+<col style="width: 16%">
+<col style="width: 7%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>MembershipLevelName</th>
-<th>0–30 days</th>
-<th>31–90 days</th>
 <th>91–180 days</th>
 <th>181–365 days</th>
 <th>1+ years</th>
@@ -492,70 +474,56 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>Friend</td>
-<td>1</td>
-<td>2</td>
-<td>1</td>
-<td>6</td>
 <td>3</td>
+<td>4</td>
+<td>6</td>
 <td>4</td>
 <td>17</td>
 </tr>
 <tr class="even">
 <td>Household</td>
-<td>35</td>
-<td>81</td>
-<td>63</td>
-<td>44</td>
-<td>212</td>
+<td>111</td>
+<td>94</td>
+<td>230</td>
 <td>152</td>
 <td>587</td>
 </tr>
 <tr class="odd">
 <td>Household - Autorenewing Annually</td>
-<td>15</td>
-<td>41</td>
-<td>21</td>
-<td>28</td>
-<td>59</td>
+<td>53</td>
+<td>36</td>
+<td>75</td>
 <td>42</td>
 <td>206</td>
 </tr>
 <tr class="even">
 <td>Individual</td>
-<td>10</td>
-<td>22</td>
-<td>16</td>
-<td>14</td>
-<td>73</td>
+<td>32</td>
+<td>23</td>
+<td>80</td>
 <td>11</td>
 <td>146</td>
 </tr>
 <tr class="odd">
 <td>Individual - Autorenewing Annually</td>
-<td>3</td>
-<td>6</td>
-<td>9</td>
-<td>5</td>
-<td>10</td>
+<td>8</td>
+<td>11</td>
+<td>14</td>
 <td>0</td>
 <td>33</td>
 </tr>
 <tr class="even">
 <td>Organization/Business</td>
-<td>0</td>
-<td>2</td>
-<td>5</td>
 <td>2</td>
 <td>6</td>
+<td>7</td>
 <td>1</td>
 <td>16</td>
 </tr>
 <tr class="odd">
 <td>Organization/Business - Autorenewing Annually</td>
-<td>0</td>
 <td>3</td>
 <td>3</td>
-<td>0</td>
 <td>1</td>
 <td>0</td>
 <td>7</td>
@@ -563,30 +531,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="even">
 <td>Student</td>
 <td>0</td>
-<td>0</td>
-<td>1</td>
 <td>2</td>
-<td>0</td>
+<td>1</td>
 <td>1</td>
 <td>4</td>
 </tr>
 <tr class="odd">
 <td>Unknown</td>
-<td>6</td>
-<td>67</td>
-<td>63</td>
-<td>0</td>
+<td>59</td>
+<td>77</td>
 <td>24</td>
 <td>10</td>
 <td>170</td>
 </tr>
 <tr class="even">
 <td>Total</td>
-<td>70</td>
-<td>224</td>
-<td>182</td>
-<td>101</td>
-<td>388</td>
+<td>271</td>
+<td>256</td>
+<td>438</td>
 <td>221</td>
 <td>1186</td>
 </tr>
@@ -598,7 +560,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="membership-level-vs-ismember" class="level2">
 <h2 class="anchored" data-anchor-id="membership-level-vs-ismember">Membership level vs IsMember</h2>
 <p>This check simply looks for bad data. How does membership level map to the IsMember flag? This status flag is maintained internally by wild apricot, but in some cases, can glitch.</p>
-<div id="28ab865c" class="cell" data-execution_count="7">
+<div id="e2d1611e" class="cell" data-execution_count="7">
 <div class="cell-output cell-output-display cell-output-markdown" data-execution_count="7">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -685,7 +647,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="interesting-lets-look-at-the-non-members-with-household-level">Interesting, let’s look at the non-members with Household level</h2>
 <p>Lapsed members are still members, but with reduced privileges, that is, they can’t access member-only features of the website. They do however, still receive email notifications, etc.</p>
 <p>The records below are in error. Their status should be switch to “member”, while they remain as lapsed.</p>
-<div id="d3f1a670" class="cell" data-execution_count="8">
+<div id="7e182659" class="cell" data-execution_count="8">
 <div class="cell-output cell-output-display cell-output-markdown" data-execution_count="8">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -718,7 +680,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Household</td>
 <td>Isenberg, Nevin</td>
 <td>woodsonmetals@gmail.com</td>
-<td>0–30 days</td>
+<td>91–180 days</td>
 <td>2018-04-13T18:14:58+00:00</td>
 </tr>
 <tr class="even">
@@ -739,7 +701,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="status-vs-ismember" class="level2">
 <h2 class="anchored" data-anchor-id="status-vs-ismember">Status vs IsMember</h2>
 <p>Another exploration table.</p>
-<div id="59e1d41e" class="cell" data-execution_count="9">
+<div id="8463c8e1" class="cell" data-execution_count="9">
 <div class="cell-output cell-output-display cell-output-markdown" data-execution_count="9">
 <table class="caption-top table table-sm table-striped small">
 <thead>
@@ -796,7 +758,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="duplicate-firstlast-names">Duplicate first/last names</h2>
 <p>Let’s take a look at duplicate entries. Entries in the table share the same first and last name, but show up in multiple records.</p>
 <p>One can assume that only one of the records is <em>good</em>. But, it’s not clear which one is bad.</p>
-<div id="ad1e85a3" class="cell" data-execution_count="10">
+<div id="5845666f" class="cell" data-execution_count="10">
 <div class="cell-output cell-output-display cell-output-markdown" data-execution_count="10">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -849,7 +811,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Household</td>
 <td>White, Daniella</td>
 <td>daniellawhite@hotmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2016-03-24T16:05:25+00:00</td>
 </tr>
 <tr class="even">
@@ -899,7 +861,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Schlatter, Elizabeth</td>
 <td>eschlatt23@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-23T22:36:53+00:00</td>
 </tr>
 <tr class="odd">
@@ -909,7 +871,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>romero, franco</td>
 <td>elmisafia3@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-28T22:07:16+00:00</td>
 </tr>
 <tr class="even">
@@ -919,7 +881,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>romero, franco</td>
 <td>francoroask399@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-29T21:36:36+00:00</td>
 </tr>
 <tr class="odd">
@@ -929,7 +891,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>romero, franco</td>
 <td>francor9e93@gmail.com</td>
-<td>0–30 days</td>
+<td>91–180 days</td>
 <td>2025-05-18T17:36:45+00:00</td>
 </tr>
 <tr class="even">
@@ -939,7 +901,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>asfasfas, fras</td>
 <td>fasfajsf38@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-25T00:03:52+00:00</td>
 </tr>
 <tr class="odd">
@@ -949,7 +911,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>asfasfas, fras</td>
 <td>fasofas9fs@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-30T18:10:16+00:00</td>
 </tr>
 <tr class="even">
@@ -959,7 +921,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>fasfas, fras</td>
 <td>asfasfas1351@mail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-25T00:14:36+00:00</td>
 </tr>
 <tr class="odd">
@@ -969,7 +931,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>fasfas, fras</td>
 <td>fasfa3043@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-26T14:48:44+00:00</td>
 </tr>
 <tr class="even">
@@ -999,7 +961,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Yin, Jessica</td>
 <td>yinjessica12@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-04T06:36:20+00:00</td>
 </tr>
 <tr class="odd">
@@ -1009,7 +971,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Yin, Jessica</td>
 <td>jessicayin33@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-11T21:11:36+00:00</td>
 </tr>
 <tr class="even">
@@ -1029,7 +991,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Individual</td>
 <td>MESSICK, Kathy</td>
 <td>buye105241@aol.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-23T23:50:12+00:00</td>
 </tr>
 <tr class="even">
@@ -1069,7 +1031,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Bonds, Lori</td>
 <td>lori.bonds1@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2022-11-20T22:55:52+00:00</td>
 </tr>
 <tr class="even">
@@ -1099,7 +1061,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Household</td>
 <td>Monta, Matt</td>
 <td>mgmonta@gmail.com</td>
-<td>0–30 days</td>
+<td>91–180 days</td>
 <td>2023-06-14T01:38:27+00:00</td>
 </tr>
 <tr class="odd">
@@ -1199,7 +1161,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Lanasa, Teresa</td>
 <td>teresalanasa1@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-03-11T20:31:35+00:00</td>
 </tr>
 <tr class="odd">
@@ -1209,7 +1171,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Friend</td>
 <td>Lanasa, Teresa</td>
 <td>teresalanasart@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-15T19:04:56+00:00</td>
 </tr>
 <tr class="even">
@@ -1229,7 +1191,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Household</td>
 <td>Feehan, Tim</td>
 <td>feehan@chlhf.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-07T19:14:46+00:00</td>
 </tr>
 <tr class="even">
@@ -1261,7 +1223,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="list-members-without-addresses">List members without addresses</h2>
 <p>Members of the FDA should have valid addresses in the FDA. Let’s look at records without addresses.</p>
 <p>This check does NOT evaluate the validity of the address itself. It only looks for blanks.</p>
-<div id="4b8a5aa2" class="cell" data-execution_count="11">
+<div id="3f98ece2" class="cell" data-execution_count="11">
 <div class="cell-output cell-output-display cell-output-markdown" data-execution_count="11">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -1384,7 +1346,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="membership-status-by-hasemail" class="level2">
 <h2 class="anchored" data-anchor-id="membership-status-by-hasemail">Membership status by HasEmail</h2>
-<div id="09786cd1" class="cell" data-execution_count="12">
+<div id="712244e9" class="cell" data-execution_count="12">
 <div class="cell-output cell-output-display cell-output-markdown" data-execution_count="12">
 <table class="caption-top table table-sm table-striped small">
 <thead>
@@ -1439,7 +1401,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="membership-level-by-hasemail" class="level2">
 <h2 class="anchored" data-anchor-id="membership-level-by-hasemail">Membership level by HasEmail</h2>
-<div id="b6915e76" class="cell" data-execution_count="13">
+<div id="d8204243" class="cell" data-execution_count="13">
 <div class="cell-output cell-output-display cell-output-markdown" data-execution_count="13">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -1526,7 +1488,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="list-all-contacts-without-emails">List all contacts without emails</h2>
 <p>Same check for emails. Note that members CANNOT log in without a valid email and activated password.</p>
 <p>The members below were manually entered, and their membership info manually updated. They won’t receive emails or meeting announcements.</p>
-<div id="53fdb62e" class="cell" data-execution_count="14">
+<div id="8e35dc5b" class="cell" data-execution_count="14">
 <div class="cell-output cell-output-display cell-output-markdown" data-execution_count="14">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -2310,7 +2272,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="complete-list-of-non-members" class="level2">
 <h2 class="anchored" data-anchor-id="complete-list-of-non-members">Complete list of non-members</h2>
 <p>Let’s take a look at the details of non-members. Are these real records?</p>
-<div id="215e4ed4" class="cell" data-execution_count="15">
+<div id="13f5b8e8" class="cell" data-execution_count="15">
 <div class="cell-output cell-output-display cell-output-markdown" data-execution_count="15">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
@@ -2353,7 +2315,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>aasas, fasf</td>
 <td>fas8fca8s3@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-05-13T23:43:25+00:00</td>
 </tr>
 <tr class="odd">
@@ -2363,7 +2325,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Ackley, Amy</td>
 <td>acklectic@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-20T17:04:37+00:00</td>
 </tr>
 <tr class="even">
@@ -2373,7 +2335,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>afasfas, fasf</td>
 <td>asffasf3993@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-28T22:05:03+00:00</td>
 </tr>
 <tr class="odd">
@@ -2383,7 +2345,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>afsas, fas</td>
 <td>fasascas3@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-05-09T19:02:57+00:00</td>
 </tr>
 <tr class="even">
@@ -2393,7 +2355,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>afsas, fasfa</td>
 <td>fascaso933@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-26T19:32:14+00:00</td>
 </tr>
 <tr class="odd">
@@ -2403,7 +2365,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>afsasf39, cvasfas</td>
 <td>jfasu8sa83@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-05-09T19:27:38+00:00</td>
 </tr>
 <tr class="even">
@@ -2423,7 +2385,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Anderson, Valerie</td>
 <td>vcasey523@hotmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-03-01T14:41:39+00:00</td>
 </tr>
 <tr class="even">
@@ -2433,7 +2395,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>asd, asd</td>
 <td>asd@asd.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-10T14:22:56+00:00</td>
 </tr>
 <tr class="odd">
@@ -2443,7 +2405,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>asdas, fraan</td>
 <td>dasfas33@gmail.com</td>
-<td>0–30 days</td>
+<td>91–180 days</td>
 <td>2025-05-16T21:50:01+00:00</td>
 </tr>
 <tr class="even">
@@ -2453,7 +2415,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>asdas, fras</td>
 <td>fasrfasi93@gmail.com</td>
-<td>0–30 days</td>
+<td>91–180 days</td>
 <td>2025-05-21T07:48:08+00:00</td>
 </tr>
 <tr class="odd">
@@ -2463,7 +2425,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>asfafa, fasf</td>
 <td>asfasfasci3@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-26T19:46:52+00:00</td>
 </tr>
 <tr class="even">
@@ -2473,7 +2435,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>ASFASE, FRAS</td>
 <td>frasnfi339@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-05-11T16:13:52+00:00</td>
 </tr>
 <tr class="odd">
@@ -2483,7 +2445,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>asfasfas, fras</td>
 <td>fasfajsf38@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-25T00:03:52+00:00</td>
 </tr>
 <tr class="even">
@@ -2493,7 +2455,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>asfasfas, fras</td>
 <td>fasofas9fs@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-30T18:10:16+00:00</td>
 </tr>
 <tr class="odd">
@@ -2503,7 +2465,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Askin, Peter</td>
 <td>petersaskin@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-27T01:33:18+00:00</td>
 </tr>
 <tr class="even">
@@ -2513,7 +2475,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Austin, Brit</td>
 <td>brit@britaustin.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-05-13T11:32:11+00:00</td>
 </tr>
 <tr class="odd">
@@ -2533,7 +2495,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Bauman, Nathaniel</td>
 <td>natereid88@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-03-10T19:51:27+00:00</td>
 </tr>
 <tr class="odd">
@@ -2543,7 +2505,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Bell, Taylor</td>
 <td>taylor.bell107@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-22T17:00:09+00:00</td>
 </tr>
 <tr class="even">
@@ -2553,7 +2515,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Bilodeau, Claire</td>
 <td>claireelizabeth365@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-03-06T20:13:58+00:00</td>
 </tr>
 <tr class="odd">
@@ -2573,7 +2535,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Bonds, Lori</td>
 <td>lori.bonds1@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2022-11-20T22:55:52+00:00</td>
 </tr>
 <tr class="odd">
@@ -2583,7 +2545,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Bretana, Karen</td>
 <td>asimplestatementllc@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-03-08T17:32:49+00:00</td>
 </tr>
 <tr class="even">
@@ -2593,7 +2555,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Bugay, Annabelle</td>
 <td>abugay@feedmore.org</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-24T20:40:07+00:00</td>
 </tr>
 <tr class="odd">
@@ -2603,7 +2565,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Burrow, Theresa</td>
 <td>burrowtheresa@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-16T14:33:35+00:00</td>
 </tr>
 <tr class="even">
@@ -2613,7 +2575,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Carlson, M Mohler</td>
 <td>mmcummingscarlson@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-03-09T21:31:29+00:00</td>
 </tr>
 <tr class="odd">
@@ -2623,7 +2585,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Carrington, Johanna</td>
 <td>johannacarrington@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-12T20:24:58+00:00</td>
 </tr>
 <tr class="even">
@@ -2643,7 +2605,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Chavis, Ian</td>
 <td>ian.chavis@gmail.com</td>
-<td>31–90 days</td>
+<td>181–365 days</td>
 <td>2025-03-24T23:06:17+00:00</td>
 </tr>
 <tr class="even">
@@ -2653,7 +2615,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>cio, patri</td>
 <td>elmasi93@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-05-01T16:21:45+00:00</td>
 </tr>
 <tr class="odd">
@@ -2663,7 +2625,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Clayton, Liv</td>
 <td>livfclayton@fastmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-04T15:22:06+00:00</td>
 </tr>
 <tr class="even">
@@ -2683,7 +2645,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Cooper, Kate</td>
 <td>katenealecooper@me.com</td>
-<td>31–90 days</td>
+<td>181–365 days</td>
 <td>2025-03-24T17:53:46+00:00</td>
 </tr>
 <tr class="even">
@@ -2693,7 +2655,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Cordero, Diana</td>
 <td>artie.lamb01@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-30T16:13:24+00:00</td>
 </tr>
 <tr class="odd">
@@ -2703,7 +2665,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>correa, fernanda</td>
 <td>fernandacorreao3@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-29T21:57:00+00:00</td>
 </tr>
 <tr class="even">
@@ -2733,7 +2695,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Cromer, Alexandra</td>
 <td>pretzelsvinylworks@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-03T16:04:29+00:00</td>
 </tr>
 <tr class="odd">
@@ -2743,7 +2705,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Curran, Mary</td>
 <td>jamesriverlinen@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-15T22:38:24+00:00</td>
 </tr>
 <tr class="even">
@@ -2753,7 +2715,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Darby, Sarah</td>
 <td>glitterpunknailcompany@gmail.com</td>
-<td>31–90 days</td>
+<td>181–365 days</td>
 <td>2025-03-17T19:12:11+00:00</td>
 </tr>
 <tr class="odd">
@@ -2773,7 +2735,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Dempsey, Katelyn</td>
 <td>kdemps8@gmail.com</td>
-<td>31–90 days</td>
+<td>181–365 days</td>
 <td>2025-03-18T14:51:06+00:00</td>
 </tr>
 <tr class="odd">
@@ -2793,7 +2755,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Dickey, Emily</td>
 <td>ebdickeyart@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-25T01:01:09+00:00</td>
 </tr>
 <tr class="odd">
@@ -2813,7 +2775,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Dobbs, Laura</td>
 <td>laura.gene.42@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-13T20:28:25+00:00</td>
 </tr>
 <tr class="odd">
@@ -2823,7 +2785,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>DuBois, Patricia</td>
 <td>whichwaycrafts@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-10T14:29:42+00:00</td>
 </tr>
 <tr class="even">
@@ -2833,7 +2795,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Dunn, Serena</td>
 <td>serenadunn888@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-03-07T11:43:57+00:00</td>
 </tr>
 <tr class="odd">
@@ -2843,7 +2805,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>elmas, elajs</td>
 <td>u83819jfdsa@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-05-11T17:04:56+00:00</td>
 </tr>
 <tr class="even">
@@ -2853,7 +2815,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Evans, Alexa</td>
 <td>lexcevans@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2024-02-07T13:35:59+00:00</td>
 </tr>
 <tr class="odd">
@@ -2863,7 +2825,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>fafas, afsfsa</td>
 <td>fasaj83@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-05-06T22:27:04+00:00</td>
 </tr>
 <tr class="even">
@@ -2873,7 +2835,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>fafasf, fraas</td>
 <td>fcasj393@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-24T23:55:00+00:00</td>
 </tr>
 <tr class="odd">
@@ -2883,7 +2845,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>fasfas, fasfas</td>
 <td>fasfasi9393@gmakl.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-26T17:17:24+00:00</td>
 </tr>
 <tr class="even">
@@ -2893,7 +2855,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>fasfas, frab eras</td>
 <td>fasrascj838@gmail.com</td>
-<td>0–30 days</td>
+<td>91–180 days</td>
 <td>2025-05-20T22:54:21+00:00</td>
 </tr>
 <tr class="odd">
@@ -2903,7 +2865,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>fasfas, fras</td>
 <td>asfasfas1351@mail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-25T00:14:36+00:00</td>
 </tr>
 <tr class="even">
@@ -2913,7 +2875,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>fasfas, fras</td>
 <td>fasfa3043@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-26T14:48:44+00:00</td>
 </tr>
 <tr class="odd">
@@ -2923,7 +2885,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>fasjfas, fasf</td>
 <td>jfasiasi3934g@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-26T17:32:30+00:00</td>
 </tr>
 <tr class="even">
@@ -2933,7 +2895,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Fera, Shaun</td>
 <td>heartofthegoat@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-05-12T13:53:27+00:00</td>
 </tr>
 <tr class="odd">
@@ -2943,7 +2905,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Foster, Alex</td>
 <td>brookhouse.band@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-11T23:22:39+00:00</td>
 </tr>
 <tr class="even">
@@ -2953,7 +2915,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Franz, Hannah</td>
 <td>hannahafranz@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-27T01:51:56+00:00</td>
 </tr>
 <tr class="odd">
@@ -2973,7 +2935,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Frenkiel, Kelsey</td>
 <td>kafrenkiel@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-25T13:43:47+00:00</td>
 </tr>
 <tr class="odd">
@@ -2983,7 +2945,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Friedrichs, Olivia</td>
 <td>olivia@togethervintage.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-06T22:33:19+00:00</td>
 </tr>
 <tr class="even">
@@ -2993,7 +2955,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Gadbois, Sofia</td>
 <td>sofiag2300@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-03-01T22:20:11+00:00</td>
 </tr>
 <tr class="odd">
@@ -3013,7 +2975,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Gorsline, Jennifer</td>
 <td>customerservice@cakesbyjen.shop</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-10T17:39:00+00:00</td>
 </tr>
 <tr class="odd">
@@ -3033,7 +2995,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Harrigan, True</td>
 <td>true.harrigan@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-07T19:41:20+00:00</td>
 </tr>
 <tr class="odd">
@@ -3043,7 +3005,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Harris, KK and Austin</td>
 <td>kk@kkharrisdesign.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-25T13:52:46+00:00</td>
 </tr>
 <tr class="even">
@@ -3053,7 +3015,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Hawkes, Aurea</td>
 <td>hawkesaurea@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-03-01T12:29:12+00:00</td>
 </tr>
 <tr class="odd">
@@ -3063,7 +3025,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Hintz, Libby</td>
 <td>libbyhintz@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-11T00:59:13+00:00</td>
 </tr>
 <tr class="even">
@@ -3073,7 +3035,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Holmes -Bakari, Shani</td>
 <td>mhblotusart@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-24T18:10:09+00:00</td>
 </tr>
 <tr class="odd">
@@ -3093,7 +3055,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Hutton, Kathleen</td>
 <td>shows@artbykathleen.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-11T19:05:18+00:00</td>
 </tr>
 <tr class="odd">
@@ -3103,7 +3065,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>jasus, fran</td>
 <td>elasucas839@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-05-06T21:23:14+00:00</td>
 </tr>
 <tr class="even">
@@ -3113,7 +3075,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Johnson, Brandon</td>
 <td>dm@travelintomscoffee.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-03-03T15:27:36+00:00</td>
 </tr>
 <tr class="odd">
@@ -3133,7 +3095,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Kane, Teresa</td>
 <td>southsidesawdust@outlook.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-03-14T18:07:27+00:00</td>
 </tr>
 <tr class="odd">
@@ -3143,7 +3105,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>kastenbaum, helene</td>
 <td>helene@madswanz.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-25T00:53:05+00:00</td>
 </tr>
 <tr class="even">
@@ -3153,7 +3115,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Kerry, Riley</td>
 <td>kerryriley55@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-24T14:55:34+00:00</td>
 </tr>
 <tr class="odd">
@@ -3163,7 +3125,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>King, Tracy</td>
 <td>toking23220@gmail.com</td>
-<td>31–90 days</td>
+<td>181–365 days</td>
 <td>2025-03-16T09:52:45+00:00</td>
 </tr>
 <tr class="even">
@@ -3173,7 +3135,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Kinnick, Michele</td>
 <td>mkinnick@kinnickcpa.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2024-10-14T15:19:30+00:00</td>
 </tr>
 <tr class="odd">
@@ -3183,7 +3145,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Kirby, Vaughan</td>
 <td>yelsub1212@yahoo.com</td>
-<td>31–90 days</td>
+<td>181–365 days</td>
 <td>2025-03-19T11:34:04+00:00</td>
 </tr>
 <tr class="even">
@@ -3193,7 +3155,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Kontos, Emily</td>
 <td>kontosemily@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-23T00:52:47+00:00</td>
 </tr>
 <tr class="odd">
@@ -3203,7 +3165,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Lanasa, Teresa</td>
 <td>teresalanasa1@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-03-11T20:31:35+00:00</td>
 </tr>
 <tr class="even">
@@ -3213,7 +3175,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Lazlau, Sarah</td>
 <td>drinkwjambread@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-26T14:13:11+00:00</td>
 </tr>
 <tr class="odd">
@@ -3223,7 +3185,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Little, Allison</td>
 <td>allisonlittle10@yahoo.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-03-11T02:51:21+00:00</td>
 </tr>
 <tr class="even">
@@ -3233,7 +3195,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>llanos, Crs</td>
 <td>esakfka@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-05-01T00:17:57+00:00</td>
 </tr>
 <tr class="odd">
@@ -3243,7 +3205,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>lope, franc</td>
 <td>jfaus8393@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-28T23:13:56+00:00</td>
 </tr>
 <tr class="even">
@@ -3253,7 +3215,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>lopez, Erick</td>
 <td>frankasi9e3@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-05-11T19:07:42+00:00</td>
 </tr>
 <tr class="odd">
@@ -3263,7 +3225,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>lopez, ernesto</td>
 <td>ernestoleo3@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-29T04:45:55+00:00</td>
 </tr>
 <tr class="even">
@@ -3273,7 +3235,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>lopez, fran</td>
 <td>fjasu8c3@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-29T02:47:20+00:00</td>
 </tr>
 <tr class="odd">
@@ -3293,7 +3255,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Mamunes, Lilah</td>
 <td>lilahmamunes@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-23T15:38:03+00:00</td>
 </tr>
 <tr class="odd">
@@ -3303,7 +3265,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Markhoff, Holly</td>
 <td>hmarkhoffstudio@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-21T17:44:55+00:00</td>
 </tr>
 <tr class="even">
@@ -3313,7 +3275,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Maximini, Kendall</td>
 <td>kmaximini@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-12T17:40:29+00:00</td>
 </tr>
 <tr class="odd">
@@ -3333,7 +3295,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>McPeters, Emily</td>
 <td>abyssalpastel@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-04T20:16:13+00:00</td>
 </tr>
 <tr class="odd">
@@ -3343,7 +3305,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Mereand, Chelsea</td>
 <td>clmereand@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-25T22:51:16+00:00</td>
 </tr>
 <tr class="even">
@@ -3353,7 +3315,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Merka, Madaleine</td>
 <td>laskavtg@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-30T16:12:32+00:00</td>
 </tr>
 <tr class="odd">
@@ -3393,7 +3355,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>moreno, Said</td>
 <td>saidmoe939@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-05-11T16:58:39+00:00</td>
 </tr>
 <tr class="odd">
@@ -3403,7 +3365,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Muehlbauer, Christina</td>
 <td>cemuehlbauer04@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-20T12:49:35+00:00</td>
 </tr>
 <tr class="even">
@@ -3413,7 +3375,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Muldez, Kaitlyn</td>
 <td>kaitlynmuldez@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-03T18:04:51+00:00</td>
 </tr>
 <tr class="odd">
@@ -3423,7 +3385,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>murphy, caroline</td>
 <td>caroline.murphy.artist@gmail.com</td>
-<td>31–90 days</td>
+<td>181–365 days</td>
 <td>2025-03-19T19:46:23+00:00</td>
 </tr>
 <tr class="even">
@@ -3463,7 +3425,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Parrish, Caroline</td>
 <td>resyak@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-22T04:44:12+00:00</td>
 </tr>
 <tr class="even">
@@ -3483,7 +3445,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Philp, Jon</td>
 <td>jonbphilp@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-12T17:40:17+00:00</td>
 </tr>
 <tr class="even">
@@ -3493,7 +3455,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Pignone, Barrett</td>
 <td>abarrettmartin@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-05T18:17:20+00:00</td>
 </tr>
 <tr class="odd">
@@ -3503,7 +3465,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Polizzi, Sophia</td>
 <td>hopeishealing@yahoo.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-11T16:35:36+00:00</td>
 </tr>
 <tr class="even">
@@ -3513,7 +3475,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Rabinowitch, Marybeth</td>
 <td>mbrabinowitch@gmail.com</td>
-<td>31–90 days</td>
+<td>181–365 days</td>
 <td>2025-03-23T20:52:06+00:00</td>
 </tr>
 <tr class="odd">
@@ -3523,7 +3485,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>raragasb, fran</td>
 <td>faraks83@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-28T21:21:07+00:00</td>
 </tr>
 <tr class="even">
@@ -3533,7 +3495,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Reid, Christina</td>
 <td>info@5931handmade.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-03-10T21:30:20+00:00</td>
 </tr>
 <tr class="odd">
@@ -3543,7 +3505,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Renas, Jenni</td>
 <td>j.renas@ymail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-03-14T14:56:54+00:00</td>
 </tr>
 <tr class="even">
@@ -3563,7 +3525,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>romero, franco</td>
 <td>elmisafia3@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-28T22:07:16+00:00</td>
 </tr>
 <tr class="even">
@@ -3573,7 +3535,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>romero, franco</td>
 <td>francoroask399@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-29T21:36:36+00:00</td>
 </tr>
 <tr class="odd">
@@ -3583,7 +3545,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>romero, franco</td>
 <td>francor9e93@gmail.com</td>
-<td>0–30 days</td>
+<td>91–180 days</td>
 <td>2025-05-18T17:36:45+00:00</td>
 </tr>
 <tr class="even">
@@ -3593,7 +3555,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>rosales, fran</td>
 <td>kainaks939@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-05-09T15:34:28+00:00</td>
 </tr>
 <tr class="odd">
@@ -3603,7 +3565,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Rowland, Bruce</td>
 <td>chefbruce01@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-15T17:43:38+00:00</td>
 </tr>
 <tr class="even">
@@ -3613,7 +3575,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Rudolph, Ashlyn</td>
 <td>altargokart@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-03T17:15:59+00:00</td>
 </tr>
 <tr class="odd">
@@ -3623,7 +3585,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Ruggles, Lisa</td>
 <td>lisacrowruggles@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-17T21:14:41+00:00</td>
 </tr>
 <tr class="even">
@@ -3633,7 +3595,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>salas, gael</td>
 <td>gaelsalao9e3@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-28T21:08:41+00:00</td>
 </tr>
 <tr class="odd">
@@ -3643,7 +3605,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Sander, Michaeline</td>
 <td>michaelinesexton@gmail.com</td>
-<td>0–30 days</td>
+<td>91–180 days</td>
 <td>2025-05-27T15:56:43+00:00</td>
 </tr>
 <tr class="even">
@@ -3653,7 +3615,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Sauer, Grant</td>
 <td>gjsauer4@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-17T23:33:58+00:00</td>
 </tr>
 <tr class="odd">
@@ -3663,7 +3625,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Savoy, Julianna</td>
 <td>mymailboxl@yahoo.com</td>
-<td>0–30 days</td>
+<td>91–180 days</td>
 <td>2025-05-15T20:14:15+00:00</td>
 </tr>
 <tr class="even">
@@ -3673,7 +3635,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Scaife, Susan</td>
 <td>susanscaife3@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-25T17:43:18+00:00</td>
 </tr>
 <tr class="odd">
@@ -3693,7 +3655,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Schlatter, Elizabeth</td>
 <td>eschlatt23@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-23T22:36:53+00:00</td>
 </tr>
 <tr class="odd">
@@ -3703,7 +3665,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Schnebele, Haley</td>
 <td>hschnebele@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-17T13:53:53+00:00</td>
 </tr>
 <tr class="even">
@@ -3713,7 +3675,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>sfasfas, fsrasa</td>
 <td>fasfasaso93@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-28T23:44:41+00:00</td>
 </tr>
 <tr class="odd">
@@ -3723,7 +3685,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Shaw, FabienneDanielle</td>
 <td>plrministries@yahoo.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-03-31T21:06:42+00:00</td>
 </tr>
 <tr class="even">
@@ -3733,7 +3695,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Short, Valoris</td>
 <td>agreatdaycandle@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-08T03:00:13+00:00</td>
 </tr>
 <tr class="odd">
@@ -3753,7 +3715,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Sidhu, Sasha</td>
 <td>artporsasha@gmail.com</td>
-<td>31–90 days</td>
+<td>181–365 days</td>
 <td>2025-02-10T21:35:43+00:00</td>
 </tr>
 <tr class="odd">
@@ -3773,7 +3735,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Simpson, Jana</td>
 <td>kittyhawkobx@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-18T16:55:42+00:00</td>
 </tr>
 <tr class="odd">
@@ -3783,7 +3745,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Smart, Emily</td>
 <td>esmart28931@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-03-04T02:51:48+00:00</td>
 </tr>
 <tr class="even">
@@ -3793,7 +3755,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Smith, Caroline</td>
 <td>csmit247@kent.edu</td>
-<td>31–90 days</td>
+<td>181–365 days</td>
 <td>2025-03-26T16:44:10+00:00</td>
 </tr>
 <tr class="odd">
@@ -3803,7 +3765,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Spenik, Faith</td>
 <td>faithspenik@gmail.com</td>
-<td>31–90 days</td>
+<td>181–365 days</td>
 <td>2025-03-18T14:14:11+00:00</td>
 </tr>
 <tr class="even">
@@ -3813,7 +3775,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Spenneberg, Therese</td>
 <td>yosematsam@aol.com</td>
-<td>31–90 days</td>
+<td>181–365 days</td>
 <td>2025-03-28T00:36:42+00:00</td>
 </tr>
 <tr class="odd">
@@ -3823,7 +3785,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Spicer, Maureen</td>
 <td>spicedglass@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-28T14:55:12+00:00</td>
 </tr>
 <tr class="even">
@@ -3833,7 +3795,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Stacy, William</td>
 <td>willstacyart@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-03-12T23:19:18+00:00</td>
 </tr>
 <tr class="odd">
@@ -3843,7 +3805,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Sterling, Lindsay</td>
 <td>lsterling03@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2024-02-27T16:58:23+00:00</td>
 </tr>
 <tr class="even">
@@ -3853,7 +3815,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Stevenson, Laurence</td>
 <td>lastevess@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-11T02:44:28+00:00</td>
 </tr>
 <tr class="odd">
@@ -3863,7 +3825,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Swartz, Kyra</td>
 <td>gypsophilacrow@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-15T14:12:46+00:00</td>
 </tr>
 <tr class="even">
@@ -3883,7 +3845,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Thomson, Keely</td>
 <td>keelyjthomson@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-23T17:09:50+00:00</td>
 </tr>
 <tr class="even">
@@ -3893,7 +3855,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Valentine, Sally</td>
 <td>svcourtreporter@aol.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-11T00:16:33+00:00</td>
 </tr>
 <tr class="odd">
@@ -3903,7 +3865,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Viverito, Andrea/Charlie (11yr old)</td>
 <td>aviverito@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-05T20:03:54+00:00</td>
 </tr>
 <tr class="even">
@@ -3923,7 +3885,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Walz, Cj</td>
 <td>cjwalz02@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-05-10T17:45:57+00:00</td>
 </tr>
 <tr class="even">
@@ -3933,7 +3895,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Waters, Dianna</td>
 <td>diannamwaters@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-20T02:48:22+00:00</td>
 </tr>
 <tr class="odd">
@@ -3943,7 +3905,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Webmaster</td>
 <td>webmaster@fandistrict.org</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2015-12-12T04:11:26+00:00</td>
 </tr>
 <tr class="even">
@@ -3953,7 +3915,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>wer, wer</td>
 <td>maur@gmail.com</td>
-<td>31–90 days</td>
+<td>91–180 days</td>
 <td>2025-04-02T18:19:18+00:00</td>
 </tr>
 <tr class="odd">
@@ -3973,7 +3935,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Wilson, Maddy</td>
 <td>maddywilsonart@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-21T00:01:40+00:00</td>
 </tr>
 <tr class="odd">
@@ -3993,7 +3955,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Yin, Jessica</td>
 <td>yinjessica12@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-04T06:36:20+00:00</td>
 </tr>
 <tr class="odd">
@@ -4003,7 +3965,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Yin, Jessica</td>
 <td>jessicayin33@gmail.com</td>
-<td>91–180 days</td>
+<td>181–365 days</td>
 <td>2025-02-11T21:11:36+00:00</td>
 </tr>
 <tr class="even">
@@ -4013,7 +3975,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Young, Ashley</td>
 <td>mashley.davis@gmail.com</td>
-<td>31–90 days</td>
+<td>181–365 days</td>
 <td>2025-03-18T20:15:02+00:00</td>
 </tr>
 <tr class="odd">
@@ -4023,7 +3985,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unknown</td>
 <td>Zechini, Sue (c/o Keithly Pierce)</td>
 <td>szechini1@gmail.com</td>
-<td>31–90 days</td>
+<td>181–365 days</td>
 <td>2025-03-27T17:12:52+00:00</td>
 </tr>
 <tr class="even">
@@ -4048,287 +4010,293 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
-window.document.addEventListener("DOMContentLoaded", function (event) {
-  const toggleBodyColorMode = (bsSheetEl) => {
-    const mode = bsSheetEl.getAttribute("data-mode");
-    const bodyEl = window.document.querySelector("body");
-    if (mode === "dark") {
-      bodyEl.classList.add("quarto-dark");
-      bodyEl.classList.remove("quarto-light");
-    } else {
-      bodyEl.classList.add("quarto-light");
-      bodyEl.classList.remove("quarto-dark");
-    }
-  }
-  const toggleBodyColorPrimary = () => {
-    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-    if (bsSheetEl) {
-      toggleBodyColorMode(bsSheetEl);
-    }
-  }
-  toggleBodyColorPrimary();  
-  const icon = "";
-  const anchorJS = new window.AnchorJS();
-  anchorJS.options = {
-    placement: 'right',
-    icon: icon
-  };
-  anchorJS.add('.anchored');
-  const isCodeAnnotation = (el) => {
-    for (const clz of el.classList) {
-      if (clz.startsWith('code-annotation-')) {                     
-        return true;
-      }
-    }
-    return false;
-  }
-  const onCopySuccess = function(e) {
-    // button target
-    const button = e.trigger;
-    // don't keep focus
-    button.blur();
-    // flash "checked"
-    button.classList.add('code-copy-button-checked');
-    var currentTitle = button.getAttribute("title");
-    button.setAttribute("title", "Copied!");
-    let tooltip;
-    if (window.bootstrap) {
-      button.setAttribute("data-bs-toggle", "tooltip");
-      button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "Copied!");
-      tooltip = new bootstrap.Tooltip(button, 
-        { trigger: "manual", 
-          customClass: "code-copy-button-tooltip",
-          offset: [0, -8]});
-      tooltip.show();    
-    }
-    setTimeout(function() {
-      if (tooltip) {
-        tooltip.hide();
-        button.removeAttribute("data-bs-title");
-        button.removeAttribute("data-bs-toggle");
-        button.removeAttribute("data-bs-placement");
-      }
-      button.setAttribute("title", currentTitle);
-      button.classList.remove('code-copy-button-checked');
-    }, 1000);
-    // clear code selection
-    e.clearSelection();
-  }
-  const getTextToCopy = function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-    text: getTextToCopy
-  });
-  clipboard.on('success', onCopySuccess);
-  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-      text: getTextToCopy,
-      container: window.document.getElementById('quarto-embedded-source-code-modal')
-    });
-    clipboardModal.on('success', onCopySuccess);
-  }
-  const viewSource = window.document.getElementById('quarto-view-source') ||
-                     window.document.getElementById('quarto-code-tools-source');
-  if (viewSource) {
-    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
-    viewSource.addEventListener("click", function(e) {
-      if (sourceUrl) {
-        // rstudio viewer pane
-        if (/\bcapabilities=\b/.test(window.location)) {
-          window.open(sourceUrl);
-        } else {
-          window.location.href = sourceUrl;
-        }
-      } else {
-        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
-        modal.show();
-      }
-      return false;
-    });
-  }
-  function toggleCodeHandler(show) {
-    return function(e) {
-      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
-      for (let i=0; i<detailsSrc.length; i++) {
-        const details = detailsSrc[i].parentElement;
-        if (show) {
-          details.open = true;
-        } else {
-          details.removeAttribute("open");
-        }
-      }
-      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
-      const fromCls = show ? "hidden" : "unhidden";
-      const toCls = show ? "unhidden" : "hidden";
-      for (let i=0; i<cellCodeDivs.length; i++) {
-        const codeDiv = cellCodeDivs[i];
-        if (codeDiv.classList.contains(fromCls)) {
-          codeDiv.classList.remove(fromCls);
-          codeDiv.classList.add(toCls);
-        } 
-      }
-      return false;
-    }
-  }
-  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
-  if (hideAllCode) {
-    hideAllCode.addEventListener("click", toggleCodeHandler(false));
-  }
-  const showAllCode = window.document.getElementById("quarto-show-all-code");
-  if (showAllCode) {
-    showAllCode.addEventListener("click", toggleCodeHandler(true));
-  }
-    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-    var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
-    var isInternal = (href) => {
-        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
-    }
-    // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-    for (var i=0; i<links.length; i++) {
-      const link = links[i];
-      if (!isInternal(link.href)) {
-        // undo the damage that might have been done by quarto-nav.js in the case of
-        // links that we want to consider external
-        if (link.dataset.originalHref !== undefined) {
-          link.href = link.dataset.originalHref;
-        }
-      }
-    }
-  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-    const config = {
-      allowHTML: true,
-      maxWidth: 500,
-      delay: 100,
-      arrow: false,
-      appendTo: function(el) {
-          return el.parentElement;
-      },
-      interactive: true,
-      interactiveBorder: 10,
-      theme: 'quarto',
-      placement: 'bottom-start',
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
     };
-    if (contentFn) {
-      config.content = contentFn;
-    }
-    if (onTriggerFn) {
-      config.onTrigger = onTriggerFn;
-    }
-    if (onUntriggerFn) {
-      config.onUntrigger = onUntriggerFn;
-    }
-    window.tippy(el, config); 
-  }
-  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-  for (var i=0; i<noterefs.length; i++) {
-    const ref = noterefs[i];
-    tippyHover(ref, function() {
-      // use id or data attribute instead here
-      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-      try { href = new URL(href).hash; } catch {}
-      const id = href.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      if (note) {
-        return note.innerHTML;
-      } else {
-        return "";
-      }
-    });
-  }
-  const xrefs = window.document.querySelectorAll('a.quarto-xref');
-  const processXRef = (id, note) => {
-    // Strip column container classes
-    const stripColumnClz = (el) => {
-      el.classList.remove("page-full", "page-columns");
-      if (el.children) {
-        for (const child of el.children) {
-          stripColumnClz(child);
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
         }
       }
+      return false;
     }
-    stripColumnClz(note)
-    if (id === null || id.startsWith('sec-')) {
-      // Special case sections, only their first couple elements
-      const container = document.createElement("div");
-      if (note.children && note.children.length > 2) {
-        container.appendChild(note.children[0].cloneNode(true));
-        for (let i = 1; i < note.children.length; i++) {
-          const child = note.children[i];
-          if (child.tagName === "P" && child.innerText === "") {
-            continue;
-          } else {
-            container.appendChild(child.cloneNode(true));
-            break;
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
           }
         }
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(container);
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
         }
-        return container.innerHTML
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
       } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
         if (window.Quarto?.typesetMath) {
           window.Quarto.typesetMath(note);
         }
-        return note.innerHTML;
-      }
-    } else {
-      // Remove any anchor links if they are present
-      const anchorLink = note.querySelector('a.anchorjs-link');
-      if (anchorLink) {
-        anchorLink.remove();
-      }
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(note);
-      }
-      if (note.classList.contains("callout")) {
-        return note.outerHTML;
-      } else {
-        return note.innerHTML;
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
       }
     }
-  }
-  for (var i=0; i<xrefs.length; i++) {
-    const xref = xrefs[i];
-    tippyHover(xref, undefined, function(instance) {
-      instance.disable();
-      let url = xref.getAttribute('href');
-      let hash = undefined; 
-      if (url.startsWith('#')) {
-        hash = url;
-      } else {
-        try { hash = new URL(url).hash; } catch {}
-      }
-      if (hash) {
-        const id = hash.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note !== null) {
-          try {
-            const html = processXRef(id, note.cloneNode(true));
-            instance.setContent(html);
-          } finally {
-            instance.enable();
-            instance.show();
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
           }
         } else {
-          // See if we can fetch this
-          fetch(url.split('#')[0])
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
           .then(res => res.text())
           .then(html => {
             const parser = new DOMParser();
             const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.getElementById(id);
+            const note = htmlDoc.querySelector('main.content');
             if (note !== null) {
-              const html = processXRef(id, note);
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
               instance.setContent(html);
             } 
           }).finally(() => {
@@ -4336,185 +4304,161 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             instance.show();
           });
         }
-      } else {
-        // See if we can fetch a full url (with no hash to target)
-        // This is a special case and we should probably do some content thinning / targeting
-        fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(html, "text/html");
-          const note = htmlDoc.querySelector('main.content');
-          if (note !== null) {
-            // This should only happen for chapter cross references
-            // (since there is no id in the URL)
-            // remove the first header
-            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-              note.children[0].remove();
-            }
-            const html = processXRef(null, note);
-            instance.setContent(html);
-          } 
-        }).finally(() => {
-          instance.enable();
-          instance.show();
-        });
-      }
-    }, function(instance) {
-    });
-  }
-      let selectedAnnoteEl;
-      const selectorForAnnotation = ( cell, annotation) => {
-        let cellAttr = 'data-code-cell="' + cell + '"';
-        let lineAttr = 'data-code-annotation="' +  annotation + '"';
-        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-        return selector;
-      }
-      const selectCodeLines = (annoteEl) => {
-        const doc = window.document;
-        const targetCell = annoteEl.getAttribute("data-target-cell");
-        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-        const lineIds = lines.map((line) => {
-          return targetCell + "-" + line;
-        })
-        let top = null;
-        let height = null;
-        let parent = null;
-        if (lineIds.length > 0) {
-            //compute the position of the single el (top and bottom and make a div)
-            const el = window.document.getElementById(lineIds[0]);
-            top = el.offsetTop;
-            height = el.offsetHeight;
-            parent = el.parentElement.parentElement;
-          if (lineIds.length > 1) {
-            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-            height = bottom - top;
-          }
-          if (top !== null && height !== null && parent !== null) {
-            // cook up a div (if necessary) and position it 
-            let div = window.document.getElementById("code-annotation-line-highlight");
-            if (div === null) {
-              div = window.document.createElement("div");
-              div.setAttribute("id", "code-annotation-line-highlight");
-              div.style.position = 'absolute';
-              parent.appendChild(div);
-            }
-            div.style.top = top - 2 + "px";
-            div.style.height = height + 4 + "px";
-            div.style.left = 0;
-            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-            if (gutterDiv === null) {
-              gutterDiv = window.document.createElement("div");
-              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-              gutterDiv.style.position = 'absolute';
-              const codeCell = window.document.getElementById(targetCell);
-              const gutter = codeCell.querySelector('.code-annotation-gutter');
-              gutter.appendChild(gutterDiv);
-            }
-            gutterDiv.style.top = top - 2 + "px";
-            gutterDiv.style.height = height + 4 + "px";
-          }
-          selectedAnnoteEl = annoteEl;
-        }
-      };
-      const unselectCodeLines = () => {
-        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-        elementsIds.forEach((elId) => {
-          const div = window.document.getElementById(elId);
-          if (div) {
-            div.remove();
-          }
-        });
-        selectedAnnoteEl = undefined;
-      };
-        // Handle positioning of the toggle
-    window.addEventListener(
-      "resize",
-      throttle(() => {
-        elRect = undefined;
-        if (selectedAnnoteEl) {
-          selectCodeLines(selectedAnnoteEl);
-        }
-      }, 10)
-    );
-    function throttle(fn, ms) {
-    let throttle = false;
-    let timer;
-      return (...args) => {
-        if(!throttle) { // first call gets through
-            fn.apply(this, args);
-            throttle = true;
-        } else { // all the others get throttled
-            if(timer) clearTimeout(timer); // cancel #2
-            timer = setTimeout(() => {
-              fn.apply(this, args);
-              timer = throttle = false;
-            }, ms);
-        }
-      };
-    }
-      // Attach click handler to the DT
-      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-      for (const annoteDlNode of annoteDls) {
-        annoteDlNode.addEventListener('click', (event) => {
-          const clickedEl = event.target;
-          if (clickedEl !== selectedAnnoteEl) {
-            unselectCodeLines();
-            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-            if (activeEl) {
-              activeEl.classList.remove('code-annotation-active');
-            }
-            selectCodeLines(clickedEl);
-            clickedEl.classList.add('code-annotation-active');
-          } else {
-            // Unselect the line
-            unselectCodeLines();
-            clickedEl.classList.remove('code-annotation-active');
-          }
-        });
-      }
-  const findCites = (el) => {
-    const parentEl = el.parentElement;
-    if (parentEl) {
-      const cites = parentEl.dataset.cites;
-      if (cites) {
-        return {
-          el,
-          cites: cites.split(' ')
-        };
-      } else {
-        return findCites(el.parentElement)
-      }
-    } else {
-      return undefined;
-    }
-  };
-  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-  for (var i=0; i<bibliorefs.length; i++) {
-    const ref = bibliorefs[i];
-    const citeInfo = findCites(ref);
-    if (citeInfo) {
-      tippyHover(citeInfo.el, function() {
-        var popup = window.document.createElement('div');
-        citeInfo.cites.forEach(function(cite) {
-          var citeDiv = window.document.createElement('div');
-          citeDiv.classList.add('hanging-indent');
-          citeDiv.classList.add('csl-entry');
-          var biblioDiv = window.document.getElementById('ref-' + cite);
-          if (biblioDiv) {
-            citeDiv.innerHTML = biblioDiv.innerHTML;
-          }
-          popup.appendChild(citeDiv);
-        });
-        return popup.innerHTML;
+      }, function(instance) {
       });
     }
-  }
-});
-</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
 <div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> FDA Review</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
