@@ -1,0 +1,261 @@
+---
+title: Parsing and cleaning the HHC excel workbook
+---
+
+```{python}
+import sys
+import click
+import shutil
+import pandas as pd
+
+sys.path.append("..")
+
+from fandu.utils import load_excel_sheet, extract_and_fill_year_and_chair_column, \
+        split_year_and_chair_columns, split_address_and_host, split_address_parts, \
+        perform_column_cleaning, load_csv_file, recode_street_names, match_addresses, \
+        build_clean_address, split_and_add_chairs, save_to_geojson
+
+EXCEL_HHT_FILE = '../data/1963-2024 HHT Homeowners_Adresses_modified.xlsx'
+CSV_HHT_FILE = '../data/1963-2024 HHT Homeowners_Adresses.csv'
+CLEANED_HHT_ADDRESSES = "../data/cleaned_hht_addresses.csv"
+RVA_ADDRESSES = "../data/Addresses.csv"
+
+HHT_SOURCE_XLSX = "./data/1963-2024 HHT Homeowners_Adresses_modified.xlsx"
+HHT_GEO_FILE = "./data/hht_addresses_with_geo.csv"
+HHT_GEO_JSON = "./data/hht_addresses_with_geo.json"
+
+```
+
+# Cleaning
+
+Many changes to the workbook are made here in the python code.  However,
+some changes were required directly in the original workbook.  This workbook
+was renamed to reflect the changes.
+
+## Load the excel file
+
+Here is the code and the first 20 records.
+
+```{python}
+#| echo: true
+
+if (0):
+
+    df = load_csv_file(
+        CSV_HHT_FILE,
+        skip_rows=3,             # Skip first 3 rows (0-based index)
+        header_row=None,         # No header row in the file
+        column_names=["data"]    # Manually assign column name
+    )
+
+else:
+
+    df = load_excel_sheet(
+        EXCEL_HHT_FILE,
+        skip_rows=3,             # Skip first 3 rows (0-based index)
+        header_row=None,         # No header row in the file
+        column_names=["data"],   # Manually assign column name
+        columns=[0]
+    )
+
+df.head(20)
+
+```
+
+## Extract and fill year and chair
+
+We first need to flip the year and chair to the end of each record.  Some additional work
+is required for 1983, because no tour was held that year.
+
+Additional notes are also shared across records.
+
+```{python}
+df = extract_and_fill_year_and_chair_column(df)
+df.head(15)
+```
+
+## Clean columns
+
+Miscellaneous record cleaning here.  Remove odd characters, etc.
+
+```{python}
+df = perform_column_cleaning( df )
+df.head(10)
+```
+
+## Split year and chair
+
+Starting with the year-and-chair, separate out the data to new columns.
+
+```{python}
+df = split_year_and_chair_columns( df )
+df.head(10)
+```
+
+## Split chair names out
+
+In some cases there are multiple chairs in a single year.  We also
+want to pull out their first and last names.
+
+```{python}
+df = split_and_add_chairs( df )
+df[["year","chair","chair1","chair2"]].head(30)
+```
+
+And a list combined.
+
+```{python}
+df["informal_chairs"] = df.apply(
+    lambda row: f"{row['chair1']} & {row['chair2']}" if pd.notna(row["chair2"]) and str(row["chair2"]).strip() != "" else row["chair1"],
+    axis=1
+)
+df[["year","informal_chairs"]].head()
+
+```
+
+## Split addresses from hosts
+
+Separate hosts and addresses.
+
+```{python}
+df = split_address_and_host( df )
+df[df["year"]=="1972"][["data","host_name"]].head(30)
+```
+
+## Further split addresses
+
+Addresses are separated into numbers, units, and all that good stuff.
+
+```{python}
+df = split_address_parts( df )
+df[["data", "street_number", "unit_number", "street_name", "street_type"]].head(30)
+
+```
+
+## Recoding and rearranging
+
+Reorder the columns.  Clean the street names and build a *clean address* for 
+matching with city data.
+
+```{python}
+new_column_order = [
+    "data",
+    "year_and_chair",
+    "notes",
+    "year",
+    "tour",
+    "chair",
+    "chair1",
+    "chair1_first_name",
+    "chair1_last_name",
+    "chair2",
+    "chair2_first_name",
+    "chair2_last_name",
+    "informal_chairs",
+    "address",
+    "street_number",
+    "unit_number",  # <- moved here!
+    "street_name",
+    "street_type",
+    "place_name",
+    "host_name",
+]
+
+#df = df[new_column_order]
+
+df = recode_street_names( df )
+df = build_clean_address( df )
+```
+
+# Quick cleaning analysis
+
+## Tighten up street names
+
+```{python}
+# Extract the unique street names
+unique_street_names = df["street_name"].dropna().unique()
+
+# Sort them alphabetically
+unique_street_names = sorted(unique_street_names)
+
+# Convert to a DataFrame if you want it as a table
+unique_street_names_df = pd.DataFrame(unique_street_names, columns=["street_name"])
+
+# Display
+click.echo(unique_street_names_df)
+
+```
+
+# Match addresses
+
+The following code matches HHT addresses with the city database of addresses.  Some
+additional work on the original data set was performed to rename address locations as appropriate.
+
+```{python}
+
+master_df = pd.read_csv("../data/Addresses.csv")       # columns: id, address
+
+matched, unmatched = match_addresses(master_df, df,threshold=99.0)
+
+# Save to files if desired
+matched.to_csv("matched.csv", index=False)
+unmatched.to_csv("unmatched.csv", index=False)
+
+
+# remove duplicates from matched
+matched = matched.drop_duplicates(subset=["unmatched_address"])
+
+
+# Step 1: Merge hht_addresses_df with matched to get matched_id
+merged_hht = df.merge(
+    matched,
+    left_on="clean_address",
+    right_on="unmatched_address",
+    how="left"
+)
+
+# Step 2: Merge in additional fields from master_df using matched_id
+columns_to_merge = [
+    'AddressId', 'ZipCode', 'X', 'Y',
+    'StatePlaneX', 'StatePlaneY', 'Latitude', 'Longitude'
+]
+
+merged_final = merged_hht.merge(
+    master_df[columns_to_merge],
+    left_on="matched_id",
+    right_on="AddressId",
+    how="left"
+)
+
+# Optional: drop helper columns if you want
+df = merged_final.drop(columns=["unmatched_address"])
+
+df = df.drop(columns=["X", "Y"])
+
+df = df.rename(columns={
+    "AddressId": "city_address_id",
+    "ZipCode": "zip_code",
+    "StatePlaneX": "state_plane_x",
+    "StatePlaneY": "state_plane_y",
+    "Latitude": "latitude",
+    "Longitude": "longitude"
+})
+
+```
+
+
+## Save final data
+
+Store the final data as CSV and JSON for later use.
+
+
+```{python}
+# Save to file or continue processing
+df.to_csv(HHT_GEO_FILE, index=False)
+
+# Save to JSON for mapping
+save_to_geojson( df, HHT_GEO_JSON )
+
+# Ensure original XLSX is available on HTML path.
+shutil.copyfile( EXCEL_HHT_FILE, HHT_SOURCE_XLSX )
+```

@@ -1,0 +1,16 @@
+---
+title: setup
+---
+
+```{python}
+#! label: 01_setup.qmd
+import sys
+from loguru import logger
+
+logger.remove()
+logger.add(sys.__stderr__, level="INFO")  # use the original stderr, not Jupyter’s proxy
+
+logger.info("")
+logger.info("This should go only to the real console")
+logger.info("A second log message")
+```

@@ -1,0 +1,152 @@
+---
+title: Export data cleaning
+date: last-modified
+---
+
+This report explores an export data file for the Fan District Association looking
+for data inconsistencies and overall metrics.
+
+## Initial data exploration
+
+```{python}
+#| echo: false
+RUN_EXCEL_ANALYSIS = False
+
+if RUN_EXCEL_ANALYSIS:
+    from reports.utils import ExcelAnalyzer
+    export_file_name = "../data/2025-02-17 Contacts Fan District Association.xls"
+    metrics = ExcelAnalyzer(export_file_name)
+    print("ExcelAnalyzer initialized.")
+else:
+    print("Skipping ExcelAnalyzer steps.")
+    metrics = None
+```
+
+## Overall summary of records
+
+```{python}
+if metrics:
+    metrics.summary()
+else:
+    print("metrics.summary() skipped.")
+```
+
+## User IDs by level
+
+Only records marked with *Membership enabled = yes* are included in the list.
+
+```{python}
+if metrics:
+    metrics.count_membership_by_level()
+else:
+    print("count_membership_by_level() skipped.")
+```
+
+## Bundles by level
+
+A *bundle* is a group of *user ids* that share a single membership. 
+
+```{python}
+if metrics:
+    metrics.count_bundles_by_level()
+else:
+    print("count_bundles_by_level() skipped.")
+```
+
+## Duplicate Emails
+
+Below is a list of user ID with duplicate emails.  This list
+is most probably clean.
+
+```{python}
+if metrics:
+    metrics.get_users_with_duplicate_emails()
+else:
+    print("get_users_with_duplicate_emails() skipped.")
+```
+
+
+## Duplicate names
+
+Below is a list of members with the same first and last names.  Note the *Membership enabled" column.  If *Membership enabled* is *yes* for both records, then this 
+record is a duplicate.
+```{python}
+if metrics:
+    metrics.get_users_with_duplicate_names()
+else:
+    print("get_users_with_duplicate_names() skipped.")
+```
+
+## Geocoding Excel File
+
+```{python}
+import pandas as pd
+
+# Flag to control whether to run geocoding (set to False to use existing CSV)
+RUN_GEOCODING = False
+
+if RUN_GEOCODING:
+    import time
+    from geopy.geocoders import Nominatim
+    from geopy.exc import GeocoderTimedOut
+
+    # Read the Excel file
+    excel_file = "../data/2025-02-17 Contacts Fan District Association.xls"
+    df = pd.read_excel(excel_file)
+
+    # Build a full_address column using only "Address", "City", "State", and "Zip".
+    def build_full_address(row):
+        parts = []
+        if pd.notnull(row["Address"]):
+            parts.append(str(row["Address"]).strip())
+        if pd.notnull(row["City"]):
+            parts.append(str(row["City"]).strip())
+        if pd.notnull(row["State"]):
+            parts.append(str(row["State"]).strip())
+        if pd.notnull(row["Zip"]):
+            parts.append(str(row["Zip"]).strip())
+        return ", ".join(parts)
+
+    df["full_address"] = df.apply(build_full_address, axis=1)
+    df["full_address"] = df["full_address"].astype(str).str.strip()
+
+    # Initialize the geocoder.
+    geolocator = Nominatim(user_agent="fan_district_geocoder", timeout=10)
+
+    # Define a geocoding function with retry logic.
+    def geocode_address(address, retries=3):
+        for attempt in range(retries):
+            try:
+                time.sleep(1)  # Respect rate limits.
+                location = geolocator.geocode(address)
+                if location:
+                    return location.latitude, location.longitude
+                else:
+                    return None, None
+            except GeocoderTimedOut:
+                time.sleep(2)
+            except Exception:
+                return None, None
+        return None, None
+
+    # Geocode each address.
+    geocoded = df["full_address"].apply(geocode_address)
+    df["lat"] = geocoded.apply(lambda x: x[0])
+    df["lon"] = geocoded.apply(lambda x: x[1])
+
+    # Drop rows where geocoding failed.
+    df = df.dropna(subset=["lat", "lon"])
+
+    # Write the results to a CSV file.
+    output_csv = "../data/geocoded_contacts.csv"
+    df[["full_address", "lat", "lon"]].to_csv(output_csv, index=False)
+    print(f"Geocoded CSV file saved as {output_csv}")
+else:
+    print("Skipping geocoding; using previously generated CSV.")
+
+# =============================================================================
+# Load the previously generated CSV and display its head.
+# =============================================================================
+df_verified = pd.read_csv("../data/geocoded_contacts.csv")
+df_verified.head()
+```

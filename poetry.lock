@@ -1120,6 +1120,37 @@ files = [
 arrow = ">=0.15.0"
 
 [[package]]
+name = "itables"
+version = "2.5.2"
+description = "Pandas and Polar DataFrames as interactive DataTables"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "itables-2.5.2-py3-none-any.whl", hash = "sha256:a26b5a5fad079db7eee83ff720fb98395f7327fddcb7af84d10e1165a139acf2"},
+    {file = "itables-2.5.2.tar.gz", hash = "sha256:ec34bbacfbf4305570ea75b36970de442f924126f3701c323a5a46018de84c8a"},
+]
+
+[package.dependencies]
+ipython = "*"
+numpy = "*"
+pandas = "*"
+
+[package.extras]
+all = ["anywidget", "dash", "matplotlib", "platformdirs", "polars", "pyarrow", "pytz", "shiny", "shinywidgets", "streamlit", "tomli ; python_version < \"3.11\"", "traitlets", "typeguard (>=4.4.1)", "world-bank-data"]
+check-type = ["typeguard (>=4.4.1)"]
+config = ["platformdirs", "tomli ; python_version < \"3.11\""]
+dash = ["dash"]
+dev = ["anywidget", "dash", "ipykernel", "jupyterlab", "jupytext", "marimo", "matplotlib", "nbconvert", "platformdirs", "polars", "pyarrow", "pytest", "pytest-cov", "pytz", "requests", "shiny", "shinywidgets", "streamlit", "tomli ; python_version < \"3.11\"", "traitlets", "typeguard (>=4.4.1)", "watchfiles", "world-bank-data"]
+polars = ["polars", "pyarrow"]
+samples = ["pytz", "world-bank-data"]
+shiny = ["shiny", "shinywidgets"]
+streamlit = ["streamlit"]
+style = ["matplotlib"]
+test = ["anywidget", "dash", "ipykernel", "jupytext", "marimo", "matplotlib", "nbconvert", "platformdirs", "polars", "pyarrow", "pytest", "pytest-cov", "pytz", "requests", "shiny", "shinywidgets", "streamlit", "tomli ; python_version < \"3.11\"", "traitlets", "typeguard (>=4.4.1)", "world-bank-data"]
+widget = ["anywidget", "traitlets"]
+
+[[package]]
 name = "jedi"
 version = "0.19.2"
 description = "An autocompletion tool for Python that can be used for text editors."
@@ -3955,4 +3986,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4.0"
-content-hash = "fa4a09835c174d72f9ba0c80156e4030e75e39211ce845b26b6201b99add2d58"
+content-hash = "fc2ce259de8f3e1fb234e4232f6cdffe9e615ec6ed09aafc9037eafa37326c0b"

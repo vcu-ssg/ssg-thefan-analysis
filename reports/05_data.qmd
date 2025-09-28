@@ -1,5 +1,5 @@
 ---
-title: Fan District Association
+title: Data sources and cleaning
 ---
 
 The City of Richmond maintains an arcgis geodata repository called [Richmond GeoHub](https://richmond-geo-hub-cor.hub.arcgis.com).
@@ -46,6 +46,12 @@ from matplotlib.patches import Patch
 from matplotlib.lines import Line2D
 from math import floor
 from loguru import logger
+import itables
+from itables import show
+
+# Configure loguru to only log to stderr (console)
+logger.remove()  # remove default handler
+logger.add(lambda msg: print(msg, end=""), level="INFO")
 
 sys.path.append("..")
 from fandu.geo_utils import get_newest_feature_file
@@ -89,7 +95,6 @@ for feature in [selector] + features:
 
 ```
 
-
 ```{python}
 
 for feature in features:
@@ -109,8 +114,19 @@ for feature in features:
     df.to_csv(f"{feature_name}.csv", index=False)
     print(f"Saving: {feature_name}.csv" )
 
+```
+
+## Perform initial recodes on Parcels
+
+::: {.column-page style="font-size:0.7em;"}
+```{python}
+parcels = data["Parcels_in_fan"].drop(columns=["geometry","GlobalID_left","GlobalID_right","Name","ID","MaskedOwner"])
+show( parcels, maxBytes=0, buttons=["pageLength", "copyHtml5", "csvHtml5" ])
 
 ```
+:::
+
+
 
 ## FDA - Key measures
 
@@ -345,6 +361,8 @@ print(f"Unit addresses with missing base address: {len(missing)}")
 if not missing.empty:
     print("\nExamples of missing base addresses:")
     print(missing[["AddressLabel", "BaseAddressLabel", "UnitType", "UnitValue"]].head())
+else:
+    print("\nAll addresses have base address. (this is good!)")
 
 ```
 
@@ -476,14 +494,18 @@ parcels_gdf = data["Parcels_in_fan"]
 addresses = data["Addresses_in_fan"].to_crs(parcels_gdf.crs)
 
 # 🔍 Filter to include only addresses with UnitType not null (unit addresses)
-addresses = addresses[addresses["UnitType"].notnull()]
+addresses_with_units = addresses[addresses["UnitType"].notnull()]
 
 # Step 2: Perform spatial join: which addresses fall within which parcel
-joined = gpd.sjoin(addresses, parcels_gdf, predicate="within", how="left")
+joined_with_units = gpd.sjoin(addresses_with_units, parcels_gdf, predicate="within", how="left")
+
+```
+
+```{python}
 
 # Step 3: Group addresses by parcel index and aggregate
-address_groups = (
-    joined.groupby("index_right")
+address_groups_with_units = (
+    joined_with_units.groupby("index_right")
     .agg({
         "AddressLabel": lambda x: list(x.dropna()),
         "AddressId": lambda x: list(x.dropna())
@@ -491,8 +513,11 @@ address_groups = (
     .rename(columns={"AddressLabel": "AddressList", "AddressId": "AddressIdList"})
 )
 
+```
+```{python}
+
 # Step 4: Merge back into parcels
-parcels_with_addresses = parcels_gdf.join(address_groups)
+parcels_with_addresses = parcels_gdf.join(address_groups_with_units)
 
 # Step 5: Fill missing lists as empty
 parcels_with_addresses["AddressList"] = parcels_with_addresses["AddressList"].apply(
@@ -650,6 +675,10 @@ if 0:
     conn.close()
 
 ```
+
+
+
+## Save modified GEOJSON files for later use
 
 ```{python}
 

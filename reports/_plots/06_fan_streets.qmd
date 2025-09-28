@@ -1,0 +1,34 @@
+---
+title: FDA - Static Map
+---
+
+```{python}
+#| echo: false
+
+import duckdb
+
+# Open DuckDB in-memory (or point to a .duckdb file if you want persistence)
+con = duckdb.connect()
+
+# Query directly from the CSV
+query = """
+SELECT DISTINCT
+	case when StreetType is NOT NULL THEN 
+    TRIM(
+		case when StreetDirection is NOT NULL THEN (COALESCE(StreetDirection, '') || '. ') ELSE '' END ||
+        TRIM(COALESCE(StreetName, '')) || ' ' ||
+        TRIM(COALESCE(StreetType, '')) || '.' )
+	ELSE '' END AS StreetFull
+FROM read_csv_auto('Addresses_in_fan.csv', header=True)
+WHERE StreetName IS NOT NULL
+order by 1
+"""
+
+streets = con.execute(query).fetchall()
+
+# Convert to a simple list of strings
+streets = [row[0].strip() for row in streets]
+print("\n".join(streets))
+
+
+```

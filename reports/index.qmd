@@ -1,11 +1,87 @@
 ---
-title: Welcome!
+title: ""
+format: dashboard
 ---
 
-## Reports
 
-* [Neighborhoods in Richmond](neighborhoods.qmd) - A quick report exploring the GIS shapefile from City of Richmond containing a listing
-of neighborhoods in the City.  The boundary for The Fan can be pulled from
-here and used to find addresses and parcels located within The fan.
 
-* [Address analysis](06_addresses.qmd) - An interactive map of addresses mapped to parcels using City of Richmond GIS data.
+## Row {height="18%"}
+
+::: {.card .border-0 width=10%}
+:::
+
+```{python}
+#| content: valuebox
+#| title: "Parcels"
+from itables import show
+import math
+
+parcel_count = 3413
+dict(
+#  icon = "archive",
+  color = "light",
+  value = f"{parcel_count}"
+)
+```
+
+<div class="card valuebox cell bslib-card html-fill-container bslib-value-box bg-light" data-bslib-card-init="" data-require-bs-caller="card()">
+<div class="card-body html-fill-item html-fill-container">
+<div class="card-body html-fill-item html-fill-container">
+<div class="value-box-area">
+<p class="value-box-title">Title</p>
+<p class="value-box-value">`{python} parcel_count// 2`</p>
+</div>
+</div>
+</div>
+</div>
+
+```{python}
+#| output: asis
+print(f"""
+<div class="card valuebox cell bslib-card html-fill-container bslib-value-box bg-light" data-bslib-card-init="" data-require-bs-caller="card()">
+<div class="card-body html-fill-item html-fill-container">
+<div class="card-body html-fill-item html-fill-container">
+<div class="value-box-area">
+<p class="value-box-title">Title</p>
+<p class="value-box-value">Value</p>
+<p class="value-box-desc">Footer value</p>
+</div>
+</div>
+</div>
+</div>
+""")
+```
+
+
+```{python}
+#| content: valuebox
+#| title: "Addresses"
+address_count = 11234
+dict(
+#  icon = "archive",
+  color = "light",
+  value = address_count
+)
+```
+
+```{python}
+#| content: valuebox
+#| title: "Matching members"
+
+count = 1423
+percent = count / address_count * 100
+matching_members = f"{count:,} ({percent:.0f}%)"
+x = dict(
+  color = "green",
+  value = matching_members
+)
+x
+```
+
+::: {.card .border-0 width=10%}
+:::
+
+## Row {height="65%""}
+
+{{< embed ./_plots/06_addresses.qmd >}}
+

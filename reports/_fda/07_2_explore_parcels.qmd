@@ -1,0 +1,81 @@
+---
+title: Exploring Addresses and Parcels
+---
+
+```{python}
+import duckdb
+import pandas as pd
+
+con = duckdb.connect()
+con.execute("INSTALL spatial; LOAD spatial;")
+
+pd.set_option("display.max_rows", None)
+
+# Load parcels (polygon geometries)
+con.execute("""
+    CREATE TABLE parcels_and_addresses AS
+    SELECT * FROM ST_Read('../data/fan_addresses_with_parcels.csv');
+""")
+
+
+df = con.execute("""
+select * from parcels_and_addresses limit 0
+""").df()
+df.columns
+```
+
+```{python}
+df = con.execute("""
+create table parcels as
+select 
+ParcelID,
+OwnerName,
+AsrLocationBldgNo,
+MailAddress,
+MailCity,
+MailState,
+MailZip,
+AssessmentDate,
+LandValue,
+DwellingValue,
+TotalValue,
+LandSqFt,
+ProvalAsmtNhood,
+TaxExemptCode,
+PropertyClassID,
+PropertyClass,
+LandUse,
+Mailable_1,
+MaskedOwner
+from parcels_and_addresses
+group by
+ParcelID,
+OwnerName,
+AsrLocationBldgNo,
+MailAddress,
+MailCity,
+MailState,
+MailZip,
+AssessmentDate,
+LandValue,
+DwellingValue,
+TotalValue,
+LandSqFt,
+ProvalAsmtNhood,
+TaxExemptCode,
+PropertyClassID,
+PropertyClass,
+LandUse,
+Mailable_1,
+MaskedOwner
+""").df()
+```
+
+```{python}
+df = con.execute("""
+select LandUse, count(*) from parcels 
+group by landuse
+order by 2 desc
+""").df()
+df
+```

@@ -1,0 +1,170 @@
+---
+title: FDA - Clean and Merge 
+---
+
+
+## Load the files
+
+```{python}
+import duckdb
+import pandas as pd
+
+pd.set_option("display.max_rows", None)
+con = duckdb.connect()
+con.execute("INSTALL spatial; LOAD spatial;")
+
+parcels_geojson   = '../../data/Parcels_in_fan.geojson'
+addresses_geojson = '../../data/Addresses_in_fan.geojson'
+contacts_csv = '../../precious/contacts-2025-09-28.csv'
+```
+
+## Loading Parcels in the Fan
+
+```{python}
+
+# Load parcels (polygon geometries)
+con.execute(f"""
+    CREATE OR REPLACE TABLE parcels AS
+    SELECT * FROM ST_Read('{parcels_geojson}');
+""")
+
+df = con.execute("describe parcels").df()
+df
+```
+
+## Loading Addresses in the Fan
+
+```{python}
+
+# Load addresses (point geometries)
+con.execute(f"""
+    CREATE or REPLACE TABLE addresses AS
+    SELECT * FROM ST_Read('{addresses_geojson}');
+""")
+df = con.execute("describe addresses").df()
+df
+```
+
+## Loading Contacts 
+
+```{python}
+
+# Load addresses (point geometries)
+con.execute(f"""
+    CREATE or REPLACE TABLE contacts AS
+    SELECT * FROM ST_Read('{contacts_csv}');
+""")
+df = con.execute("describe contacts").df()
+df
+```
+
+### Count rows
+
+```{python}
+# Count rows
+parcel_count = con.execute("SELECT COUNT(*) FROM parcels").fetchone()[0]
+parcel_count_distinct = con.execute("SELECT COUNT( distinct parcelid ) FROM parcels").fetchone()[0]
+address_count = con.execute("SELECT COUNT(*) FROM addresses").fetchone()[0]
+address_count_distinct = con.execute("SELECT COUNT( distinct AddressId) FROM addresses").fetchone()[0]
+
+print(f"Number of parcels: {parcel_count}")
+print(f"Number of distinct parcels: {parcel_count_distinct}")
+print(f"Number of addresses: {address_count}")
+print(f"Number of distinct addresses: {address_count_distinct}")
+```
+
+## Explore parcels
+
+```{python}
+df = con.execute("""
+select LandUse,count(*),sum(case when array_length(AddressList)>0 then array_length(AddressList) else 1 end) as AddressCount from parcels
+group by Landuse
+order by 2 desc
+""").df()
+df
+```
+
+
+## Spatial Join
+
+```{python}
+con.execute("""
+CREATE TABLE addr_with_parcels AS
+SELECT 
+    a.*,
+    p.*
+FROM addresses a
+JOIN parcels p
+  ON ST_Within(a.geom, p.geom);
+""")
+```
+
+```{python}
+con.execute("""
+update addr_with_parcels
+set AddressList=[AddressLabel], AddressIdList=[AddressId]
+where addressList='[]'
+""")
+```
+
+```{python}
+con.execute("""
+delete from addr_with_parcels
+where AddressId <> ALL(AddressIdList)
+""")
+```
+
+## Metrics on join
+
+```{python}
+# Count how many addresses matched a parcel
+matched = con.execute("SELECT COUNT(*) FROM addr_with_parcels").fetchone()[0]
+
+# Total counts (repeated from above)
+parcel_count = con.execute("SELECT COUNT(*) FROM parcels").fetchone()[0]
+address_count = con.execute("SELECT COUNT(*) FROM addresses").fetchone()[0]
+
+# Addresses with no parcel
+unmatched = address_count - matched
+
+print(f"Number of parcels:   {parcel_count}")
+print(f"Number of addresses: {address_count}")
+print(f"Addresses matched:   {matched}")
+print(f"Addresses unmatched: {unmatched}")
+```
+
+
+## Check results
+
+```{python}
+df = con.execute("SELECT * FROM addr_with_parcels").df()
+print(df.shape)
+print(df.head())
+
+```
+
+## Save results
+
+```{python}
+con.execute("""
+COPY (
+    SELECT ST_AsGeoJSON(geom) AS geojson, *
+    FROM addr_with_parcels
+) TO 'fan_addresses_with_parcels.geojson' (FORMAT JSON);
+""")
+
+```
+
+## Save non-geometries to CSV
+
+```{python}
+con.execute("""
+    COPY (
+        SELECT * EXCLUDE (geom, geom_1)
+        FROM addr_with_parcels
+        ORDER BY AddressLabel
+    ) TO 'fan_addresses_with_parcels.csv'
+    (HEADER, DELIMITER ',');
+""")
+```
+

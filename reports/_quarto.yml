@@ -10,26 +10,30 @@ project:
 
 execute:
   echo: false
-  kernel: python3  # or the name of your Jupyter kernel
+  kernel: python  # or the name of your Jupyter kernel
 
 website:
-  title: "The Fan"
+  title: "FDA Dashboard"
   navbar:
     left:
-      - href: index.qmd
+      - href: ./parcels.qmd
         text: Home
+      - href: ./parcels.qmd
+        text: Parcels
+      - href: ./05_data.qmd
+        text: Data sources
 
 format:
   html:
-    smooth-scroll: true
     theme: default
     toc: true
-    code-tools: true
-    # Enable interactive figures
+#    smooth-scroll: true
+#    code-tools: true
+#    # Enable interactive figures
     fig-responsive: true
-    execute:
-      enabled: true
+#    execute:
+#      enabled: true
 #    embed-resources: true
-    html-math-method: katex
-    plotly: true
-    raw-html:
+#    html-math-method: katex
+#    plotly: true
+    
