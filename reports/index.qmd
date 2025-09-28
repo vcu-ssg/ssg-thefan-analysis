@@ -11,71 +11,74 @@ format: dashboard
 :::
 
 ```{python}
-#| content: valuebox
-#| title: "Parcels"
-from itables import show
+#| output: asis
+import os
 import math
 
-parcel_count = 3413
-dict(
-#  icon = "archive",
-  color = "light",
-  value = f"{parcel_count}"
-)
+import geopandas as gpd
+import matplotlib as plt
+
+from itables import show
+
+
+base_names = ["Parcels_in_fan"]
+input_folder = "../data"
+
+data={}
+for name in base_names:
+    file_path = os.path.join(input_folder, f"{name}.geojson")
+    if os.path.exists(file_path):
+        data[name] = gpd.read_file(file_path)
+    else:
+        print(f"current dir: {os.getcwd()}")
+        print(f"⚠️ File not found: {file_path}")
+        stop()
+
+parcels = data["Parcels_in_fan"]
+parcels["OwnerOccupied"] = parcels.apply(
+        lambda row: str(row["MailAddress"]).startswith(str(row["AsrLocationBldgNo"])),
+        axis=1
+    )
+
+parcel_count = len(parcels)
+
+def showCard( title, value, description):
+  description_line = ""
+  if description:
+    description_line = f"<p class='value-box-desc'>{description}</p>"
+
+  print(f"""
+  <div class="card valuebox cell bslib-card html-fill-container bslib-value-box bg-light" data-bslib-card-init="" data-require-bs-caller="card()">
+  <div class="card-body html-fill-item html-fill-container">
+  <div class="card-body html-fill-item html-fill-container">
+  <div class="value-box-area">
+  <p class="value-box-title">{title}</p>
+  <p class="value-box-value">{value}</p>
+  {description_line}
+  </div>
+  </div>
+  </div>
+  </div>
+  """)
+
+showCard("Total Parcels",parcel_count,"in the Fan")
 ```
 
-<div class="card valuebox cell bslib-card html-fill-container bslib-value-box bg-light" data-bslib-card-init="" data-require-bs-caller="card()">
-<div class="card-body html-fill-item html-fill-container">
-<div class="card-body html-fill-item html-fill-container">
-<div class="value-box-area">
-<p class="value-box-title">Title</p>
-<p class="value-box-value">`{python} parcel_count// 2`</p>
-</div>
-</div>
-</div>
-</div>
+
 
 ```{python}
 #| output: asis
-print(f"""
-<div class="card valuebox cell bslib-card html-fill-container bslib-value-box bg-light" data-bslib-card-init="" data-require-bs-caller="card()">
-<div class="card-body html-fill-item html-fill-container">
-<div class="card-body html-fill-item html-fill-container">
-<div class="value-box-area">
-<p class="value-box-title">Title</p>
-<p class="value-box-value">Value</p>
-<p class="value-box-desc">Footer value</p>
-</div>
-</div>
-</div>
-</div>
-""")
-```
-
-
-```{python}
-#| content: valuebox
-#| title: "Addresses"
-address_count = 11234
-dict(
-#  icon = "archive",
-  color = "light",
-  value = address_count
-)
+count_single_family = (parcels["LandUse"] == "Single Family").sum()
+showCard("Single Family",count_single_family,"Parcels")
 ```
 
 ```{python}
-#| content: valuebox
-#| title: "Matching members"
+#| output: asis
 
-count = 1423
-percent = count / address_count * 100
-matching_members = f"{count:,} ({percent:.0f}%)"
-x = dict(
-  color = "green",
-  value = matching_members
-)
-x
+count_owner_occ_sf = len(parcels[(parcels["OwnerOccupied"] == True) & 
+                                 (parcels["LandUse"] == "Single Family")])
+showCard("Owner Occupied",count_owner_occ_sf,"Single Family Parcels")
+
 ```
 
 ::: {.card .border-0 width=10%}
@@ -83,5 +86,4 @@ x
 
 ## Row {height="65%""}
 
-{{< embed ./_plots/06_addresses.qmd >}}
-
+{{< embed ./_plots/06_parcels.qmd >}}

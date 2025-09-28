@@ -1,5 +1,12 @@
 [
   {
+    "objectID": "01_setup.html",
+    "href": "01_setup.html",
+    "title": "setup",
+    "section": "",
+    "text": "2025-09-28 17:44:22.908 | INFO     | __main__:&lt;module&gt;:8 - \n2025-09-28 17:44:22.908 | INFO     | __main__:&lt;module&gt;:9 - This should go only to the real console\n2025-09-28 17:44:22.908 | INFO     | __main__:&lt;module&gt;:10 - A second log message"
+  },
+  {
     "objectID": "05_data.html",
     "href": "05_data.html",
     "title": "Data sources and cleaning",
@@ -33,12 +40,5 @@
     "title": "Data sources and cleaning",
     "section": "Available columns",
     "text": "Available columns\n\n\n\nCivic_Associations\n\n\n\nProperty\n\n\n\n\nID\n\n\nName\n\n\nAdoptionDate\n\n\nChangeDate\n\n\nGlobalID\n\n\nShape__Area\n\n\nShape__Length\n\n\ngeometry\n\n\n\n\n\n\nAddresses_in_fan\n\n\n\nProperty\n\n\n\n\nAddressId\n\n\nAddressLabel\n\n\nBuildingNumber\n\n\nStreetDirection\n\n\nStreetName\n\n\nStreetType\n\n\nExtensionWithUnit\n\n\nUnitType\n\n\nUnitValue\n\n\nZipCode\n\n\nMailable\n\n\nStatePlaneX\n\n\nStatePlaneY\n\n\nLatitude\n\n\nLongitude\n\n\ngeometry\n\n\nID\n\n\nName\n\n\nGlobalID\n\n\nShape__Area\n\n\nShape__Length\n\n\nBaseAddressLabel\n\n\nUnitCount\n\n\n\n\n\n\nParcels_in_fan\n\n\n\nProperty\n\n\n\n\nParcelID\n\n\nPIN\n\n\nCountOfPIN\n\n\nOwnerName\n\n\nAsrLocationBldgNo\n\n\nMailAddress\n\n\nMailCity\n\n\nMailState\n\n\nMailZip\n\n\nAssessmentDate\n\n\nLandValue\n\n\nDwellingValue\n\n\nTotalValue\n\n\nLandSqFt\n\n\nProvalAsmtNhood\n\n\nTaxExemptCode\n\n\nPropertyClassID\n\n\nPropertyClass\n\n\nLandUse\n\n\nMailable\n\n\nMaskedOwner\n\n\nGlobalID_left\n\n\ngeometry\n\n\nID\n\n\nName\n\n\nGlobalID_right\n\n\nShape__Area\n\n\nShape__Length\n\n\ngeom_wkt\n\n\ngeom_count\n\n\nAddressList\n\n\nAddressIdList"
-  },
-  {
-    "objectID": "01_setup.html",
-    "href": "01_setup.html",
-    "title": "setup",
-    "section": "",
-    "text": "2025-09-28 17:03:36.215 | INFO     | __main__:&lt;module&gt;:8 - \n2025-09-28 17:03:36.215 | INFO     | __main__:&lt;module&gt;:9 - This should go only to the real console\n2025-09-28 17:03:36.215 | INFO     | __main__:&lt;module&gt;:10 - A second log message"
   }
 ]

@@ -16,7 +16,7 @@ website:
   title: "FDA Dashboard"
   navbar:
     left:
-      - href: ./parcels.qmd
+      - href: ./index.qmd
         text: Home
       - href: ./parcels.qmd
         text: Parcels
