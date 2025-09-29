@@ -18,10 +18,6 @@ website:
     left:
       - href: ./index.qmd
         text: Home
-      - href: ./parcels.qmd
-        text: Parcels
-      - href: ./05_data.qmd
-        text: Data sources
 
 format:
   html:

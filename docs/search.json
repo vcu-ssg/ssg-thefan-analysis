@@ -4,7 +4,7 @@
     "href": "01_setup.html",
     "title": "setup",
     "section": "",
-    "text": "2025-09-28 17:44:22.908 | INFO     | __main__:&lt;module&gt;:8 - \n2025-09-28 17:44:22.908 | INFO     | __main__:&lt;module&gt;:9 - This should go only to the real console\n2025-09-28 17:44:22.908 | INFO     | __main__:&lt;module&gt;:10 - A second log message"
+    "text": "2025-09-29 07:11:21.612 | INFO     | __main__:&lt;module&gt;:8 - \n2025-09-29 07:11:21.612 | INFO     | __main__:&lt;module&gt;:9 - This should go only to the real console\n2025-09-29 07:11:21.612 | INFO     | __main__:&lt;module&gt;:10 - A second log message"
   },
   {
     "objectID": "05_data.html",
