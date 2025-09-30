@@ -18,11 +18,14 @@ website:
     left:
       - href: ./index.qmd
         text: Home
+      - href: ./data_sources.qmd
+        text: Data Sources
 
 format:
   html:
     theme: default
-    toc: true
+    toc: false
+
 #    smooth-scroll: true
 #    code-tools: true
 #    # Enable interactive figures
@@ -32,4 +35,3 @@ format:
 #    embed-resources: true
 #    html-math-method: katex
 #    plotly: true
-    

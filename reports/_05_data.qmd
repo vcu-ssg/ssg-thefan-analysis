@@ -1,0 +1,728 @@
+---
+title: Data sources and cleaning
+---
+
+The City of Richmond maintains an arcgis geodata repository called [Richmond GeoHub](https://richmond-geo-hub-cor.hub.arcgis.com).
+
+Data on the geohub are organized into key areas.  For our analysis, we'll be using the 
+following data sources.
+
+[Addresses](https://richmond-geo-hub-cor.hub.arcgis.com/datasets/674d645c444f4191998f0ebb96e56047_0/explore?location=37.527383%2C-77.493413%2C10.99)
+: All of the official, mapped inventory of all unit and non-unit-based addresses in the City. Includes only active addresses.
+
+[Parcels](https://richmond-geo-hub-cor.hub.arcgis.com/datasets/fbfce2aab2a44c05bc0abc2d6ea7e54a_0/explore?location=37.525465%2C-77.493422%2C10.60)
+: City of Richmond property ownership information, mapped by land ownership (parcels).
+
+[Civic Associations](https://richmond-geo-hub-cor.hub.arcgis.com/datasets/be39ce592f3e4419babe11d1b967e2f3_0/explore?location=37.528836%2C-77.494197%2C10.96)
+: Represents civic organization boundaries in the city of Richmond, Virginia.
+
+[National Historic Districts](https://richmond-geo-hub-cor.hub.arcgis.com/datasets/38bd0df47c6440528c2ef22daaf81883_0/explore?location=37.550339%2C-77.468606%2C14.93)
+: Represents districts and sites that are listed on the National Register of Historic Places (Federal designation) and the Virginia Landmarks Register (State designation).
+
+[Neighborhoods](https://richmond-geo-hub-cor.hub.arcgis.com/datasets/7a0ffef23d16461e9728c065f27b2790_0/explore?location=37.525021%2C-77.493427%2C10.73)
+: City of Richmond Neighborhoods.
+
+For our Fan District analysis we will be working with [Civic Associations](https://richmond-geo-hub-cor.hub.arcgis.com/datasets/be39ce592f3e4419babe11d1b967e2f3_0/explore?location=37.528836%2C-77.494197%2C10.96)
+to get the formal boundary of the *Fan District Association*.
+
+We then use that boundary to determine [Addresses](https://richmond-geo-hub-cor.hub.arcgis.com/datasets/674d645c444f4191998f0ebb96e56047_0/explore?location=37.527383%2C-77.493413%2C10.99)
+and [Parcels](https://richmond-geo-hub-cor.hub.arcgis.com/datasets/fbfce2aab2a44c05bc0abc2d6ea7e54a_0/explore?location=37.525465%2C-77.493422%2C10.60)
+in the *Fan District Association*
+
+```{python}
+
+
+import os
+import re
+import sys
+import sqlite3
+import requests
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+import matplotlib.pyplot as plt
+
+from matplotlib.patches import Patch
+from matplotlib.lines import Line2D
+from math import floor
+from loguru import logger
+import itables
+from itables import show
+
+# Configure loguru to only log to stderr (console)
+logger.remove()  # remove default handler
+#logger.add(lambda msg: print(msg, end=""), level="INFO")
+
+logger.add(sys.__stderr__, level="INFO")  # use the original stderr, not Jupyter’s proxy
+
+
+sys.path.append("..")
+from fandu.geo_utils import get_newest_feature_file
+
+pd.set_option("display.max_rows", None)
+
+geojson_folder = "../precious/"
+features = ["Addresses","Parcels"]
+selector = "Civic_Associations"
+selector_key = "Fan District Association"
+
+```
+
+# Fan District Association
+
+```{python}
+
+# Load the neighborhoods GeoJSON
+data = {}
+for feature in [selector] + features:
+    geofile = get_newest_feature_file( geojson_folder, feature )
+    #logger.debug(geofile)
+    print(f"Found {feature}:  {geofile}" )
+    data[feature] = gpd.read_file( geofile )
+
+for feature in features:
+    data[feature] = data[feature].to_crs( data[selector].crs )
+
+
+# columns to drop:
+
+shared_drops = ['CreatedBy','CreatedDate','EditBy','EditDate']
+drop_columns = {
+    "Civic_Associations" : ['OBJECTID'] + shared_drops,
+    "Addresses"          : ['OBJECTID'] + shared_drops,
+    "Parcels"            : ['OBJECTID'],
+}
+
+for feature in [selector] + features:
+    data[feature] = data[feature].drop(columns=drop_columns[feature])
+
+```
+
+```{python}
+
+for feature in features:
+    data[selector_key] = data[selector][ data[selector]["Name"] == selector_key ]
+
+for feature in features:
+    predicate = "overlaps" if feature=="Neighborhoods" else "within"
+    data[feature+"_in_fan"] = gpd.sjoin(data[feature], data[selector_key], predicate=predicate, how="inner")
+
+for feature in features:
+    feature_name = feature+"_in_fan"
+    data[feature_name] = data[feature_name].drop(columns=["index_right","AdoptionDate","ChangeDate"])
+
+for feature in features:
+    feature_name = feature+"_in_fan"
+    df = data[feature_name].drop(columns="geometry")
+    df.to_csv(f"{feature_name}.csv", index=False)
+    print(f"Saving: {feature_name}.csv" )
+
+```
+
+## Perform initial recodes on Parcels
+
+::: {.column-page style="font-size:0.7em;"}
+```{python}
+parcels = data["Parcels_in_fan"].drop(columns=["geometry","GlobalID_left","GlobalID_right","Name","ID","MaskedOwner"])
+show( parcels, maxBytes=0, buttons=["pageLength", "copyHtml5", "csvHtml5" ])
+
+```
+:::
+
+
+
+## FDA - Key measures
+
+
+### Area 
+```{python}
+
+# Get the Shape_Area value for the row where Name == selector_key
+projected = data[selector].to_crs(epsg=2283)
+# Get Shape_Area for the selected feature
+area_sqft = projected.loc[projected["Name"] == selector_key, "geometry"].area.iloc[0]
+
+# Convert to acres
+area_acres = area_sqft / 43560
+area_sqmi = area_sqft / 27_878_400
+area_sqm = area_sqft * 0.09290304
+area_hectare = area_sqm / 10_000
+area_sqkm = area_sqm / 1_000_000
+
+print(f"{selector_key}: Area: {area_sqft:,.0f} sq.ft.,  {area_acres:,.2f} acres, {area_sqmi:,.3f} sq.miles")
+print(f"{selector_key}: Area: {area_sqm:,.0f} sq.m, {area_hectare:,.3f} hectares, {area_sqkm:,.3f} sq.km")
+
+```
+
+### Examples of records sharing the same AddressLabel
+
+```{python}
+feature_name = "Addresses_in_fan"
+gdf = data[feature_name]
+
+# Step 1: Find duplicated AddressLabels
+duplicates = gdf[gdf.duplicated(subset=["AddressLabel"], keep=False)]
+
+# Step 2: Group and inspect (optional)
+grouped = duplicates.sort_values("AddressLabel").groupby("AddressLabel")
+
+# Step 3: Print summary
+print(f"Total duplicated AddressLabel records: {len(duplicates)}")
+print(f"Number of unique duplicated labels: {duplicates['AddressLabel'].nunique()}")
+
+# Step 4: Show some examples
+print("\nExamples of duplicated AddressLabels:")
+print(duplicates[["AddressLabel", "UnitType", "UnitValue"]].head(10))
+
+```
+
+### Examples of non-unit addresses with unit parts in AddressLabel
+
+```{python}
+feature_name = "Addresses_in_fan"
+gdf = data[feature_name].copy()
+
+# Step 1: Build a list of distinct, non-null UnitTypes
+potential_unit_types = gdf["UnitType"].dropna().astype(str).str.strip().unique().tolist()
+potential_unit_types = [ut for ut in potential_unit_types if ut]  # Remove blanks
+
+# Step 2: Build regex pattern to match unit suffix at end of address
+#unit_pattern = r"\b(" + "|".join(map(re.escape, potential_unit_types)) + r")\s+\S+$"
+unit_pattern = r"\b(?:{})\s+\S+$".format("|".join(map(re.escape, potential_unit_types)))
+
+# Step 3: Find rows with UnitType == None and AddressLabel contains a recognizable UnitType
+mask = gdf["UnitType"].isnull() & gdf["AddressLabel"].astype(str).str.contains(unit_pattern, regex=True, na=False)
+
+# Subset matching rows
+candidates = gdf[mask].copy()
+
+# Step 4: Report
+print(f"🔍 Found {len(candidates)} rows where AddressLabel ends with a recognizable UnitType + value and UnitType is missing.")
+print("\n🧪 Sample rows:")
+print(candidates[["AddressLabel", "UnitType", "UnitValue"]].head())
+
+```
+
+### Fix these issues found above.
+
+```{python}
+
+# Step 5: Extract UnitType and UnitValue using regex
+# Example match: "501 N Arthur Ashe Blvd Unit 2" → ("Unit", "2")
+unit_extract_pattern = r"\b(" + "|".join(map(re.escape, potential_unit_types)) + r")\s+(\S+)$"
+unit_parts = candidates["AddressLabel"].astype(str).str.extract(unit_extract_pattern)
+
+# Assign back to the original gdf using index alignment
+gdf.loc[candidates.index, "UnitType"] = unit_parts[0]
+gdf.loc[candidates.index, "UnitValue"] = unit_parts[1]
+
+# Step 6: Update data structure
+data[feature_name] = gdf
+
+print(f"\n✅ Extracted UnitType and UnitValue for {len(unit_parts.dropna())} rows.")
+```
+
+### Examples of non-unit addreses sharing the same long/lat
+
+```{python}
+
+feature_name = "Addresses_in_fan"
+gdf = data[feature_name]
+
+# Step 1: Filter for base addresses (UnitType is None) and valid coordinates
+base_addrs = gdf[
+    gdf["UnitType"].isnull() &
+    gdf["Longitude"].notnull() &
+    gdf["Latitude"].notnull()
+].copy()
+
+# Step 2: Find duplicate coordinate records
+dup_coords = base_addrs[
+    base_addrs.duplicated(subset=["Longitude", "Latitude"], keep=False)
+]
+
+# Step 3: Group duplicates for inspection
+coord_groups = dup_coords.groupby(["Latitude", "Longitude"])
+
+# Step 4: Summary counts
+print(f"📍 Total base address rows with duplicate coordinates: {len(dup_coords)}")
+print(f"🔁 Unique (lat, lon) pairs with duplicates: {coord_groups.ngroups}")
+
+# Step 5: Show sample groups
+print("\n🔍 Example duplicates (UnitType is None, by lat/lon):")
+for (lat, lon), group in coord_groups:
+    print(f"\nCoordinates: ({lat}, {lon}) — {len(group)} records")
+    sorted_group = group.sort_values("AddressLabel")
+    print(sorted_group[["AddressLabel", "UnitType", "UnitValue", "Latitude", "Longitude"]])
+    break  # Remove this if you want to show all groups
+
+```
+
+```{python}
+if 0:
+    print("\n\n\n🔍 First record from each duplicate (UnitType is None, by lat/lon):")
+    for (lat, lon), group in coord_groups:
+        first = group.sort_values("AddressLabel").iloc[0]
+        print(f"{first['AddressLabel']} | UnitType={first['UnitType']} | UnitValue={first['UnitValue']} | ({lat}, {lon})")
+
+print("\n🔍 First record from each duplicate (UnitType is None, by lat/lon):")
+for (lat, lon), group in coord_groups:
+    first = group.sort_values("AddressLabel").iloc[0]
+    group_size = len(group)
+    print(f"{first['AddressLabel']} | {group_size} records | ({lat}, {lon})")
+
+
+```
+
+### Fix: jitter addresses
+
+```{python}
+# Make a copy so we can safely modify coordinates
+
+from shapely.geometry import Point
+
+gdf_jittered = gdf.copy()
+
+# Define base jitter radius in degrees (very small ~meters)
+base_radius_deg = 0.00001
+
+# Loop over each group
+for (lat, lon), group in coord_groups:
+    count = len(group)
+    if count == 1:
+        continue  # No need to jitter
+
+    radius = base_radius_deg * np.sqrt(1.0 * count)  # Increase radius with count
+     # One random multiplier [0, 1) for each point
+    random_scalars = np.random.rand(count)
+
+    # Final radius for each point
+    radii = radius * random_scalars
+    angles = np.linspace(0, 2 * np.pi, count, endpoint=False)
+
+    jittered_lats = lat + radii * np.sin(angles)
+    jittered_lons = lon + radii * np.cos(angles)
+
+    # Assign jittered coordinates back using index
+    gdf_jittered.loc[group.index, "Latitude"] = jittered_lats
+    gdf_jittered.loc[group.index, "Longitude"] = jittered_lons
+
+data[feature_name].loc[gdf_jittered.index, "Latitude"] = gdf_jittered["Latitude"]
+data[feature_name].loc[gdf_jittered.index, "Longitude"] = gdf_jittered["Longitude"]
+
+# Update all the geometries
+data[feature_name]["geometry"] = data[feature_name].apply(
+    lambda row: Point(row["Longitude"], row["Latitude"]), axis=1
+)
+
+print("✅ Jittered coordinates applied to duplicate lat/lon groups.")
+```
+
+
+### Example: Unit addresses without non-unit base address
+
+
+```{python}
+
+feature_name = "Addresses_in_fan"
+gdf = data[feature_name]
+
+# Step 1: Get unit addresses (where UnitType is not null)
+unit_addrs = gdf[gdf["UnitType"].notnull()].copy()
+
+# Step 2: Extract base address (remove unit from AddressLabel)
+# Assumes unit info appears after a comma, e.g., "123 Main St, Apt 2B"
+
+unit_addrs["BaseAddressLabel"] = (
+    unit_addrs["BuildingNumber"].fillna("") + " " +
+    unit_addrs["StreetDirection"].fillna("") + " " +
+    unit_addrs["StreetName"].fillna("") + " " +
+    unit_addrs["StreetType"].fillna("")
+).str.replace(r"\s+", " ", regex=True).str.strip()
+
+# Step 3: Get base addresses in the dataset (with UnitType == None)
+base_addrs = gdf[gdf["UnitType"].isnull()].copy()
+base_addrs["BaseAddressLabel"] = (
+    base_addrs["BuildingNumber"].fillna("") + " " +
+    base_addrs["StreetDirection"].fillna("") + " " +
+    base_addrs["StreetName"].fillna("") + " " +
+    base_addrs["StreetType"].fillna("")
+).str.strip().replace(r"\s+", " ", regex=True)
+
+base_addrs["AddressLabel"] = base_addrs["AddressLabel"].fillna("").astype(str).str.strip()
+
+# Step 4: Get the set of base labels from base_addrs
+base_set = set(base_addrs["BaseAddressLabel"])
+
+# Step 5: Find unit addresses whose base is missing
+missing = unit_addrs[~unit_addrs["BaseAddressLabel"].isin(base_set)]
+
+# Step 6: Print summary
+print(f"Total unit addresses: {len(unit_addrs)}")
+print(f"Unit addresses with missing base address: {len(missing)}")
+
+if not missing.empty:
+    print("\nExamples of missing base addresses:")
+    print(missing[["AddressLabel", "BaseAddressLabel", "UnitType", "UnitValue"]].head())
+else:
+    print("\nAll addresses have base address. (this is good!)")
+
+```
+
+### List of non-unit addresses where baseaddresslabel <> addressLabel
+
+```{python}
+# Count total base records
+total_base = len(base_addrs)
+
+# Compare BaseAddressLabel to AddressLabel
+match = base_addrs[base_addrs["BaseAddressLabel"] == base_addrs["AddressLabel"]]
+mismatch = base_addrs[base_addrs["BaseAddressLabel"] != base_addrs["AddressLabel"]]
+
+# Print counts
+print(f"Total base addresses (UnitType is null): {total_base}")
+print(f"Matching AddressLabel == BaseAddressLabel: {len(match)}")
+print(f"Non-matching AddressLabel != BaseAddressLabel: {len(mismatch)}")
+
+# Show examples of mismatches
+if not mismatch.empty:
+    print("\nExamples of mismatched base addresses:")
+    print(mismatch[["AddressLabel", "BaseAddressLabel"]].head())
+
+```
+
+### Addresses with the top 20 unit counts.
+
+```{python}
+
+feature_name = "Addresses_in_fan"
+gdf = data[feature_name].copy()
+
+# Step 1: Create BaseAddressLabel for all addresses
+gdf["BaseAddressLabel"] = (
+    gdf["BuildingNumber"].fillna("") + " " +
+    gdf["StreetDirection"].fillna("") + " " +
+    gdf["StreetName"].fillna("") + " " +
+    gdf["StreetType"].fillna("")
+).str.strip().replace(r'\s+', ' ', regex=True)
+
+# Step 2: Count number of unit addresses per BaseAddressLabel
+unit_counts = (
+    gdf[gdf["UnitType"].notnull()]
+    .groupby("BaseAddressLabel")
+    .size()
+    .rename("UnitCountForBase")
+)
+
+# Step 3: Map unit counts to base addresses
+gdf["UnitCount"] = gdf["BaseAddressLabel"].map(unit_counts).fillna(1).astype(int)
+
+# Save back to data object
+data[feature_name] = gdf
+
+```
+
+```{python}
+feature_name = "Addresses_in_fan"
+gdf = data[feature_name]
+
+# Sort by UnitCount descending and drop duplicates to avoid listing each unit individually
+top_bases = (
+    gdf[gdf["UnitType"].isnull()]  # Only base addresses
+    .sort_values("UnitCount", ascending=False)
+    .head(20)
+)
+
+# Display relevant info
+print(top_bases[["AddressLabel", "BaseAddressLabel", "UnitCount","UnitType"]])
+```
+
+### Delete parcels with duplicate geometries
+
+
+```{python}
+import geopandas as gpd
+
+# Load your GeoDataFrame
+gdf = data["Parcels_in_fan"]
+
+# Convert geometries to a hashable form for comparison
+gdf["geom_wkt"] = gdf.geometry.to_wkt()
+
+# Keep only the first occurrence of each geometry
+gdf_unique = gdf.drop_duplicates(subset="geom_wkt", keep="first").copy()
+
+# Drop the helper column
+gdf_unique.drop(columns=["geom_wkt"], inplace=True)
+
+data["Parcels_in_fan"] = gdf_unique
+
+# Or inspect
+print(f"Original count: {len(gdf)}, After deduplication: {len(gdf_unique)}")
+
+```
+
+List out duplicate parcels
+
+```{python}
+# Step 1: Load your parcel GeoDataFrame
+gdf = data["Parcels_in_fan"]
+
+# Step 2: Convert geometry to WKT for exact-match comparison
+gdf["geom_wkt"] = gdf.geometry.to_wkt()
+
+# Step 3: Count duplicate geometries
+geom_counts = gdf["geom_wkt"].value_counts()
+
+# Step 4: Add back the count to the original GeoDataFrame
+gdf["geom_count"] = gdf["geom_wkt"].map(geom_counts)
+
+# Step 5 (Optional): See only duplicates
+duplicates = gdf[gdf["geom_count"] > 1]
+
+# Print or inspect
+print(duplicates[["ParcelID", "PIN", "geom_count"]])
+
+```
+
+### Merge addresses to parcels
+
+```{python}
+
+import geopandas as gpd
+
+# 1. Reproject to a common CRS if necessary
+
+parcels_gdf = data["Parcels_in_fan"]
+addresses = data["Addresses_in_fan"].to_crs(parcels_gdf.crs)
+
+# 🔍 Filter to include only addresses with UnitType not null (unit addresses)
+addresses_with_units = addresses[addresses["UnitType"].notnull()]
+
+# Step 2: Perform spatial join: which addresses fall within which parcel
+joined_with_units = gpd.sjoin(addresses_with_units, parcels_gdf, predicate="within", how="left")
+
+```
+
+```{python}
+
+# Step 3: Group addresses by parcel index and aggregate
+address_groups_with_units = (
+    joined_with_units.groupby("index_right")
+    .agg({
+        "AddressLabel": lambda x: list(x.dropna()),
+        "AddressId": lambda x: list(x.dropna())
+    })
+    .rename(columns={"AddressLabel": "AddressList", "AddressId": "AddressIdList"})
+)
+
+```
+```{python}
+
+# Step 4: Merge back into parcels
+parcels_with_addresses = parcels_gdf.join(address_groups_with_units)
+
+# Step 5: Fill missing lists as empty
+parcels_with_addresses["AddressList"] = parcels_with_addresses["AddressList"].apply(
+    lambda x: x if isinstance(x, list) else []
+)
+parcels_with_addresses["AddressIdList"] = parcels_with_addresses["AddressIdList"].apply(
+    lambda x: x if isinstance(x, list) else []
+)
+
+# Step 6: Store result back into data
+data["Parcels_in_fan"] = parcels_with_addresses
+
+```
+
+### Frequency of addresses counts in parcels
+
+```{python}
+# Step 1: Get number of addresses per parcel
+address_counts = data["Parcels_in_fan"]["AddressList"].apply(len)
+
+# Step 2: Create frequency table
+frequency_table = address_counts.value_counts().sort_index()
+
+# Step 3: Print result
+print("📊 Frequency of address counts per parcel:")
+print(frequency_table)
+
+```
+
+### Why so many odd parcel counts?
+
+let's look at a few parcels with 12 addresses.
+
+```{python}
+
+# Step 1: Get parcels with exactly 12 addresses
+parcels_with_12 = data["Parcels_in_fan"][data["Parcels_in_fan"]["AddressList"].apply(len) == 12]
+
+# Step 2: Display first few (e.g., 5) with their addresses
+print("📦 Parcels with exactly 12 addresses:\n")
+for idx, row in parcels_with_12.head(5).iterrows():
+    print(f"Parcel Index: {idx}")
+    print("Addresses:")
+    for addr in row["AddressList"]:
+        print(f"  - {addr}")
+    print("-" * 40)
+
+
+```
+
+### Any now digging into 2710 Stuart
+
+```{python}
+
+# Helper function: check if any address in the list starts with "2710 Stuart Ave"
+def has_stuart_ave(addresses):
+    return any(addr.startswith("2710 Stuart Ave") for addr in addresses)
+
+# Step 1: Filter parcels with at least one address matching "2710 Stuart Ave"
+stuart_parcels = data["Parcels_in_fan"][data["Parcels_in_fan"]["AddressList"].apply(has_stuart_ave)]
+
+# Step 2: Show full info for each parcel
+print("📦 Parcels containing addresses for '2710 Stuart Ave':\n")
+for idx, row in stuart_parcels.iterrows():
+    print(f"Parcel Index: {idx}")
+    for key, value in row.items():
+        if isinstance(value, list):
+            print(f"{key}:")
+            for item in value:
+                print(f"  - {item}")
+        else:
+            print(f"{key}: {value}")
+    print("-" * 80)
+
+```
+
+### All the duplicate parcels
+
+```{python}
+
+import pandas as pd
+
+if 0:
+    # Step 1: Normalize AddressList for comparison — sort and convert to tuple
+    def normalized_address_list(addresses):
+        return tuple(sorted(addresses)) if isinstance(addresses, list) else ()
+
+    # Step 2: Create a normalized column
+    parcels = data["Parcels_in_fan"].copy()
+    parcels["AddressListKey"] = parcels["AddressList"].apply(normalized_address_list)
+
+    # Step 3: Group by the normalized address list
+    grouped = parcels.groupby("AddressListKey")
+
+    # Step 4: Identify groups with duplicates (2 or more parcels sharing the same address list)
+    duplicate_groups = {k: g for k, g in grouped if len(g) > 1}
+
+    # Step 5: Print full info for each group of duplicated parcels
+    print("📦 Duplicate parcels with identical address lists:\n")
+    for key, group in duplicate_groups.items():
+        print(f"🧵 Shared Address List ({len(group)} parcels):")
+        for addr in key:
+            print(f"  - {addr}")
+        print("🔍 Full parcel records:\n")
+        print(group.drop(columns=["AddressListKey"]).to_string(index=False))
+        print("-" * 80)
+
+
+```
+
+
+### Exploring parcels with more than one address
+
+These lists can be used later in tool tips.
+
+```{python}
+
+# Filter parcels that have more than one address
+multi_address_parcels = parcels_with_addresses[parcels_with_addresses["AddressList"].apply(lambda x: isinstance(x, list) and len(x) > 1)]
+
+# Print a few examples
+print("📦 Parcels with multiple addresses:\n")
+
+for idx, row in multi_address_parcels.head(5).iterrows():
+    print(f"Parcel Index: {idx}")
+    print(f"Address Count: {len(row['AddressList'])}")
+    print("Addresses:")
+    for addr in row["AddressList"]:
+        print(f"  - {addr}")
+    print("-" * 40)
+
+```
+
+
+```{python}
+
+if 0:
+    # Connect to or create a database file
+    conn = sqlite3.connect("fda-data.sqlite")
+
+    for feature in [selector]+features:
+
+    # Write the DataFrame to a new table (overwrite if it exists)
+        temp_copy = data[feature].copy()
+        temp_copy = temp_copy.drop(columns=['geometry'])
+        temp_copy.to_sql(feature.lower(), conn, if_exists="replace", index=False)
+
+        # write out _in_fan features
+        if not feature==selector:
+            feature_name = feature + "_in_fan"
+            temp_copy = data[feature_name].copy()
+            temp_copy = temp_copy.drop(columns=['geometry'])
+            temp_copy.to_sql(feature_name.lower(), conn, if_exists="replace", index=False)
+
+    conn.close()
+
+```
+
+
+
+## Save modified GEOJSON files for later use
+
+```{python}
+
+output_folder = "../data"
+os.makedirs(output_folder, exist_ok=True)
+
+# Write each GeoDataFrame in the dictionary to a GeoJSON file
+for key, gdf in data.items():
+    if hasattr(gdf, "to_file"):  # Check it's a GeoDataFrame
+        output_path = os.path.join(output_folder, f"{key}.geojson")
+        gdf.to_file(output_path, driver="GeoJSON")
+```
+
+
+
+## Available columns
+
+```{python}
+#| output: asis
+
+print(":::: {.columns} ")
+
+width = round(floor(100.0 / len( [selector] + features )))
+
+for feature in [selector] + features:
+    if feature in features:
+        feature = feature + "_in_fan"
+    print(f"""
+::: {{.column width={width}%}}
+### {feature}
+
+| Property |
+|----------|""")
+
+    columns = data[feature].columns.tolist()
+    for col in columns:
+        print(f"| {col} |")
+    print (f"""
+
+::: 
+""")
+
+print("\n::::")
+```

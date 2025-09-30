@@ -1,0 +1,41 @@
+---
+title: Parcels
+---
+
+```{python}
+import os
+import re
+import sys
+import sqlite3
+import requests
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+import matplotlib.pyplot as plt
+
+from matplotlib.patches import Patch
+from matplotlib.lines import Line2D
+from math import floor
+import itables
+from itables import show
+
+
+#sys.path.append("..")
+from fandu.geo_utils import get_newest_feature_file
+
+
+from loguru import logger
+logger.remove()  # remove default handler
+#logger.add(lambda msg: print(msg, end=""), level="INFO")
+logger.add(sys.__stderr__, level="INFO")  # use the original stderr, not Jupyter’s proxy
+
+
+pd.set_option("display.max_rows", None)
+```
+
+```{python}
+precious_folder = "../precious/"
+feature_file = "Parcels"
+filename = get_newest_feature_file(precious_folder,feature_file)
+
+```

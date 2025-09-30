@@ -2,15 +2,319 @@
 title: setup
 ---
 
-```{python}
-#! label: 01_setup.qmd
-import sys
-from loguru import logger
+This is the introduction paragraph.  In this file we're cleaning the data and setting up files for later processing.
 
-logger.remove()
+```{python}
+
+
+import os
+import re
+import sys
+import sqlite3
+import requests
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+import matplotlib.pyplot as plt
+
+from matplotlib.patches import Patch
+from matplotlib.lines import Line2D
+from math import floor
+
+from loguru import logger
+# Configure loguru to only log to stderr (console)
+logger.remove()  # remove default handler
 logger.add(sys.__stderr__, level="INFO")  # use the original stderr, not Jupyter’s proxy
 
-logger.info("")
-logger.info("This should go only to the real console")
-logger.info("A second log message")
+import itables
+from itables import show
+# 🔧 Sensible global defaults for itables
+itables.options.maxBytes = 0                        # show full content in each cell
+itables.options.classes = ["display", "compact"]    # compact, clean look
+itables.options.lengthMenu = [10, 25, 50, 100]      # page length menu
+itables.options.buttons = ["copy", "csv", "print"]
+itables.options.scrollX = True                      # allow horizontal scroll if needed
+itables.options.scrollY = True                      # allow horizontal scroll if needed
+itables.options.ordering = True
+
+#sys.path.append("..")
+from fandu.geo_utils import get_newest_feature_file
+
+pd.set_option("display.max_rows", None)
+
+geojson_folder = "../precious/"
+features = ["Addresses","Parcels"]
+selector = "Civic_Associations"
+selector_key = "Fan District Association"
+
 ```
+
+# Load, clean, recode and save
+
+
+## Load files
+
+```{python}
+#| echo: true
+
+# Load the neighborhoods GeoJSON
+# creates data["Parcels"] containing geojson data.
+data = {}
+for feature in [selector] + features:
+    geofile = get_newest_feature_file( geojson_folder, feature )
+    #logger.debug(geofile)
+    print(f"Found {feature}:  {geofile}" )
+    data[feature] = gpd.read_file( geofile )
+
+# convert all feature files to same CRS mapping as Civic_Associations
+for feature in features:
+    data[feature] = data[feature].to_crs( data[selector].crs )
+
+```
+
+### Drop columns
+
+```{python}
+#| echo: true
+# columns to drop:
+shared_drops = ['CreatedBy','CreatedDate','EditBy','EditDate']
+## file specific column drop mappings
+drop_columns = {
+    "Civic_Associations" : ['OBJECTID'] + shared_drops,
+    "Addresses"          : ['OBJECTID'] + shared_drops,
+    "Parcels"            : ['OBJECTID'],
+}
+for feature in [selector] + features:
+    data[feature] = data[feature].drop(columns=drop_columns[feature])
+
+```
+
+### Spatial join, select only parcels and addresses in the Fan.
+
+```{python}
+#| echo: true
+
+# Pull out only FDA from Civic_Associations and store it
+data[selector_key] = data[selector][ data[selector]["Name"] == selector_key ]
+
+# Select only features from the selector_key (FDA).  perform spatial join.
+for feature in features:
+    predicate = "overlaps" if feature=="Neighborhoods" else "within"
+    data[feature+"_in_fan"] = gpd.sjoin(data[feature], data[selector_key], predicate=predicate, how="inner")
+
+```
+
+### Drop unnecessary columns
+
+```{python}
+#| echo: true
+# Drop columns created from spatial join
+shared_drops = ["index_right","AdoptionDate","ChangeDate","Shape__Area","Shape__Length"]
+drop_columns = {
+    "Addresses"          : ['GlobalID'] + shared_drops,
+    "Parcels"            : ['MaskedOwner','GlobalID_left','GlobalID_right'] + shared_drops,
+}
+for feature in features:
+    feature_name = feature+"_in_fan"
+    data[feature_name] = data[feature_name].drop(columns=drop_columns[feature])
+```
+
+### Create columns and recode columns in Parcels
+
+```{python}
+#| echo: true
+
+gdf = data["Parcels_in_fan"]
+
+gdf["OwnerOccupied"] = gdf.apply(
+    lambda row: str(row["MailAddress"]).startswith(str(row["AsrLocationBldgNo"]))
+                and str(row["MailCity"]).upper() == "RICHMOND"
+                and str(row["MailState"]).upper() == "VA"
+                and str(row["MailZip"]) == "23220",
+    axis=1
+).map({True: 1, False: 0})
+
+
+# Rule 1: If PropertyClass contains 'Commercial'
+gdf.loc[gdf["PropertyClass"].str.contains("Commercial", case=False, na=False), "LandUse"] = "Commercial"
+
+# Rule 2: If PropertyClass contains 'Condo'
+gdf.loc[gdf["PropertyClass"].str.contains("Condo", case=False, na=False), "LandUse"] = "Multi-Family"
+
+gdf["SharedGeometry"] = gdf.duplicated(subset="geometry", keep=False).astype(int)
+
+# Create FanUse
+
+mapping = {
+    "Single Family": "FanResidential",
+    "Multi-Family": "FanResidential",
+    "Duplex (2 Family)" : "FanResidential",
+    "Commercial": "FanBusiness",
+    "Industrial": "FanBusiness",
+    "Office" : "FanBusiness",
+    "Institutional" : "FanBusiness",
+    "Mixed-Use" : "FanMixed-Use"
+}
+gdf["FanUse"] = gdf["LandUse"].map(mapping).fillna("FanOther")
+
+# Ensure PropertyClass is string and safe for NaNs
+mask = gdf["PropertyClass"].fillna("").str.contains("vacant|parking|common|garage|storage|tower|space", case=False, na=False)
+# Apply recode
+gdf.loc[mask, "FanUse"] = "FanOther"
+
+
+# A new variable to permit easy selecting
+
+gdf["FanUseType"] = "FanIgnore"  # default
+gdf.loc[(gdf["OwnerOccupied"] == 1) & (gdf["Mailable"] == 1), "FanUseType"] = "FanOwner"
+gdf.loc[(gdf["OwnerOccupied"] == 0) & (gdf["Mailable"] == 1), "FanUseType"] = "FanRental"
+
+# Reset if it's one of the FanOther property classes.
+gdf.loc[mask, "FanUseType"] = "FanIgnore"
+
+
+mapping = {
+    "FanResidential": 1,
+    "FanBusiness": 10,
+    "FanMixed-Use" : 20,
+    "FanOther": 99
+}
+gdf["FanUseOrder"] = gdf["FanUse"].map(mapping).fillna(99)
+
+data["Parcels_in_fan"] = gdf
+
+```
+
+### Save Parcels_in_fan and Addresses_in_fan for later use.
+
+```{python}
+#| echo: true
+for feature in features:
+    feature_name = feature+"_in_fan"
+
+    # create dataframe without spatial geometries and store to CSV
+    gdf = data[feature_name].drop(columns="geometry")
+    gdf.to_csv(f"{feature_name}.csv", index=False)
+    logger.info(f"Saving: {feature_name}.csv" )
+
+    # store to parquet using pyarror (workflow tip from chatgpt
+    data[feature_name].to_parquet(f"{feature_name}.parquet",engine="pyarrow")
+    logger.info(f"Saving: {feature_name}.parquet" )
+
+```
+
+# Examine Parcels
+
+```{python}
+import duckdb
+con = duckdb.connect()
+x = con.execute("INSTALL spatial; LOAD spatial;")
+x = con.execute("CREATE TABLE parcels AS SELECT * FROM 'Parcels_in_fan.parquet';")
+```
+
+## FanUse by FanUseType
+
+::: {style="font-size:0.7em"}
+
+```{python}
+result = con.execute("""
+SELECT
+    FanUse,
+    SUM(CASE WHEN FanUseType='FanOwner'  THEN 1 ELSE 0 END) AS FanOwner,
+    SUM(CASE WHEN FanUseType='FanRental' THEN 1 ELSE 0 END) AS FanRental,
+    SUM(CASE WHEN FanUseType='FanIgnore' THEN 1 ELSE 0 END) AS FanIgnore,
+    SUM(1) as total,
+    ' ' as ' ',
+    SUM(CASE WHEN SharedGeometry = 1 THEN 1 ELSE 0 END) AS SharedParcel
+FROM parcels
+GROUP BY FanUse,FanUseOrder
+ORDER BY FanUseOrder
+""").fetch_df().reset_index()
+show(result,pageLength=100)
+```
+:::
+
+* `FanOwner` - Parcel owner address matches building address number, parcel owner zip is 23220, and parcel has mailable USPS address for owner of record.  These parcel owners have their tax
+record mailed to this parcel address, so they're probably the owner.
+* `FanRental` - Parcel owner address doesn't match building address number. So, parcel owner address is OUTSIDE the Fan. It's possible that the owner uses a different address for tax bill. NOTE - the parcel database doesn't contain addresses for these parcels. We don't have Fan addresses for these parcels, just the address of the tax owner.  For example, the address for Joe's Inn isn't in parcel database.  The parcel owner is outside the Fan.
+* `FanIgnore` - not a mailable address, probably a park, parking lot, common area, etc.
+
+
+## FanUse, LandUse by FanUseType
+
+
+::: {.column-page-inset-right style="font-size:0.7em"}
+
+```{python}
+result = con.execute("""
+SELECT
+    FanUse, LandUse,
+    SUM(CASE WHEN FanUseType='FanOwner'  THEN 1 ELSE 0 END) AS FanOwner,
+    SUM(CASE WHEN FanUseType='FanRental' THEN 1 ELSE 0 END) AS FanRental,
+    SUM(CASE WHEN FanUseType='FanIgnore' THEN 1 ELSE 0 END) AS FanIgnore,
+    SUM(1) as total,
+    ' ' as ' ',
+    SUM(CASE WHEN SharedGeometry = 1 THEN 1 ELSE 0 END) AS SharedParcel
+FROM parcels
+GROUP BY FanUse,LandUse,FanUseOrder
+ORDER BY FanUseOrder, LandUse
+""").fetch_df().reset_index()
+show(result,pageLength=100)
+```
+:::
+
+## FanUse, LandUse, PropertyClass by FanUseType
+
+::: {.column-page-inset-right style="font-size:0.7em"}
+```{python}
+result = con.execute("""
+SELECT
+    FanUse, LandUse, PropertyClass,
+    SUM(CASE WHEN FanUseType='FanOwner'  THEN 1 ELSE 0 END) AS FanOwner,
+    SUM(CASE WHEN FanUseType='FanRental' THEN 1 ELSE 0 END) AS FanRental,
+    SUM(CASE WHEN FanUseType='FanIgnore' THEN 1 ELSE 0 END) AS FanIgnore,
+    SUM(1) as total,
+    ' ' as ' ',
+    SUM(CASE WHEN SharedGeometry = 1 THEN 1 ELSE 0 END) AS SharedParcel
+FROM parcels
+GROUP BY FanUse,LandUse,FanUseOrder,PropertyClass
+ORDER BY FanUseOrder, LandUse, PropertyClass
+""").fetch_df().reset_index()
+show(result,pageLength=100)
+```
+:::
+
+
+## View All Parcels
+
+Use the Sort field to select subsets of parcels.
+
+::: {.column-screen-inset style="font-size:0.7em"}
+```{python}
+feature_name = "Parcels_in_fan"
+df = data[feature_name].drop(columns="geometry")
+cols = ["FanUse", "LandUse", "PropertyClass","FanUseType"] + [c for c in df.columns if c not in ["FanUse", "LandUse", "PropertyClass"]]
+df = df[cols]               
+df = df.sort_values(by=["FanUseOrder", "LandUse", "PropertyClass"],
+               ascending=[True, True, True])
+show(df)
+```
+:::
+
+
+# Examine Addresses
+
+In the following sections we review the Addresses file.  If changes
+are necessary, iterate with the cleaning sections and rerun the report until
+everyting is clean.
+
+
+## View All Addresses
+
+::: {.column-screen-inset style="font-size:0.7em"}
+```{python}
+feature_name = "Addresses_in_fan"
+df = data[feature_name].drop(columns="geometry")
+show(df)
+```
+:::

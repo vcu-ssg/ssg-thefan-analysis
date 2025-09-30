@@ -3,9 +3,17 @@
 This folder contains files that are manually downloaded from their source.
 
 Files are named according to their feature contents (e.g., Addresses, Parcels, Civic Associations) and then
-dated by download day.
+dated by download day. For example:
 
-When downloading a new file, add a download date.  Feature names are separated from date by a dash-.
+    Addresses-2025-12-31.geojson
+    FDA_contacts-2025-10-12.csv
+    Civic_Associations-2024-12-13.geojson
+
+Use this function to load the latest feature file:
+
+        sys.path.append("..")
+        from fandu.geo_utils import get_newest_feature_file
+
 
 Geocoded feature files from RVA GeoHub:  https://richmond-geo-hub-cor.hub.arcgis.com/
 
@@ -18,4 +26,6 @@ Geocoded feature files from RVA GeoHub:  https://richmond-geo-hub-cor.hub.arcgis
 * [National Historic Districts](https://richmond-geo-hub-cor.hub.arcgis.com/datasets/38bd0df47c6440528c2ef22daaf81883_0/explore?location=37.550339%2C-77.468606%2C14.93) - Represents districts and sites that are listed on the National Register of Historic Places (Federal designation) and the Virginia Landmarks Register (State designation).
 
 * [Neighborhoods](https://richmond-geo-hub-cor.hub.arcgis.com/datasets/7a0ffef23d16461e9728c065f27b2790_0/explore?location=37.525021%2C-77.493427%2C10.73) - City of Richmond Neighborhoods. These are different from civic associations.
+
+* [FDA Contact List](https://fandistrict.org/admin/contacts/) - use the "export" button on this screen to save all contacts to a CSV file.
 
