@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Optional
 
 
-def get_newest_feature_file(path: str, feature: str) -> Optional[str]:
+def get_newest_feature_file(path: str, feature: str, ext: str = ".geojson") -> Optional[str]:
     """
     Finds the newest .geojson file matching the pattern 'feature-YYYY-MM-DD*.geojson' in the given path.
     Returns the absolute file path, or None if no matching files are found.
@@ -24,7 +24,7 @@ def get_newest_feature_file(path: str, feature: str) -> Optional[str]:
     Returns:
         Optional[str]: Absolute file path of the newest feature file, or None.
     """
-    pattern = re.compile(rf"^{re.escape(feature)}-(\d{{4}}-\d{{2}}-\d{{2}}).*\.geojson$", re.IGNORECASE)
+    pattern = re.compile(rf"^{re.escape(feature)}-(\d{{4}}-\d{{2}}-\d{{2}}).*\{re.excape(ext)}$", re.IGNORECASE)
 
     newest_file = None
     newest_date = None

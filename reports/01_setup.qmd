@@ -37,15 +37,24 @@ itables.options.scrollX = True                      # allow horizontal scroll if
 itables.options.scrollY = True                      # allow horizontal scroll if needed
 itables.options.ordering = True
 
-#sys.path.append("..")
+sys.path.append("..")
 from fandu.geo_utils import get_newest_feature_file
 
 pd.set_option("display.max_rows", None)
 
-geojson_folder = "../precious/"
+precious_folder = "../precious/"
 features = ["Addresses","Parcels"]
 selector = "Civic_Associations"
 selector_key = "Fan District Association"
+
+```
+```{python}
+import re
+from fandu.geo_utils import get_newest_feature_file
+precious_folder = "../precious/"
+
+csvs = ["FDA_contacts"]
+csvfile = get_newest_feature_file( precious_folder,'FDA_contacts',ext='.csv')
 
 ```
 
@@ -61,7 +70,7 @@ selector_key = "Fan District Association"
 # creates data["Parcels"] containing geojson data.
 data = {}
 for feature in [selector] + features:
-    geofile = get_newest_feature_file( geojson_folder, feature )
+    geofile = get_newest_feature_file( precious_folder, feature )
     #logger.debug(geofile)
     print(f"Found {feature}:  {geofile}" )
     data[feature] = gpd.read_file( geofile )
