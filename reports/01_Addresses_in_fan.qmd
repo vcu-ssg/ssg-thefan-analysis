@@ -1,0 +1,487 @@
+---
+title: setup
+---
+
+This is the introduction paragraph.  In this file we're cleaning the data and setting up files for later processing.
+
+```{python}
+
+
+import os
+import re
+import sys
+import sqlite3
+import requests
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+import matplotlib.pyplot as plt
+
+from matplotlib.patches import Patch
+from matplotlib.lines import Line2D
+from math import floor
+
+from loguru import logger
+# Configure loguru to only log to stderr (console)
+logger.remove()  # remove default handler
+logger.add(sys.__stderr__, level="INFO", format="{level: <8} | {name}:{function}:{line} - {message}" )  # use the original stderr, not Jupyter’s proxy
+
+## Set up itables
+import itables
+from itables import show
+# 🔧 Sensible global defaults for itables
+itables.options.maxBytes = 0                        # show full content in each cell
+itables.options.classes = ["display", "compact"]    # compact, clean look
+itables.options.lengthMenu = [10, 25, 50, 100]      # page length menu
+itables.options.pageLength = 25
+itables.options.buttons = ["copy", "csv", "print"]
+itables.options.scrollX = True                      # allow horizontal scroll if needed
+itables.options.scrollY = True                      # allow horizontal scroll if needed
+itables.options.ordering = True
+
+## Set up duckdb
+
+import duckdb
+con = duckdb.connect()
+x = con.execute("INSTALL spatial; LOAD spatial;")
+
+sys.path.append("..")
+from fandu.geo_utils import get_newest_file
+
+pd.set_option("display.max_rows", None)
+
+precious_folder = "../precious/"
+
+features = ["Addresses"]
+
+selector = "Civic_Associations"
+selector_key = "Fan District Association"
+
+fda_contacts_filename = get_newest_file( precious_folder,'FDA_contacts',ext='.csv')
+
+```
+```{python}
+
+def show_result_set( query, **kwargs ):
+    print('::: {.column-screen-inset style="font-size:0.7em"}')
+    df = con.execute( query ).fetch_df()
+    show(df,**kwargs)
+    print(':::')
+
+```
+
+# Load, clean, recode and save
+
+## Load files
+
+```{python}
+#| echo: true
+
+# Load the neighborhoods GeoJSON
+# creates data["Parcels"] containing geojson data.
+data = {}
+for feature in [selector] + features:
+    geofile = get_newest_file( precious_folder, feature, ext=".geojson" )
+    #logger.debug(geofile)
+    logger.info(f"Found {feature}:  {geofile}" )
+    data[feature] = gpd.read_file( geofile )
+
+# convert all feature files to same CRS mapping as Civic_Associations
+for feature in features:
+    data[feature] = data[feature].to_crs( data[selector].crs )
+
+```
+
+### Drop columns
+
+```{python}
+#| echo: true
+# columns to drop:
+shared_drops = ['CreatedBy','CreatedDate','EditBy','EditDate']
+## file specific column drop mappings
+drop_columns = {
+    "Civic_Associations" : ['OBJECTID'] + shared_drops,
+    "Addresses"          : ['OBJECTID'] + shared_drops,
+    "Parcels"            : ['OBJECTID'],
+}
+for feature in [selector] + features:
+    data[feature] = data[feature].drop(columns=drop_columns[feature])
+
+```
+
+### Spatial join, select only parcels and addresses in the Fan.
+
+```{python}
+#| echo: true
+
+# Pull out only FDA from Civic_Associations and store it
+data[selector_key] = data[selector][ data[selector]["Name"] == selector_key ]
+
+# Select only features from the selector_key (FDA).  perform spatial join.
+for feature in features:
+    predicate = "overlaps" if feature=="Neighborhoods" else "within"
+    data[feature+"_in_fan"] = gpd.sjoin(data[feature], data[selector_key], predicate=predicate, how="inner")
+
+```
+
+### Drop unnecessary columns
+
+```{python}
+#| echo: true
+# Drop columns created from spatial join
+shared_drops = ["index_right","AdoptionDate","ChangeDate","Shape__Area","Shape__Length"]
+drop_columns = {
+    "Addresses"          : ['GlobalID'] + shared_drops,
+    "Parcels"            : ['MaskedOwner','GlobalID_left','GlobalID_right'] + shared_drops,
+}
+for feature in features:
+    feature_name = feature+"_in_fan"
+    data[feature_name] = data[feature_name].drop(columns=drop_columns[feature])
+```
+
+
+### Clean columns in Addresses
+
+```{python}
+#| echo: true
+gdf = data["Addresses_in_fan"]
+
+# Trim and normalize white space
+gdf = gdf.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+gdf = gdf.apply(lambda col: col.str.strip().str.replace(r"\s+", " ", regex=True) 
+                if col.dtype == "object" else col)
+
+# Make sure values are integers, or compare as strings consistently
+gdf.loc[~gdf["ZipCode"].isin(['23220', '23284']), "ZipCode"] = '23220'
+
+# Clean up double spaces
+gdf["AddressLabel"] = (
+    gdf["AddressLabel"]
+    .astype(str)
+    # Replace non-breaking spaces with regular spaces
+    .str.replace(u"\u00A0", " ", regex=False)
+    # Remove other invisible/control characters
+    .str.replace(r"[\x00-\x1F\x7F-\x9F]", "", regex=True)
+    # Collapse multiple spaces (including tabs/newlines) into one
+    .str.replace(r"\s+", " ", regex=True)
+    # Trim leading/trailing whitespace
+    .str.strip()
+)
+
+gdf["HasDoubleSpaces"] = gdf["AddressLabel"].astype(str).str.contains(r"\s{2,}")
+gdf["AddressLen"] = gdf["AddressLabel"].astype(str).str.len()
+bad_rows = gdf[gdf["HasDoubleSpaces"]]
+print(bad_rows[["AddressLabel", "AddressLen"]])
+
+```
+
+
+```{python}
+#| echo: true
+
+## New columns
+gdf["AddressBase"] = (
+    gdf["BuildingNumber"].fillna("").astype(str).str.strip() + " " +
+    gdf["StreetDirection"].fillna("").astype(str).str.strip() + " " +
+    gdf["StreetName"].fillna("").astype(str).str.strip() + " " +
+    gdf["StreetType"].fillna("").astype(str).str.strip()
+).str.replace(r"\s+", " ", regex=True).str.strip()
+
+def make_extension(row):
+    parts = []
+    # only include UnitType if it's not None, empty, or "None"
+    if row["UnitType"] not in [None, "", "None"]:
+        parts.append(str(row["UnitType"]).strip())
+    # only include UnitValue if it's not None or empty
+    if row["UnitValue"] not in [None, ""]:
+        parts.append(str(row["UnitValue"]).strip())
+    return " ".join(parts)
+
+gdf["AddressExtension"] = gdf.apply(make_extension, axis=1)
+
+```
+
+```{python}
+#| echo: true
+
+# If AddressExtension is empty but ExtensionWithUnit has value → copy over
+gdf.loc[
+    (gdf["AddressExtension"].str.len() == 0) & (gdf["ExtensionWithUnit"].str.len() > 0),
+    "AddressExtension"
+] = gdf["ExtensionWithUnit"]
+
+# If ExtensionWithUnit is empty but AddressExtension has value → copy over
+gdf.loc[
+    (gdf["ExtensionWithUnit"].str.len() == 0) & (gdf["AddressExtension"].str.len() > 0),
+    "ExtensionWithUnit"
+] = gdf["AddressExtension"]
+
+```
+
+### A few records mention REAR APT A and REAR APT B
+```{python}
+#| echo: true
+
+# Condition: AddressLabel contains both "REAR" and "APT"
+mask = gdf["AddressLabel"].str.contains("REAR APT", case=False, na=False)
+
+# Remove "REAR" from AddressLabel
+gdf.loc[mask, "AddressLabel"] = gdf.loc[mask, "AddressLabel"].str.replace(
+    "REAR APT", "APT", case=False, regex=False
+).str.strip()
+
+# Set ExtensionWithUnit = AddressExtension for these rows
+gdf.loc[mask, "ExtensionWithUnit"] = gdf.loc[mask, "AddressExtension"]
+
+```
+
+### Fix 425 Strawberry Street
+
+```{python}
+#| echo: true
+gdf.loc[gdf["AddressBase"] == "425 Strawberry St", "AddressLabel"] = (
+    gdf["AddressBase"] + " " + gdf["AddressExtension"].fillna("")
+).str.strip()
+```
+
+```{python}
+#| echo: true
+
+data[feature_name] = gdf
+
+```
+
+### Save Parcels_in_fan and Addresses_in_fan for later use.
+
+```{python}
+#| echo: true
+for feature in features:
+    feature_name = feature+"_in_fan"
+
+    # store to parquet using pyarror (workflow tip from chatgpt
+    data[feature_name].to_parquet(f"{feature_name}.parquet",engine="pyarrow")
+    logger.info(f"Saving: {feature_name}.parquet" )
+
+    # create dataframe without spatial geometries and store to CSV
+    gdf = data[feature_name].drop(columns="geometry")
+    gdf.to_csv(f"{feature_name}.csv", index=False)
+    logger.info(f"Saving: {feature_name}.csv" )
+
+
+```
+
+# Examine Addresses
+
+In the following sections we review the Addresses file.  If changes
+are necessary, iterate with the cleaning sections and rerun the report until
+everyting is clean.
+
+```{python}
+x = con.execute("CREATE OR REPLACE TABLE addresses AS SELECT * FROM 'Addresses_in_fan.parquet';")
+```
+
+## List count addresses by zipcode
+```{python}
+#| output: asis
+show_result_set("""
+select 
+  ZipCode,
+  count(*)
+from
+  addresses
+group by
+  ZipCode
+order by
+  ZipCode
+""",pageLength=10)
+```
+
+## List odd addresses
+
+This should return blank.  These were cleaned/fixed above.
+
+```{python}
+#| output: asis
+#| echo: true
+show_result_set("""
+select 
+  *
+from
+  addresses
+where
+  not ZipCode in ('23220','23284')
+order by
+  StreetName,AddressLabel
+
+""",pageLength=10)
+```
+
+
+## List of Street Names
+
+```{python}
+#| output: asis
+show_result_set("""
+select StreetName from addresses group by StreetName order by StreetName
+""",pageLength=10)
+```
+
+## List of Street Types
+
+```{python}
+#| output: asis
+show_result_set("""
+select StreetType from addresses group by StreetType order by StreetType
+""",pageLength=10)
+```
+
+## List AddressBase that don't end with valid StreetType
+
+```{python}
+#| output: asis
+show_result_set("""
+WITH StreetTypes AS (
+    SELECT DISTINCT
+           regexp_extract(AddressBase, '[^ ]+$') AS StreetType
+    FROM addresses
+    WHERE AddressBase IS NOT NULL
+),
+AddressWithType AS (
+    SELECT AddressBase,
+           regexp_extract(AddressBase, '[^ ]+$') AS LastWord,
+           StreetType
+    FROM addresses
+    WHERE AddressBase IS NOT NULL
+)
+SELECT a.AddressBase,LastWord, StreetType
+FROM AddressWithType a
+where LastWord<>StreetType
+""",pageLength=10)
+```
+
+
+## List AddressLabels with mismatched AddressBase 
+
+```{python}
+#| output: asis
+show_result_set("""
+SELECT *
+FROM addresses
+WHERE AddressLabel NOT LIKE AddressBase || '%';
+""",pageLength=10)
+```
+
+## List Addresses with mismatched AddressExtension
+
+```{python}
+#| output: asis
+show_result_set("""
+SELECT 
+  '"' || AddressLabel || '"',
+  '"' || AddressBase || '"',
+  '"' || AddressExtension || '"',
+  '"' || ExtensionWithUnit || '"',
+  len(addresslabel),
+  len(addressbase),
+  len(addressextension)
+FROM addresses
+WHERE upper(AddressLabel) NOT LIKE ('% ' || upper(AddressExtension) || '%')
+  AND AddressExtension IS NOT NULL 
+  AND AddressExtension <> '';
+""",pageLength=10)
+```
+
+## List Addresses with mismatched AddressExtension and ExtensionWithUnit
+
+```{python}
+#| output: asis
+show_result_set("""
+SELECT 
+  AddressLabel,
+  ExtensionWithUnit,
+  AddressExtension,
+  length(AddressExtension),
+  length(ExtensionWithUnit)
+FROM addresses
+WHERE
+  length(AddressExtension)>0
+  and length(ExtensionWithUnit)>0
+  and upper(AddressExtension) <> upper(ExtensionWithUnit)
+""",pageLength=10)
+```
+
+
+## List addresses that don't add up
+
+```{python}
+#| output: asis
+show_result_set("""
+SELECT 
+  '"' || AddressLabel || '"' as AddressLabel,
+  '"' || AddressBase || '"' as AddressBase,
+  '"' || AddressExtension || '"' as AddressExtension,
+  hex(AddressLabel),
+  len(AddressLabel),
+  len(addressbase),
+  len(addressextension)
+FROM addresses
+WHERE (upper(AddressLabel) <> upper(AddressBase || ' ' || AddressExtension) )
+  AND AddressExtension IS NOT NULL 
+  AND AddressExtension <> ''
+""",pageLength=10)
+```
+## List of valid unit types
+
+```{python}
+#| output: asis
+show_result_set("""
+WITH unittype_cte AS (
+    SELECT unittype
+    FROM addresses
+    WHERE not unittype in ('None','')
+    GROUP BY unittype
+)
+SELECT * from unittype_cte
+""",pageLength=10)
+```
+
+## List of Addresses with unittype in AddressLabel and missing ExtensionWithUnit
+
+```{python}
+#| output: asis
+show_result_set("""
+WITH unittype_cte AS (
+    SELECT unittype
+    FROM addresses
+    WHERE unittype <> 'None'
+    GROUP BY unittype
+)
+SELECT
+    a.AddressLabel,
+    a.AddressBase,
+    a.AddressExtension,
+    a.ExtensionWithUnit,
+    a.UnitType,
+    a.UnitValue
+FROM addresses a
+WHERE 
+  ((a.ExtensionWithUnit IS NULL OR a.ExtensionWithUnit = '')
+    or (a.UnitType is NULL or a.UnitType='' or a.UnitType='None') )
+  and regexp_matches(AddressLabel, '\\bSte\\b');
+""",pageLength=10)
+```
+
+
+## View All Addresses
+
+::: {.column-screen-inset style="font-size:0.7em"}
+```{python}
+df = con.execute("""
+select * from addresses
+""").fetch_df().drop(columns=["geometry","__index_level_0__"])
+show(df,pageLength=10)
+```
+:::
+
+
+

@@ -1,0 +1,872 @@
+---
+title: setup
+---
+
+This is the introduction paragraph.  In this file we're cleaning the data and setting up files for later processing.
+
+```{python}
+import os
+import re
+import sys
+import sqlite3
+import requests
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+import matplotlib.pyplot as plt
+
+from matplotlib.patches import Patch
+from matplotlib.lines import Line2D
+from math import floor
+
+from loguru import logger
+# Configure loguru to only log to stderr (console)
+logger.remove()  # remove default handler
+logger.add(sys.__stderr__, level="INFO", format="{level: <8} | {name}:{function}:{line} - {message}" )  # use the original stderr, not Jupyter’s proxy
+
+## Set up itables
+import itables
+from itables import show
+# 🔧 Sensible global defaults for itables
+itables.options.maxBytes = 0                        # show full content in each cell
+itables.options.classes = ["display", "compact"]    # compact, clean look
+itables.options.lengthMenu = [10, 25, 50, 100]      # page length menu
+itables.options.pageLength = 25
+itables.options.buttons = ["copy", "csv", "print"]
+itables.options.scrollX = True                      # allow horizontal scroll if needed
+itables.options.scrollY = True                      # allow horizontal scroll if needed
+itables.options.ordering = True
+
+## Set up duckdb
+
+import duckdb
+con = duckdb.connect()
+x = con.execute("INSTALL spatial; LOAD spatial;")
+
+sys.path.append("..")
+from fandu.geo_utils import get_newest_file
+
+pd.set_option("display.max_rows", None)
+
+precious_folder = "../precious/"
+
+fda_contacts_filename = get_newest_file( precious_folder,'FDA_contacts',ext='.csv')
+contacts = pd.read_csv(fda_contacts_filename).drop(index=0).reset_index(drop=True)
+contacts.columns = contacts.columns.str.title().str.replace(" ", "", regex=False).str.replace(":","",regex=False)
+contacts.columns = contacts.columns.str.replace(".","_", regex=False)
+
+
+```
+
+```{python}
+
+def show_result_set( query, **kwargs ):
+    print('::: {.column-screen-inset style="font-size:0.7em"}')
+    df = con.execute( query ).fetch_df()
+    show(df,**kwargs)
+    print(':::')
+
+```
+
+
+# Working with Contacts
+
+
+```{python}
+
+# Dictionary of replacements
+street_replacements = {
+    "Avenue": "Ave",
+    "Alley" : "Al",
+    "Place": "Pl",
+    "Street": "St",
+    "Road": "Rd",
+    "Boulevard": "Blvd",
+    "Court": "Ct",
+    "Drive": "Dr",
+    "Ln" : "Lane",
+    "Circle" : "Cir",
+    "Apartment" : "Apt",
+    "Str":"St"
+
+}
+
+street_data = {
+    "Addison": "St",
+    "Allen": "Ave",
+    "Allison": "St",
+    "Arthur Ashe": "Blvd",
+    "Belvidere": "St",
+    "Boyd": "St",
+    "Broad": "St",
+    "Brunswick": "St",
+    "Cathedral": "Pl",
+    "Davis": "Ave",
+    "Floyd": "Ave",
+    "Franklin": "St",
+    "Grace": "St",
+    "Granby": "St",
+    "Grove": "Ave",
+    "Hanover": "Ave",
+    "Harrison": "St",
+    "Harvie": "St",
+    "Horse Barn": "Al",
+    "Kensington": "Ave",
+    "Laurel": "St",
+    "Linden": "St",
+    "Lombardy": "St",
+    "Madumbie": "Lane",
+    "Main": "St",
+    "Meadow": "St",
+    "Monument": "Ave",
+    "Morris": "St",
+    "Mulberry": "St",
+    "Park": "Ave",
+    "Pine": "St",
+    "Plum": "St",
+    "Randolph": "St",
+    "Robinson": "St",
+    "Rowland": "St",
+    "Ryland": "St",
+    "Scuffletown": "Park",
+    "Shafer": "St",
+    "Shields": "Ave",
+    "Sidewalk": "Al",
+    "Stafford": "Ave",
+    "Strawberry": "St",
+    "Stuart": "Ave",
+    "Trouvaille": "Al",
+    "Vine": "St",
+    "West": "Ave",
+}
+
+def create_address_label(address1, address2=""):
+
+    if (pd.isna(address1)):
+        address1 = ""
+    if (pd.isna(address2)):
+        address2 = ""
+
+    if address2=="#2":
+        address2 = "Apt 2"
+
+    if address2.lower().find("warsaw")>=0:
+        address2 = ""
+
+    if address2.lower().find("2709 monument ave")>=0:
+        address1 = address2
+        address2 = ""
+
+    if address2.lower().find("kavaclub")>=0:
+        address2 = ""
+
+    addr = ""
+    if address1 and address2:
+        addr = address1 + ' ' + address2
+    if not address1:
+        addr = address2
+    if not address2:
+        addr = address1
+    if not addr:
+        return ""
+
+    return addr
+
+
+def normalize_address( addr,street_date=street_data ):
+
+    if not addr:
+        return ""
+    
+    addr = addr.replace("Rowland Ave","Rowland St")
+    addr = addr.replace("N. Boulevard","N Arthur Ashe Blvd")
+
+    addr = re.sub(r'\b(Richmond|VA|Virginia)\b[,.]?', '', addr, flags=re.IGNORECASE)
+    addr = re.sub(r'\s+', ' ', addr).strip()
+
+    fixed = addr
+    for street in sorted(street_data.keys(), key=len, reverse=True):
+        # Case 1: Add a space before the street name if it's stuck to a number
+        pattern = rf"(?<!\s)(?<=\d){street}\b"  # e.g., '1508Hanover' → '1508 Hanover'
+        fixed = re.sub(pattern, f" {street}", fixed, flags=re.IGNORECASE)
+
+        # Case 2: Handle number-letter prefix like '123BHanover'
+        m = re.match(rf"^(\d+)([A-Za-z]){street}\b", fixed, flags=re.IGNORECASE)
+        if m:
+            number, letter = m.group(1), m.group(2)
+            rest = fixed[m.end():].strip()
+            fixed = f"{number} {street} {rest} Apt {letter.upper()}".strip()
+
+        # Case 3: Add a space before the street if stuck to a letter/number
+        pattern2 = rf"(?<=[A-Za-z0-9]){street}\b"
+        fixed = re.sub(pattern2, f" {street}", fixed, flags=re.IGNORECASE)
+
+        # Normalize spaces
+        fixed = re.sub(r"\s+", " ", fixed).strip()
+
+        addr = fixed
+
+    addr = addr.replace("1529’W","1529 W")
+    addr = addr.replace("DavisAve","Davis Ave")
+#    addr = addr.replace("1509Hanover","1509 Hanover")
+#    addr = addr.replace("1810Grover","1509 Hanover")
+#    addr = addr.replace("023","23")
+
+    addr = addr.replace("2620 Stuart Avenue #1B","2620 Stuart Avenue")
+
+    addr = addr.strip().title()
+    addr = addr.replace(".#", " ")
+    addr = addr.replace(",#"," Unit ")
+    addr = addr.replace("U-PL-F","PL-F")
+
+    addr = addr.replace(" #6C", " Unit 6C")
+    addr = addr.replace(" 5078"," Apt 5078")
+
+    addr = addr.replace(".", " ")
+    addr = addr.replace(",", "")
+    addr = addr.replace("#", "")
+    addr = addr.replace("’", " ")
+    addr = addr.replace("½"," 1/2 ")
+
+    # Replace street types at word boundaries
+    for long, short in street_replacements.items():
+        addr = re.sub(rf"\b{long}\b", short, addr)
+
+    # List of street types you don't want to accidentally collapse
+    protected_types = ["Ave", "St", "Pl", "Rd", "Blvd", "Ct", "Dr", "Ln", "Ter"]
+
+    # Build regex that says "only abbreviate if WEST is not followed by a street type"
+    protected_regex = "|".join(protected_types)
+
+    addr = re.sub(rf"^(\d+)\s+North(?!\s+({protected_regex})\b)", r"\1 N", addr)
+    addr = re.sub(rf"^(\d+)\s+South(?!\s+({protected_regex})\b)", r"\1 S", addr)
+    addr = re.sub(rf"^(\d+)\s+East(?!\s+({protected_regex})\b)",  r"\1 E", addr)
+    addr = re.sub(rf"^(\d+)\s+West(?!\s+({protected_regex})\b)",  r"\1 W", addr)
+
+    #addr = addr.replace("West Grace","W Grace")
+    #addr = addr.replace("West Cary","W Cary")
+    #addr = addr.replace("West Broad","W Broad")
+    #addr = addr.replace("West Franklin","W Franklin")
+
+    #if addr.startswith("101 N Stafford Apt"):
+    #    addr = addr.replace("ford Apt","ford Ave Apt")
+
+    if addr.startswith("1400 Grove Ave"):
+        addr = addr.replace("U1","Unit 1")
+        addr = addr.replace("U2","Unit 2")
+
+    addr = addr.replace("1001A","1001 A")
+    if addr.startswith("413 Stuart Circle"):
+        addr = addr.replace("Unit 5 E","Unit 5-E")
+        addr = addr.replace("Unit 6-C","Rear 6-C")
+        addr = addr.replace("U-Pl-F","PLF")
+    
+    if 1:
+        addr = addr.replace("1723 Hanover Ave 6","1723 Hanover Ave Unit 6")
+        addr = addr.replace("2616 Monument Ave 6","2616 Monument Ave Apt 6")
+        addr = addr.replace("1105 Floyd Ave 1","1105 Floyd Ave Apt 1")
+        if addr=="1524 West Ave Unit 1":
+           addr = "1524 West Ave Unit 01"
+        if addr=="1524 West Ave Unit 2":
+           addr = "1524 West Ave Unit 02"
+        if addr=="406-A N Davis Ave":
+            addr = "406 N Davis Ave Apt A"
+    
+
+    addr = re.sub(r"\s+", " ", addr).strip()
+
+    return addr
+
+def normalize_413_stuart_circle(label: str) -> str:
+    """Normalize a single 'AddressLabel' entry for 413 Stuart Cir."""
+    label = label.strip()
+
+    # Only act on rows beginning with 413 Stuart Cir
+    if not label.lower().startswith("413 stuart cir"):
+        return label
+
+    base = "413 Stuart Cir"
+    remainder = label[len(base):].strip()
+
+    # if no remainder, return base as-is
+    if remainder == "":
+        return base
+
+    # Normalize separators
+    remainder = remainder.replace(",", " ").replace("#", " ").strip()
+
+    # Convert 'Suite' or 'Apt' to 'Unit'
+    remainder = re.sub(r'(?i)\b(Suite|Apt|Apartment)\b', 'Unit', remainder)
+
+    # Normalize PL patterns (e.g. Ple, PLF, U-Pl-F)
+    remainder = re.sub(r'(?i)\b(Ple|PlE|Pl[eE])\b', 'PL-E', remainder)
+    remainder = re.sub(r'(?i)\b(Plf|PlF|Pl[fF])\b', 'PL-F', remainder)
+    remainder = re.sub(r'(?i)\b(Plg|PlG|Pl[gG])\b', 'PL-G', remainder)
+    remainder = re.sub(r'(?i)\b(Pl[a-dA-D])\b', lambda m: f"PL-{m.group(1)[-1].upper()}", remainder)
+
+    # Add "Unit" prefix if missing
+    if not re.match(r'(?i)\b(Unit|Rear)\b', remainder):
+        remainder = "Unit " + remainder
+
+    # Standardize spacing and hyphens
+    remainder = re.sub(r'\s+', ' ', remainder)
+    remainder = re.sub(r'(\d)([A-Z])', r'\1-\2', remainder)  # 6C → 6-C
+    remainder = re.sub(r'([A-Z])(\d)', r'\1-\2', remainder)  # PL1 → PL-1
+
+    # Title case (for Unit, Rear) and uppercase letter segments
+    remainder = re.sub(r'\b(Unit|Rear)\b', lambda m: m.group(1).title(), remainder)
+    remainder = re.sub(r'\b([A-Z]{1,3})\b', lambda m: m.group(1).upper(), remainder)
+
+    remainder = remainder.replace("Unit 6-C","Rear 6-C")
+    remainder = remainder.replace("U-Pl -F","PL-F")
+    remainder = remainder.replace('5 E',"5-E")
+
+    return f"{base} {remainder}".strip()
+
+
+def normalize_apt_and_unit(label: str,
+                           apt_to_unit_bases=None,
+                           unit_to_apt_bases=None):
+    """
+    Normalize apartment/unit suffixes in address labels, inserting Apt when missing.
+    Examples:
+        "1064 Monument Ave 10"  -> "1064 Monument Ave Apt 10"
+        "710 W Franklin St Unit 2005A" -> maybe "710 W Franklin St Apt 2005A" (if base in unit_to_apt_bases)
+        "612 W Franklin St Apt 5" -> "612 W Franklin St Unit 5" (if base in apt_to_unit_bases)
+    """
+
+    if not isinstance(label, str) or not label.strip():
+        return label
+
+    apt_to_unit_bases = set(apt_to_unit_bases or [])
+    unit_to_apt_bases = set(unit_to_apt_bases or [])
+
+    label = label.strip()
+
+    # Match address up to recognized street type
+    m = re.match(
+        r"^(.*\b(?:St|Ave|Rd|Blvd|Cir|Dr|Way|Ln|Pl|Al|Ct|Terr|Park)\b)(.*)$",
+        label, re.IGNORECASE
+    )
+    if not m:
+        return label  # no clear base found
+
+    base, suffix = m.group(1).strip(), m.group(2).strip()
+    suffix = re.sub(r"\s+", " ", suffix)
+
+ # 🧩 STEP 1: Insert 'Apt' if suffix lacks marker and looks like a unit code
+    if (
+        suffix  # something after street type
+        and not re.search(r'\b(Apt|Unit|Suite|Ste|Room|Rear)\b', suffix, re.IGNORECASE)
+        and re.match(r"^([#]?\d+[A-Za-z]*|[A-Za-z]\d*|[A-Z])\b", suffix)
+    ):
+        suffix = "Apt " + suffix
+
+    # 🧩 STEP 2: Apply base-specific conversions
+    if base in apt_to_unit_bases:
+        suffix = re.sub(r'\b(Apt|Apartment|Appt)\b', 'Unit', suffix, flags=re.IGNORECASE)
+    elif base in unit_to_apt_bases:
+        suffix = re.sub(r'\b(Unit|Ste|Suite)\b', 'Apt', suffix, flags=re.IGNORECASE)
+
+    # 🧩 STEP 3: Rebuild label and clean spacing
+    normalized = f"{base} {suffix}".strip()
+    normalized = re.sub(r"\s+", " ", normalized)
+    return normalized
+
+    
+def insert_missing_street_type(label: str, street_map: dict) -> str:
+    """
+    Ensures each AddressLabel includes the proper StreetType after the StreetName.
+    e.g. '1007 W Franklin' -> '1007 W Franklin St'
+    """
+    if not isinstance(label, str) or not label.strip():
+        return label
+
+    original = label
+
+    if label.lower().find("stuart cir")>=0:
+        return label
+
+    if label.lower().find("stuart ave")>=0:
+        return label
+
+    # Normalize spaces and capitalization
+    label = re.sub(r"\s+", " ", label.strip())
+
+    # Loop over all street names and types
+    for street_name, street_type in street_map.items():
+        if street_type is None or str(street_type).lower() == "none":
+            continue
+
+        # Build regex to find the street name not already followed by the type
+        pattern = rf"\b({re.escape(street_name)})\b(?!\s+{street_type}\b)"
+        if re.search(pattern, label, flags=re.IGNORECASE):
+            label = re.sub(pattern,
+                           rf"\1 {street_type}",
+                           label,
+                           flags=re.IGNORECASE)
+
+    # Clean double spaces after replacement
+    label = re.sub(r"\s+", " ", label).strip()
+    return label
+
+apt_to_unit = [
+    "1007 W Franklin St",
+    "101 N Stafford Ave",
+    "1605 Grove Ave",
+    "1524 West Ave",
+    "1723 Hanover Ave",
+    "1610 Grove Ave",
+    "2504 Grove Ave",
+    "1814 Park Ave",
+    "1828 Park Ave",
+    "2416 Park Ave",
+    "2606 Park Ave",
+    "612 W Franklin St",
+    "2620 Stuart Ave",
+    "2601 W Grace St",
+    "2042 W Grace St",
+    "2735 W Grace St",
+    "503 N Arthur Ashe Blvd",
+    "511 N Arthur Ashe Blvd"
+]
+
+unit_to_apt = [
+ "2217 Hanover Ave",
+ "16 N Rowland St",
+ "1809 Park Ave",
+ "2111 Floyd Ave",
+ "2703 Kensington Ave"
+]
+
+```
+
+
+```{python}
+# Apply
+contacts["AddressLabel"] = contacts.apply(
+    lambda row: create_address_label(row["Address"], row.get("AddressLine2", "")),
+    axis=1
+)
+```
+
+```{python}
+## Check if there is a Fan-Associated Address, and if so, use that.
+
+mask = contacts["Fan-AssociatedAddress(RequiredIfNon-FanResident)"].notna() & \
+        (contacts["Fan-AssociatedAddress(RequiredIfNon-FanResident)"].astype(str).str.strip() != "")
+
+contacts.loc[mask, "AddressLabel"] = contacts.loc[mask, "Fan-AssociatedAddress(RequiredIfNon-FanResident)"]
+
+pattern = re.compile(
+    r'(?i)\b(?P<number>\d+)\s*(?P<dir>N|S|E|W|NE|NW|SE|SW)?\s*'
+    r'(?P<name>[A-Za-z]+(?:\s+[A-Za-z]+)?)\s+'
+    r'(?P<type>Ave|Avenue|St|Street|Blvd|Boulevard|Rd|Road|Dr|Drive|Cir|Circle|Ct|Court|Ln|Lane)\b'
+)
+
+def extract_clean_street(addr):
+    if pd.isna(addr):
+        return addr
+    parts = addr.split()
+    addr = " ".join( parts[:3] )
+    return addr
+    #m = pattern.search(str(addr))
+    #if not m:
+     #   return addr.strip()
+    #return addr
+#    return f"{m.group('number')} {m.group('dir') or ''} {m.group('name')} {m.group('type')}".replace("  ", " ").strip()
+
+# 4️⃣ Apply cleaning only to the rows in mask
+contacts.loc[mask, "AddressLabel"] = contacts.loc[mask, "AddressLabel"].apply(extract_clean_street)
+
+
+
+# Start cleaning
+
+contacts["AddressLabel"] = contacts.apply(
+    lambda row: normalize_address(row["AddressLabel"]),
+    axis=1
+)
+
+
+contacts["AddressLabel"] = contacts.apply(
+    lambda row: insert_missing_street_type( row["AddressLabel"], street_map=street_data),
+    axis=1
+)
+
+contacts["AddressLabel"] = contacts.apply(
+    lambda row: normalize_apt_and_unit(row["AddressLabel"],
+      apt_to_unit_bases=apt_to_unit,
+      unit_to_apt_bases=unit_to_apt),
+    axis=1
+)
+
+contacts["AddressLabel"] = contacts.apply(
+    lambda row: normalize_413_stuart_circle(row["AddressLabel"]),
+    axis=1
+)
+
+def normalize_one_offs( label ):
+    addr = label
+    # These apts are labeled 1 and 2, not A and B
+    if addr.startswith("16 N Rowland St"):
+        addr = addr.replace("Apt A","Apt 1")
+        addr = addr.replace("Apt B","Apt 2")
+    
+    if addr.startswith("612 W Franklin St"):
+        parts = label.split()
+
+        # Process only the last word
+        last = parts[-1]
+        last_clean = re.sub(r"-", "", last).lower()
+        if last_clean.startswith("u"):
+            last_clean = last_clean.replace("u","Unit ")
+        parts[-1] = last_clean
+        addr = " ".join(parts)
+
+    if addr.startswith("2616 W Main St"):
+        addr = addr.replace("Apt 1","Apt A")
+        addr = addr.replace("Apt 2","Apt B")
+
+    if addr.startswith("2620 Stuart Ave"):
+        parts = label.split()
+        last = parts[-1]
+        last_clean = re.sub(r"-", "", last).lower()
+        parts[-1] = last_clean
+        addr = " ".join(parts)
+
+    if addr=="2016 B Park Ave":
+        addr = "2016 Park Ave Apt B"
+
+    if addr=="2320 B Floyd Ave":
+        addr = "2320 Floyd Ave Apt B"
+
+    if addr == "2414A Stuart Ave":
+        addr = "2414 Stuart Ave Apt 1"
+
+    if addr == "2024 Grove Ave Side Door":
+        addr = "2024 Grove Ave Apt A"
+
+    if addr == "2404 Grove Ave Apt 1":
+        addr = "2404 Grove Ave Apt A"
+
+    if addr == "612 W Franklin st":
+        addr = "612 W Franklin St"
+
+    if addr == "1918 Grove Ave Av":
+        addr = "1918 Grove Ave"
+
+    return addr
+
+contacts["AddressLabel"] = contacts.apply(
+    lambda row: normalize_one_offs(row["AddressLabel"]),
+    axis=1
+)
+
+
+# Normalize Zip
+contacts["Zip_norm"] = (
+    contacts["Zip"]
+    .astype(str)
+    .str.strip()
+    .str.upper()
+    .str.replace(r"[^0-9\-]", "", regex=True)   # keep only digits and dash
+    .str.replace(r"^(\d{5})-\d{4}$", r"\1", regex=True)  # keep only first 5 digits if 9-digit ZIP
+)
+
+# fix clearly incorrect zip codes
+
+contacts.loc[
+    contacts["AddressLabel"].str.contains("2100 Grove Ave", case=False, na=False),
+    "Zip_norm"
+] = "23220"
+
+
+contacts["City"] = contacts["City"].str.title()
+
+x = con.execute("CREATE OR REPLACE TABLE addresses AS SELECT * FROM 'Addresses_in_fan.parquet';")
+
+x = con.register("contacts_view", contacts)
+x = con.execute("""
+CREATE OR REPLACE TABLE contacts AS SELECT * FROM contacts_view;
+ALTER TABLE contacts ADD COLUMN AddressNote VARCHAR;
+WITH
+barely_outside_fan(address) AS (
+  VALUES
+    ('4 S Arthur Ashe Blvd'),
+    ('102 S Arthur Ashe Blvd Apt 5'),
+    ('109 S Arthur Ashe Blvd Apt 6'),
+    ('201 S Arthur Ashe Blvd'),
+    ('8 S Addison St'),
+    ('112 S Addison St Apt A'),
+    ('110 N Arthur Ashe Blvd Apt 12'),
+    ('509 N Arthur Ashe Blvd Apt 3'),
+    ('511 N Arthur Ashe Blvd Apt 7'),
+    ('8 S Stafford Ave Apt 2'),
+    ('6021 Grove Ave Unit 1E'),
+    ('2207 Uptown Aly'),
+    ('2203 W Cary St'),
+    ('1741 W Cary St'),
+    ('1714 W Cary St Unit 3'),
+    ('2202 1/2 W Cary St'),
+    ('4 S Mulberry St'),
+    ('10 S Mulberry St'),
+    ('2102 Maplewood Ave'),
+    ('2305 Apple Aly'),
+    ('41 S Davis Ave'),
+    ('2202 W Cary St')
+),
+in_fan_not_in_city_db(address) AS (
+  VALUES
+    ('2016 Park Ave Apt B'),
+    ('1214 Park Ave Unit B'),
+    ('413 Stuart Cir Unit 321'),
+    ('2510 W Main St Apt A'),
+    ('2205 Hanover Ave Apt 1'),
+    ('1805 Monument Ave Apt 302'),
+    ('1805 Monument Ave Apt 501'),
+    ('2003 Hanover Ave Apt A'),
+    ('1618 Park Ave Apt 3C')
+),
+maybe_bad_spelling(address) AS (
+  VALUES
+    ('1704 Parkwood Ave'),
+    ('1720 Parkwood Ave')
+),
+fan_addresses as (
+  select distinct AddressLabel from addresses
+)
+UPDATE contacts
+SET AddressNote = CASE
+  WHEN AddressLabel IN (SELECT address FROM barely_outside_fan)
+       THEN 'Barely outside Fan'
+  WHEN AddressLabel IN (SELECT address FROM in_fan_not_in_city_db)
+       THEN 'In Fan but not in city db'
+  WHEN AddressLabel IN (SELECT address FROM maybe_bad_spelling)
+       THEN 'Maybe bad spelling'
+  WHEN AddressLabel in (select * from fan_addresses)
+       THEN 'Valid Fan Address'
+  ELSE 'Outside the Fan'
+END;
+""")
+
+# contacts.to_parquet("Contacts_in_fda.parquet", index=False)
+x = con.execute("""
+    COPY contacts TO 'Contacts_in_fda.parquet' (FORMAT PARQUET);
+""")
+
+```
+
+
+```{python}
+x = con.execute("CREATE OR REPLACE TABLE contacts AS SELECT * FROM 'Contacts_in_fda.parquet';")
+x = con.execute("CREATE OR REPLACE TABLE addresses AS SELECT * FROM 'Addresses_in_fan.parquet';")
+x = con.execute("CREATE OR REPLACE TABLE parcels AS SELECT * FROM 'Single_parcels_in_fan.parquet';")
+```
+
+```{python}
+#| output: asis
+show_result_set("""
+describe addresses
+""",pageLength=100)
+```
+
+
+
+```{python}
+#| output: asis
+show_result_set("""
+select 
+  Address,
+  AddressLine2,
+  AddressLabel,
+  Member,
+  Zip
+from
+  contacts
+where
+  Member = 'True'
+order by AddressLabel
+""",pageLength=10);
+```
+
+
+##  Clean and classify FDA addresses
+
+As much care as possible goes into classifying the hodge-podge of FDA addresses.
+
+Below is a list of addresses from the FDA database.  If it's empty GOOD.  If not,
+you've got to decide how to clean and/or classify the address.  
+
+It's a very manual process.
+
+```{python}
+#| output: asis
+show_result_set("""
+select
+  a.AddressNote,
+  a.AddressLabel as FDA_address,
+  b.AddressLabel as RVA_address,
+  a.Member,
+  a.Zip_norm,
+  a.Address,
+  a.AddressLine2,
+  "Fan-AssociatedAddress(RequiredIfNon-FanResident)",
+  b.AddressBase
+from
+  contacts a left join addresses b on (a.AddressLabel=b.AddressLabel)
+where
+  a.AddressLabel is not NULL and a.AddressLabel <> ''
+  and b.AddressLabel is NULL
+  and a.Member='True'
+  and a.zip_norm in ('23220')
+  and addressNote is NULL
+order by
+  A.AddressLabel
+""",pageLength=10);
+```
+
+## Addresses in City database
+
+Below is a listing of addresses found in the FAN city database.  If an address isn't found in here,
+then the address isn't found in the Fan and isn't in the FDA.
+
+```{python}
+#| output: asis
+show_result_set("""
+select
+  AddressLabel,
+  Mailable
+from addresses
+order by AddressLabel
+""",pageLength=10);
+```
+
+
+
+```{python}
+#| output: asis
+show_result_set("""
+select
+  AddressNote,
+  --MembershipLevelName,
+  sum( 1 ) as "count",
+  sum(case when member='True' then 1 else 0 end) as member_cnt,
+  sum(case when not member='True' then 1 else 0 end) as non_member_cnt
+from
+  contacts
+group by 
+  AddressNote
+  --,MembershipLevelName
+order by
+  addressNote
+  --, membershipLevelName
+""",pageLength=10);
+```
+
+```{python}
+#| output: asis
+show_result_set("""
+select
+  Lastname || ', ' || firstName,
+  AddressLabel,
+  AddressNote,
+  Member,
+  MemberShipLevelName,
+  "Fan-AssociatedAddress(RequiredIfNon-FanResident)",
+  zip_norm
+from
+  contacts
+where
+  AddressNote is NULL
+order by
+  1
+""",pageLength=10);
+```
+
+
+```{python}
+#| output: asis
+show_result_set("""
+create or replace table contacts_with_landuse as (
+SELECT
+  a.AddressNote,
+  a.AddressLabel AS FDA_address,
+  b.AddressLabel AS RVA_address,
+  a.membershiplevelname,
+  a.firstname,
+  a.lastname,
+  a.email,
+  a.Member,
+  a.Zip_norm,
+  a.Address,
+  a.AddressLine2,
+  a."Fan-AssociatedAddress(RequiredIfNon-FanResident)",
+  b.AddressBase,
+  p.RepresentativeParcelID,
+  p.LandUse,
+  p.PropertyClass,
+  p.FanUse,
+  p.FanUseType,
+  p.geometry AS parcel_geom
+FROM contacts AS a
+LEFT JOIN addresses AS b
+  ON a.AddressLabel = b.AddressLabel
+-- 🔹 spatial join adds parcels that contain an address point
+LEFT JOIN parcels AS p
+  ON b.geometry IS NOT NULL
+ AND ST_Within(b.geometry, p.geometry)
+);
+select
+  AddressNote,
+  sum( 1 ) as "count",
+  sum(case when member='True' then 1 else 0 end) as member_cnt,
+  sum(case when not member='True' then 1 else 0 end) as non_member_cnt
+from
+  contacts_with_landuse
+group by 
+  AddressNote
+order by
+  addressNote
+""",pageLength=10);
+```
+
+
+```{python}
+show_result_set("""
+SELECT
+  MembershipLevelName,
+  COUNT(*) AS total,
+  SUM(CASE WHEN FanUse = 'FanResidential' THEN 1 ELSE 0 END) AS FanResidential,
+  SUM(CASE WHEN FanUse = 'FanBusiness' THEN 1 ELSE 0 END)     AS FanBusiness,
+  SUM(CASE WHEN FanUse = 'FanMixed-Use' THEN 1 ELSE 0 END)     AS FanMixedUse,
+  SUM(CASE WHEN FanUse = 'FanOther' THEN 1 ELSE 0 END)         AS FanOther,
+  SUM(CASE WHEN FanUse = 'None' THEN 1 ELSE 0 END)             AS FanNone,
+  sum(case when Fanuse is NULL then 1 else 0 end) as '(Bad addr)'
+FROM contacts_with_landuse
+where member='True'
+GROUP BY MembershipLevelName
+ORDER BY MembershipLevelName;
+"""
+)
+```
+
+
+```{python}
+show_result_set("""
+SELECT
+  MembershipLevelName,
+  COUNT(*) AS total,
+  SUM(CASE WHEN FanUseType = 'FanOwner' THEN 1 ELSE 0 END)   AS FanOwner,
+  SUM(CASE WHEN FanUseType = 'FanRental' THEN 1 ELSE 0 END)  AS FanRental,
+  SUM(CASE WHEN FanUseType = 'FanIgnore' THEN 1 ELSE 0 END)  AS FanIgnore,
+  SUM(CASE WHEN FanUseType = 'None' THEN 1 ELSE 0 END)       AS FanNone,
+  sum(case when FanUseType is NULL then 1 else 0 end) as '(Bad addr)'
+FROM contacts_with_landuse
+where member='True'
+GROUP BY MembershipLevelName
+ORDER BY MembershipLevelName;
+
+"""
+)
+```

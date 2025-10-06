@@ -1,12 +1,8 @@
 ---
-title: setup
+title: Parcels and Addresses Join
 ---
 
-This is the introduction paragraph.  In this file we're cleaning the data and setting up files for later processing.
-
 ```{python}
-
-
 import os
 import re
 import sys
@@ -51,7 +47,9 @@ from fandu.geo_utils import get_newest_file
 pd.set_option("display.max_rows", None)
 
 precious_folder = "../precious/"
-features = ["Addresses","Parcels"]
+
+features = ["Addresses"]
+
 selector = "Civic_Associations"
 selector_key = "Fan District Association"
 
@@ -68,10 +66,9 @@ def show_result_set( query, **kwargs ):
 
 ```
 
+
+
 # Create merge file
-
-
-## Load the files
 
 ```{python}
 x = con.execute("""
@@ -79,9 +76,6 @@ CREATE OR REPLACE TABLE addresses AS SELECT * FROM 'Addresses_in_fan.parquet';
 CREATE OR REPLACE TABLE parcels AS SELECT * FROM 'Parcels_in_fan.parquet';
 """);
 ```
-
-
-## The actual merge
 
 ```{python}
 #| output: asis
@@ -95,7 +89,6 @@ SELECT
     p.OwnerName,
     p.MailAddress,
     a.AddressId,
-    a.AddressLabel,
     a.BuildingNumber,
     a.StreetName,
     a.Mailable AS AddressMailable,
@@ -108,67 +101,6 @@ LEFT JOIN addresses a
   ON ST_Within(a.geometry, p.geometry);
 """)
 ```
-
-## Count dupicate pairs
-
-```{python}
-show_result_set("""
-SELECT
-    LandUse,
---    PropertyClass,
-    pair_count,
-    COUNT(*) AS num_pairs
-FROM (
-    SELECT
-        ParcelID,
-        AddressId,
-        LandUse,
-        PropertyClass,
-        COUNT(*) AS pair_count
-    FROM parcel_address_join
-    GROUP BY ParcelID, AddressId, LandUse, PropertyClass
-)
-GROUP BY
-  LandUse, 
-  --PropertyClass,
-  pair_count
-ORDER BY
-  LandUse, 
-  --PropertyClass,
-  pair_count;
-""")
-```
-
-```{python}
-show_result_set("""
-SELECT 
-    AddressId,
-    STRING_AGG(DISTINCT LandUse, ', ') AS LandUses,
-    COUNT(DISTINCT LandUse) AS LandUseCount
-FROM parcel_address_join
-GROUP BY AddressId
-having landusecount>1
-ORDER BY landusecount desc
-""")
-```
-
-
-```{python}
-show_result_set("""
-SELECT 
-    AddressId,
-    landuse,
-    propertyclass,
-    AddressLabel
-FROM parcel_address_join
-where addressid in ('3160900')
-ORDER BY addressid, landuse
-""")
-```
-
-
-
-## Examine how the addresses mapped to Parcels
 
 ```{python}
 #| output: asis
@@ -200,8 +132,6 @@ ORDER BY parcel_count DESC;
 ```
 
 
-## Count addresses with multiple parcels
-
 ```{python}
 #| output: asis
 show_result_set("""
@@ -229,7 +159,7 @@ ORDER BY address_count DESC;
 ```{python}
 #| output: asis
 show_result_set("""
-select LandUse, PropertyClass, sum(1) as address_cnt
+select LandUse, PropertyClass
 from parcel_address_join
 group by LandUse, PropertyClass
 order by LandUse,PropertyClass

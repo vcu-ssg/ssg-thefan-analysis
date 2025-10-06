@@ -1,0 +1,431 @@
+---
+title: setup
+---
+
+This is the introduction paragraph.  In this file we're cleaning the data and setting up files for later processing.
+
+```{python}
+
+
+import os
+import re
+import sys
+import sqlite3
+import requests
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+import matplotlib.pyplot as plt
+
+from matplotlib.patches import Patch
+from matplotlib.lines import Line2D
+from math import floor
+
+#import duckdb
+#import geopandas as gpd
+#import pandas as pd
+from shapely import wkb   # ✅ this is the missing import
+
+
+from loguru import logger
+# Configure loguru to only log to stderr (console)
+logger.remove()  # remove default handler
+logger.add(sys.__stderr__, level="INFO", format="{level: <8} | {name}:{function}:{line} - {message}" )  # use the original stderr, not Jupyter’s proxy
+
+## Set up itables
+import itables
+from itables import show
+# 🔧 Sensible global defaults for itables
+itables.options.maxBytes = 0                        # show full content in each cell
+itables.options.classes = ["display", "compact"]    # compact, clean look
+itables.options.lengthMenu = [10, 25, 50, 100]      # page length menu
+itables.options.pageLength = 25
+itables.options.buttons = ["copy", "csv", "print"]
+itables.options.scrollX = True                      # allow horizontal scroll if needed
+itables.options.scrollY = True                      # allow horizontal scroll if needed
+itables.options.ordering = True
+
+## Set up duckdb
+
+import duckdb
+con = duckdb.connect()
+x = con.execute("INSTALL spatial; LOAD spatial;")
+
+sys.path.append("..")
+from fandu.geo_utils import get_newest_file
+
+pd.set_option("display.max_rows", None)
+
+precious_folder = "../precious/"
+
+features = ["Parcels"]
+
+selector = "Civic_Associations"
+selector_key = "Fan District Association"
+
+fda_contacts_filename = get_newest_file( precious_folder,'FDA_contacts',ext='.csv')
+
+```
+```{python}
+
+def show_result_set( query, **kwargs ):
+    print('::: {.column-screen-inset style="font-size:0.7em"}')
+    df = con.execute( query ).fetch_df()
+    show(df,**kwargs)
+    print(':::')
+
+```
+
+# Load, clean, recode and save
+
+## Load files
+
+```{python}
+#| echo: true
+
+# Load the neighborhoods GeoJSON
+# creates data["Parcels"] containing geojson data.
+data = {}
+for feature in [selector] + features:
+    geofile = get_newest_file( precious_folder, feature, ext=".geojson" )
+    #logger.debug(geofile)
+    logger.info(f"Found {feature}:  {geofile}" )
+    data[feature] = gpd.read_file( geofile )
+
+# convert all feature files to same CRS mapping as Civic_Associations
+for feature in features:
+    data[feature] = data[feature].to_crs( data[selector].crs )
+
+```
+
+### Drop columns
+
+```{python}
+#| echo: true
+# columns to drop:
+shared_drops = ['CreatedBy','CreatedDate','EditBy','EditDate']
+## file specific column drop mappings
+drop_columns = {
+    "Civic_Associations" : ['OBJECTID'] + shared_drops,
+    "Addresses"          : ['OBJECTID'] + shared_drops,
+    "Parcels"            : ['OBJECTID'],
+}
+for feature in [selector] + features:
+    data[feature] = data[feature].drop(columns=drop_columns[feature])
+
+```
+
+### Spatial join, select only parcels and addresses in the Fan.
+
+```{python}
+#| echo: true
+
+# Pull out only FDA from Civic_Associations and store it
+data[selector_key] = data[selector][ data[selector]["Name"] == selector_key ]
+
+# Select only features from the selector_key (FDA).  perform spatial join.
+for feature in features:
+    predicate = "overlaps" if feature=="Neighborhoods" else "within"
+    data[feature+"_in_fan"] = gpd.sjoin(data[feature], data[selector_key], predicate=predicate, how="inner")
+
+```
+
+### Drop unnecessary columns
+
+```{python}
+#| echo: true
+# Drop columns created from spatial join
+shared_drops = ["index_right","AdoptionDate","ChangeDate","Shape__Area","Shape__Length"]
+drop_columns = {
+    "Addresses"          : ['GlobalID'] + shared_drops,
+    "Parcels"            : ['MaskedOwner','GlobalID_left','GlobalID_right'] + shared_drops,
+}
+for feature in features:
+    feature_name = feature+"_in_fan"
+    data[feature_name] = data[feature_name].drop(columns=drop_columns[feature])
+```
+
+### Create columns and recode columns in Parcels
+
+```{python}
+#| echo: true
+
+gdf = data["Parcels_in_fan"]
+
+gdf["OwnerOccupied"] = gdf.apply(
+    lambda row: str(row["MailAddress"]).startswith(str(row["AsrLocationBldgNo"]))
+                and str(row["MailCity"]).upper() == "RICHMOND"
+                and str(row["MailState"]).upper() == "VA"
+                and str(row["MailZip"]) == "23220",
+    axis=1
+).map({True: 1, False: 0})
+
+
+# Rule 1: If PropertyClass contains 'Commercial'
+gdf.loc[gdf["PropertyClass"].str.contains("Commercial", case=False, na=False), "LandUse"] = "Commercial"
+
+# Rule 2: If PropertyClass contains 'Condo'
+gdf.loc[gdf["PropertyClass"].str.contains("Condo", case=False, na=False), "LandUse"] = "Multi-Family"
+
+gdf["SharedGeometry"] = gdf.duplicated(subset="geometry", keep=False).astype(int)
+
+# Create FanUse
+
+mapping = {
+    "Single Family": "FanResidential",
+    "Multi-Family": "FanResidential",
+    "Duplex (2 Family)" : "FanResidential",
+    "Commercial": "FanBusiness",
+    "Industrial": "FanBusiness",
+    "Office" : "FanBusiness",
+    "Institutional" : "FanBusiness",
+    "Mixed-Use" : "FanMixed-Use"
+}
+gdf["FanUse"] = gdf["LandUse"].map(mapping).fillna("FanOther")
+
+# Ensure PropertyClass is string and safe for NaNs
+mask = gdf["PropertyClass"].fillna("").str.contains("vacant|parking|common|garage|storage|tower|space", case=False, na=False)
+# Apply recode
+gdf.loc[mask, "FanUse"] = "FanOther"
+
+
+# A new variable to permit easy selecting
+
+gdf["FanUseType"] = "FanIgnore"  # default
+gdf.loc[(gdf["OwnerOccupied"] == 1) & (gdf["Mailable"] == 1), "FanUseType"] = "FanOwner"
+gdf.loc[(gdf["OwnerOccupied"] == 0) & (gdf["Mailable"] == 1), "FanUseType"] = "FanRental"
+
+# Reset if it's one of the FanOther property classes.
+gdf.loc[mask, "FanUseType"] = "FanIgnore"
+
+
+mapping = {
+    "FanResidential": 1,
+    "FanBusiness": 10,
+    "FanMixed-Use" : 20,
+    "FanOther": 99
+}
+gdf["FanUseOrder"] = gdf["FanUse"].map(mapping).fillna(99)
+
+data["Parcels_in_fan"] = gdf
+
+```
+
+### Save Parcels_in_fan and Addresses_in_fan for later use.
+
+```{python}
+#| echo: true
+for feature in features:
+    feature_name = feature+"_in_fan"
+
+    # store to parquet using pyarror (workflow tip from chatgpt
+    data[feature_name].to_parquet(f"{feature_name}.parquet",engine="pyarrow")
+    logger.info(f"Saving: {feature_name}.parquet" )
+
+    # create dataframe without spatial geometries and store to CSV
+    xgdf = data[feature_name].drop(columns="geometry").copy()
+    xgdf.to_csv(f"{feature_name}.csv", index=False)
+    logger.info(f"Saving: {feature_name}.csv" )
+
+
+```
+
+
+```{python}
+x = con.execute("""
+CREATE OR REPLACE TABLE parcels AS
+SELECT
+    *
+FROM read_parquet('Parcels_in_fan.parquet');
+""")
+
+```
+
+```{python}
+x = con.execute("""
+CREATE OR REPLACE TABLE parcels_representative AS
+WITH geom_keyed AS (
+    -- Normalize geometry to text (or use SnapToGrid for fuzzy matching)
+    SELECT 
+        ParcelID,
+        PIN,
+        LandUse,
+        PropertyClass,
+        FanUse,
+        FanUseOrder,
+        FanUseType,
+        geometry,
+        ST_AsText(geometry) AS geom_wkt
+    FROM parcels
+),
+geom_stats AS (
+    -- Count how many parcels share the same geometry
+    SELECT 
+        geom_wkt,
+        COUNT(*) AS geometry_count,
+        STRING_AGG(DISTINCT ParcelID, ', ') AS parcel_list,
+        STRING_AGG(DISTINCT LandUse, ', ') AS landuse_list,
+        STRING_AGG(DISTINCT PropertyClass, ', ') AS propertyclass_list
+    FROM geom_keyed
+    GROUP BY geom_wkt
+),
+landuse_modes AS (
+    -- Find the most frequent (LandUse, PropertyClass) combo per geometry
+    SELECT
+        geom_wkt,
+        LandUse,
+        PropertyClass,
+        FanUse,
+        FanUseType,
+        FanUseOrder,
+        COUNT(*) AS freq,
+        ROW_NUMBER() OVER (
+            PARTITION BY geom_wkt
+            ORDER BY COUNT(*) DESC
+        ) AS rn
+    FROM geom_keyed
+    GROUP BY geom_wkt, LandUse, PropertyClass, FanUse, FanUseType,FanUseOrder
+),
+geom_representatives AS (
+    -- Keep only the dominant LandUse/PropertyClass per geometry
+    SELECT 
+        s.geom_wkt,
+        s.geometry_count,
+        s.parcel_list,
+        s.landuse_list,
+        s.propertyclass_list,
+        m.LandUse AS RepresentativeLandUse,
+        m.PropertyClass AS RepresentativePropertyClass,
+        m.FanUse,
+        m.FanUseType,
+        m.FanUseOrder
+    FROM geom_stats s
+    JOIN landuse_modes m
+      ON s.geom_wkt = m.geom_wkt
+     AND m.rn = 1
+)
+-- Now pick one representative parcel per geometry
+SELECT DISTINCT ON (r.geom_wkt)
+    p.ParcelID AS RepresentativeParcelID,
+    p.PIN,
+    r.RepresentativeLandUse AS LandUse,
+    r.RepresentativePropertyClass AS PropertyClass,
+    r.FanUse,
+    r.FanUseType,
+    r.FanUseOrder,
+    p.geometry,
+    r.geometry_count,
+    r.parcel_list,
+    r.landuse_list,
+    r.propertyclass_list
+FROM geom_keyed p
+JOIN geom_representatives r
+  ON p.geom_wkt = r.geom_wkt
+ AND p.LandUse = r.RepresentativeLandUse
+ AND p.PropertyClass = r.RepresentativePropertyClass
+ORDER BY r.geom_wkt, p.ParcelID;
+"""
+)
+
+x = con.execute("""
+COPY parcels_representative 
+TO 'Single_parcels_in_fan.parquet' (format 'parquet')
+
+""")
+
+```
+
+
+# Examine Parcels
+
+```{python}
+x = con.execute("CREATE or replace table parcels AS SELECT * FROM 'Single_parcels_in_fan.parquet';")
+show_result_set("""
+describe parcels
+""")
+```
+
+
+
+## FanUse by FanUseType
+
+::: {style="font-size:0.7em"}
+
+```{python}
+result = con.execute("""
+SELECT
+    FanUse,
+    SUM(CASE WHEN FanUseType='FanOwner'  THEN 1 ELSE 0 END) AS FanOwner,
+    SUM(CASE WHEN FanUseType='FanRental' THEN 1 ELSE 0 END) AS FanRental,
+    SUM(CASE WHEN FanUseType='FanIgnore' THEN 1 ELSE 0 END) AS FanIgnore,
+    SUM(1) as total
+FROM parcels
+GROUP BY FanUse,FanUseOrder
+ORDER BY FanUseOrder
+""").fetch_df().reset_index()
+show(result,pageLength=100)
+```
+:::
+
+* `FanOwner` - Parcel owner address matches building address number, parcel owner zip is 23220, and parcel has mailable USPS address for owner of record.  These parcel owners have their tax
+record mailed to this parcel address, so they're probably the owner.
+* `FanRental` - Parcel owner address doesn't match building address number. So, parcel owner address is OUTSIDE the Fan. It's possible that the owner uses a different address for tax bill. NOTE - the parcel database doesn't contain addresses for these parcels. We don't have Fan addresses for these parcels, just the address of the tax owner.  For example, the address for Joe's Inn isn't in parcel database.  The parcel owner is outside the Fan.
+* `FanIgnore` - not a mailable address, probably a park, parking lot, common area, etc.
+
+
+## FanUse, LandUse by FanUseType
+
+
+::: {.column-page-inset-right style="font-size:0.7em"}
+
+```{python}
+result = con.execute("""
+SELECT
+    FanUse, LandUse,
+    SUM(CASE WHEN FanUseType='FanOwner'  THEN 1 ELSE 0 END) AS FanOwner,
+    SUM(CASE WHEN FanUseType='FanRental' THEN 1 ELSE 0 END) AS FanRental,
+    SUM(CASE WHEN FanUseType='FanIgnore' THEN 1 ELSE 0 END) AS FanIgnore,
+    SUM(1) as total
+FROM parcels
+GROUP BY FanUse,LandUse,FanUseOrder
+ORDER BY FanUseOrder, LandUse
+""").fetch_df().reset_index()
+show(result,pageLength=100)
+```
+:::
+
+## FanUse, LandUse, PropertyClass by FanUseType
+
+::: {.column-page-inset-right style="font-size:0.7em"}
+```{python}
+result = con.execute("""
+SELECT
+    FanUse, LandUse, PropertyClass,
+    SUM(CASE WHEN FanUseType='FanOwner'  THEN 1 ELSE 0 END) AS FanOwner,
+    SUM(CASE WHEN FanUseType='FanRental' THEN 1 ELSE 0 END) AS FanRental,
+    SUM(CASE WHEN FanUseType='FanIgnore' THEN 1 ELSE 0 END) AS FanIgnore,
+    SUM(1) as total
+FROM parcels
+GROUP BY FanUse,LandUse,FanUseOrder,PropertyClass
+ORDER BY FanUseOrder, LandUse, PropertyClass
+""").fetch_df().reset_index()
+show(result,pageLength=100)
+```
+:::
+
+
+## View All Parcels
+
+Use the Sort field to select subsets of parcels.
+
+::: {.column-screen-inset style="font-size:0.7em"}
+```{python}
+feature_name = "Parcels_in_fan"
+df = data[feature_name].drop(columns="geometry")
+cols = ["FanUse", "LandUse", "PropertyClass","FanUseType"] + [c for c in df.columns if c not in ["FanUse", "LandUse", "PropertyClass"]]
+df = df[cols]               
+df = df.sort_values(by=["FanUseOrder", "LandUse", "PropertyClass"],
+               ascending=[True, True, True])
+show(df)
+```
+:::
