@@ -1,0 +1,255 @@
+---
+title: Parcels and Addresses Join
+---
+
+```{python}
+import os
+import re
+import sys
+import sqlite3
+import requests
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+import matplotlib.pyplot as plt
+
+from matplotlib.patches import Patch
+from matplotlib.lines import Line2D
+from math import floor
+
+from loguru import logger
+# Configure loguru to only log to stderr (console)
+logger.remove()  # remove default handler
+logger.add(sys.__stderr__, level="INFO", format="{level: <8} | {name}:{function}:{line} - {message}" )  # use the original stderr, not Jupyter’s proxy
+
+## Set up itables
+import itables
+from itables import show
+# 🔧 Sensible global defaults for itables
+itables.options.maxBytes = 0                        # show full content in each cell
+itables.options.classes = ["display", "compact"]    # compact, clean look
+itables.options.lengthMenu = [10, 25, 50, 100]      # page length menu
+itables.options.pageLength = 25
+itables.options.buttons = ["copy", "csv", "print"]
+itables.options.scrollX = True                      # allow horizontal scroll if needed
+itables.options.scrollY = True                      # allow horizontal scroll if needed
+itables.options.ordering = True
+
+## Set up duckdb
+
+import duckdb
+con = duckdb.connect()
+x = con.execute("INSTALL spatial; LOAD spatial;")
+
+sys.path.append("..")
+from fandu.geo_utils import get_newest_file
+
+pd.set_option("display.max_rows", None)
+
+precious_folder = "../precious/"
+
+features = ["Addresses"]
+
+selector = "Civic_Associations"
+selector_key = "Fan District Association"
+
+fda_contacts_filename = get_newest_file( precious_folder,'FDA_contacts',ext='.csv')
+
+```
+```{python}
+
+def show_result_set( query, **kwargs ):
+    # This depends on global variable CON to keep the argument list clean
+    print('::: {.column-screen-inset style="font-size:0.7em"}')
+    df = con.execute( query ).fetch_df()
+    show(df,**kwargs)
+    print(':::')
+
+```
+
+
+# Create merge file
+
+```{python}
+x = con.execute("""
+CREATE OR REPLACE TABLE addresses AS SELECT * FROM 'Addresses_in_fan.parquet';
+CREATE OR REPLACE TABLE parcels AS SELECT * FROM 'Single_parcels_in_fan.parquet';
+CREATE OR REPLACE TABLE contacts AS SELECT * FROM 'Contacts_in_fda.parquet';
+""");
+```
+
+```{python}
+show_result_set("""
+describe addresses
+""");
+```
+
+## Full outer join
+
+Combine single parcels and addresses.
+
+```{python}
+#| output: asis
+
+x = con.execute("""
+CREATE OR REPLACE TABLE parcel_address_join AS
+SELECT 
+    p.RepresentativeParcelID,
+    p.LandUse,
+    p.PropertyClass,
+    p.geometry AS parcel_geom,
+    p.FanUse,
+    p.FanUseType,
+    P.FanUseOrder,
+    a.AddressId,
+    a.AddressLabel,
+    a.BuildingNumber,
+    a.StreetDirection,
+    a.StreetName,
+    a.StreetType,
+    a.ExtensionWithUnit,
+    a.UnitType,
+    a.UnitValue,
+    A.ZipCode,
+    a.Mailable AS AddressMailable,
+    a.AddressBase,
+    a.AddressExtension,
+    a.geometry AS addr_geom
+FROM parcels p
+  FULL OUTER JOIN addresses a
+  ON ST_Within(a.geometry, p.geometry);
+""")
+```
+
+## Examine Parcels
+
+Looking at single parcels, how to addresses line up?  
+
+```{python}
+#| output: asis
+show_result_set("""
+WITH classified AS (
+  SELECT 
+    RepresentativeParcelID,
+    COUNT(DISTINCT AddressId) AS address_count,
+    COUNT_IF(AddressMailable = 'Yes') AS mailable_count
+  FROM parcel_address_join
+  GROUP BY RepresentativeParcelID
+)
+SELECT
+  CASE
+    WHEN address_count = 0 THEN 'No match'
+    WHEN address_count = 1 AND mailable_count = 1 THEN 'Single address (mailable)'
+    WHEN address_count = 1 AND mailable_count = 0 THEN 'Single address (not mailable)'
+    WHEN address_count > 1 AND mailable_count = 1 THEN 'Multiple addresses (1 mailable)'
+    WHEN address_count > 1 AND mailable_count > 1 THEN 'Multiple addresses (many mailable)'
+    WHEN address_count > 1 AND mailable_count = 0 THEN 'Multiple addresses (none mailable)'
+    ELSE 'Unclassified'
+  END AS match_category,
+  COUNT(*) AS parcel_count
+FROM classified
+GROUP BY match_category
+ORDER BY parcel_count DESC;
+
+""",pageLength=10)
+```
+
+## Examine Addresses
+
+How many parcels are associated with each address?  We expect each address to be matched
+with only one parcel - because we merge multiple parcels sharing the same geometry into single parcels.
+
+We may see a few addresses without parcels.  Why?
+
+```{python}
+#| output: asis
+show_result_set("""
+WITH address_classified AS (
+  SELECT 
+    AddressId,
+    AddressMailable,
+    COUNT(DISTINCT RepresentativeParcelID) AS parcel_count
+  FROM parcel_address_join
+  GROUP BY AddressId,AddressMailable
+)
+SELECT
+  CASE
+    WHEN parcel_count = 0 THEN 'No parcel match'
+    WHEN parcel_count = 1 THEN 'Single parcel'
+    WHEN parcel_count > 1 THEN 'Multiple parcels'
+  END AS parcel_category,
+  COUNT(*) AS address_count,
+  AddressMailable
+FROM address_classified
+GROUP BY AddressMailable,parcel_category
+ORDER BY address_count DESC;
+""",pageLength=10)
+```
+
+## Merge in contacts.
+
+```{python}
+show_result_set("""
+create or replace table golden_join as
+select
+  a.*,
+  b.*
+from
+  parcel_address_join a
+  full outer join contacts b on (a.addressLabel=b.addresslabel)
+""")
+```
+
+
+
+```{python}
+show_result_set("""
+select 
+  FanUse, MembershipLevelName,
+  sum( 1 ) as Total,
+  sum( case when Member='True' then 1 else 0 end ) as member_cnt,
+  sum( case when Member<>'True' and Member is not NULL then 1 else 0 end) as non_member_cnt,
+  sum( case when Member is NULL then 1 else 0 end ) as not_in_fda
+from
+  golden_join
+group by
+  FanUse, MembershipLevelName
+order by
+  FanUse, MembershipLevelName
+""")
+```
+
+
+
+```{python}
+show_result_set("""
+select 
+  FanUse,
+  sum( 1 ) as Total
+from
+  golden_join
+group by
+  FanUse
+""")
+```
+
+
+
+```{python}
+show_result_set("""
+select 
+  FanUse,
+  AddressLabel,
+  1 as Total
+from
+  golden_join
+where
+  FanUse='FanBusiness'
+order by
+  StreetName, AddressLabel
+""")
+```
+
+
+
+
