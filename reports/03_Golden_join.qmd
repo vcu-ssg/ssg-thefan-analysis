@@ -9,7 +9,10 @@ import sys
 import sqlite3
 import requests
 import numpy as np
+
 import pandas as pd
+pd.set_option("display.max_rows", None)
+
 import geopandas as gpd
 import matplotlib.pyplot as plt
 
@@ -25,7 +28,8 @@ logger.add(sys.__stderr__, level="INFO", format="{level: <8} | {name}:{function}
 ## Set up itables
 import itables
 from itables import show
-# 🔧 Sensible global defaults for itables
+
+# Sensible global defaults for itables
 itables.options.maxBytes = 0                        # show full content in each cell
 itables.options.classes = ["display", "compact"]    # compact, clean look
 itables.options.lengthMenu = [10, 25, 50, 100]      # page length menu
@@ -40,31 +44,15 @@ itables.options.ordering = True
 import duckdb
 con = duckdb.connect()
 x = con.execute("INSTALL spatial; LOAD spatial;")
-
-sys.path.append("..")
-from fandu.geo_utils import get_newest_file
-
-pd.set_option("display.max_rows", None)
-
-precious_folder = "../precious/"
-
-features = ["Addresses"]
-
-selector = "Civic_Associations"
-selector_key = "Fan District Association"
-
-fda_contacts_filename = get_newest_file( precious_folder,'FDA_contacts',ext='.csv')
-
 ```
-```{python}
 
+```{python}
 def show_result_set( query, **kwargs ):
     # This depends on global variable CON to keep the argument list clean
-    print('::: {.column-screen-inset style="font-size:0.7em"}')
+    print('::: {.column-page-right style="font-size:0.7em"}')
     df = con.execute( query ).fetch_df()
     show(df,**kwargs)
     print(':::')
-
 ```
 
 
@@ -183,7 +171,8 @@ SELECT
 FROM address_classified
 GROUP BY AddressMailable,parcel_category
 ORDER BY address_count DESC;
-""",pageLength=10)
+""",pageLength=10
+)
 ```
 
 ## Merge in contacts.

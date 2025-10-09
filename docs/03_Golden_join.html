@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Parcels and Addresses Join – FDA Dashboard</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-e55a5dd103272b6bfcd99402978141ce.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">FDA Dashboard</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./data_sources.html"> 
+<span class="menu-text">Data Sources</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Parcels and Addresses Join</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="create-merge-file" class="level1 page-columns page-full">
+<h1>Create merge file</h1>
+<div id="b69f5cfb" class="cell" data-execution_count="4">
+<div class="cell-output cell-output-stdout">
+<pre><code>::: {.column-page-right style="font-size:0.7em"}</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<!--| quarto-html-table-processing: none -->
+<table id="itables_d98f05d4_41c3_4040_ba5f_3e4bcddafca5"><tbody><tr>
+    <td style="vertical-align:middle; text-align:left">
+    <a href="https://mwouts.github.io/itables/"><svg class="main-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" width="64" viewbox="0 0 500 400" style="font-family: 'Droid Sans', sans-serif;">
+    <g style="fill:#d9d7fc">
+        <path d="M100,400H500V357H100Z"></path>
+        <path d="M100,300H400V257H100Z"></path>
+        <path d="M0,200H400V157H0Z"></path>
+        <path d="M100,100H500V57H100Z"></path>
+        <path d="M100,350H500V307H100Z"></path>
+        <path d="M100,250H400V207H100Z"></path>
+        <path d="M0,150H400V107H0Z"></path>
+        <path d="M100,50H500V7H100Z"></path>
+    </g>
+    <g style="fill:#1a1366;stroke:#1a1366;">
+   <rect x="100" y="7" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="5s" repeatcount="indefinite"></animate>
+      <animate attributename="x" values="100;100;500" dur="5s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="0" y="107" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="3.5s" repeatcount="indefinite"></animate>
+    <animate attributename="x" values="0;0;400" dur="3.5s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="100" y="207" width="300" height="43">
+    <animate attributename="width" values="0;300;0" dur="3s" repeatcount="indefinite"></animate>
+    <animate attributename="x" values="100;100;400" dur="3s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="100" y="307" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="4s" repeatcount="indefinite"></animate>
+      <animate attributename="x" values="100;100;500" dur="4s" repeatcount="indefinite"></animate>
+  </rect>
+        <g style="fill:transparent;stroke-width:8; stroke-linejoin:round" rx="5">
+            <g transform="translate(45 50) rotate(-45)">
+                <circle r="33" cx="0" cy="0"></circle>
+                <rect x="-8" y="32" width="16" height="30"></rect>
+            </g>
+
+            <g transform="translate(450 152)">
+                <polyline points="-15,-20 -35,-20 -35,40 25,40 25,20"></polyline>
+                <rect x="-15" y="-40" width="60" height="60"></rect>
+            </g>
+
+            <g transform="translate(50 352)">
+                <polygon points="-35,-5 0,-40 35,-5"></polygon>
+                <polygon points="-35,10 0,45 35,10"></polygon>
+            </g>
+
+            <g transform="translate(75 250)">
+                <polyline points="-30,30 -60,0 -30,-30"></polyline>
+                <polyline points="0,30 -30,0 0,-30"></polyline>
+            </g>
+
+            <g transform="translate(425 250) rotate(180)">
+                <polyline points="-30,30 -60,0 -30,-30"></polyline>
+                <polyline points="0,30 -30,0 0,-30"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>
+</a>
+    Loading ITables v2.5.2 from the internet...
+    (need <a href="https://mwouts.github.io/itables/troubleshooting.html">help</a>?)</td>
+    </tr></tbody></table>
+<link href="https://www.unpkg.com/dt_for_itables@2.4.0/dt_bundle.css" rel="stylesheet">
+<script type="module">
+    import { ITable, jQuery as $ } from 'https://www.unpkg.com/dt_for_itables@2.4.0/dt_bundle.js';
+
+    document.querySelectorAll("#itables_d98f05d4_41c3_4040_ba5f_3e4bcddafca5:not(.dataTable)").forEach(table => {
+        if (!(table instanceof HTMLTableElement))
+            return;
+
+        let dt_args = {"layout": {"topStart": "buttons", "topEnd": "search", "bottomStart": "info", "bottomEnd": "paging"}, "order": [], "buttons": ["copy", "csv", "print"], "scrollX": true, "text_in_header_can_be_selected": true, "style": {"table-layout": "auto", "width": "auto", "margin": "0", "caption-side": "bottom"}, "ordering": true, "classes": ["display", "compact"], "lengthMenu": [10, 25, 50, 100], "scrollY": true, "pageLength": 25, "table_html": "<table><thead>\n    <tr style=\"text-align: right;\">\n      \n      <th>column_name</th>\n      <th>column_type</th>\n      <th>null</th>\n      <th>key</th>\n      <th>default</th>\n      <th>extra</th>\n    </tr>\n  </thead></table>", "data_json": "[[\"AddressId\", \"VARCHAR\", \"YES\", \"None\", \"None\", \"None\"], [\"AddressLabel\", \"VARCHAR\", \"YES\", \"None\", \"None\", \"None\"], [\"BuildingNumber\", \"VARCHAR\", \"YES\", \"None\", \"None\", \"None\"], [\"StreetDirection\", \"VARCHAR\", \"YES\", \"None\", \"None\", \"None\"], [\"StreetName\", \"VARCHAR\", \"YES\", \"None\", \"None\", \"None\"], [\"StreetType\", \"VARCHAR\", \"YES\", \"None\", \"None\", \"None\"], [\"ExtensionWithUnit\", \"VARCHAR\", \"YES\", \"None\", \"None\", \"None\"], [\"UnitType\", \"VARCHAR\", \"YES\", \"None\", \"None\", \"None\"], [\"UnitValue\", \"VARCHAR\", \"YES\", \"None\", \"None\", \"None\"], [\"ZipCode\", \"VARCHAR\", \"YES\", \"None\", \"None\", \"None\"], [\"Mailable\", \"VARCHAR\", \"YES\", \"None\", \"None\", \"None\"], [\"StatePlaneX\", \"DOUBLE\", \"YES\", \"None\", \"None\", \"None\"], [\"StatePlaneY\", \"DOUBLE\", \"YES\", \"None\", \"None\", \"None\"], [\"Latitude\", \"DOUBLE\", \"YES\", \"None\", \"None\", \"None\"], [\"Longitude\", \"DOUBLE\", \"YES\", \"None\", \"None\", \"None\"], [\"geometry\", \"GEOMETRY\", \"YES\", \"None\", \"None\", \"None\"], [\"ID\", \"VARCHAR\", \"YES\", \"None\", \"None\", \"None\"], [\"Name\", \"VARCHAR\", \"YES\", \"None\", \"None\", \"None\"], [\"HasDoubleSpaces\", \"BOOLEAN\", \"YES\", \"None\", \"None\", \"None\"], [\"AddressLen\", \"BIGINT\", \"YES\", \"None\", \"None\", \"None\"], [\"AddressBase\", \"VARCHAR\", \"YES\", \"None\", \"None\", \"None\"], [\"AddressExtension\", \"VARCHAR\", \"YES\", \"None\", \"None\", \"None\"], [\"__index_level_0__\", \"BIGINT\", \"YES\", \"None\", \"None\", \"None\"]]"};
+        new ITable(table, dt_args);
+    });
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>:::</code></pre>
+</div>
+</div>
+<section id="full-outer-join" class="level2">
+<h2 class="anchored" data-anchor-id="full-outer-join">Full outer join</h2>
+<p>Combine single parcels and addresses.</p>
+</section>
+<section id="examine-parcels" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="examine-parcels">Examine Parcels</h2>
+<p>Looking at single parcels, how to addresses line up?</p>
+<div class="column-page-right" style="font-size:0.7em">
+<!--| quarto-html-table-processing: none -->
+<table id="itables_737845cf_4d15_4fcf_8730_d4191b03ae95"><tbody><tr>
+    <td style="vertical-align:middle; text-align:left">
+    <a href="https://mwouts.github.io/itables/"><svg class="main-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" width="64" viewbox="0 0 500 400" style="font-family: 'Droid Sans', sans-serif;">
+    <g style="fill:#d9d7fc">
+        <path d="M100,400H500V357H100Z"></path>
+        <path d="M100,300H400V257H100Z"></path>
+        <path d="M0,200H400V157H0Z"></path>
+        <path d="M100,100H500V57H100Z"></path>
+        <path d="M100,350H500V307H100Z"></path>
+        <path d="M100,250H400V207H100Z"></path>
+        <path d="M0,150H400V107H0Z"></path>
+        <path d="M100,50H500V7H100Z"></path>
+    </g>
+    <g style="fill:#1a1366;stroke:#1a1366;">
+   <rect x="100" y="7" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="5s" repeatcount="indefinite"></animate>
+      <animate attributename="x" values="100;100;500" dur="5s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="0" y="107" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="3.5s" repeatcount="indefinite"></animate>
+    <animate attributename="x" values="0;0;400" dur="3.5s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="100" y="207" width="300" height="43">
+    <animate attributename="width" values="0;300;0" dur="3s" repeatcount="indefinite"></animate>
+    <animate attributename="x" values="100;100;400" dur="3s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="100" y="307" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="4s" repeatcount="indefinite"></animate>
+      <animate attributename="x" values="100;100;500" dur="4s" repeatcount="indefinite"></animate>
+  </rect>
+        <g style="fill:transparent;stroke-width:8; stroke-linejoin:round" rx="5">
+            <g transform="translate(45 50) rotate(-45)">
+                <circle r="33" cx="0" cy="0"></circle>
+                <rect x="-8" y="32" width="16" height="30"></rect>
+            </g>
+
+            <g transform="translate(450 152)">
+                <polyline points="-15,-20 -35,-20 -35,40 25,40 25,20"></polyline>
+                <rect x="-15" y="-40" width="60" height="60"></rect>
+            </g>
+
+            <g transform="translate(50 352)">
+                <polygon points="-35,-5 0,-40 35,-5"></polygon>
+                <polygon points="-35,10 0,45 35,10"></polygon>
+            </g>
+
+            <g transform="translate(75 250)">
+                <polyline points="-30,30 -60,0 -30,-30"></polyline>
+                <polyline points="0,30 -30,0 0,-30"></polyline>
+            </g>
+
+            <g transform="translate(425 250) rotate(180)">
+                <polyline points="-30,30 -60,0 -30,-30"></polyline>
+                <polyline points="0,30 -30,0 0,-30"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>
+</a>
+    Loading ITables v2.5.2 from the internet...
+    (need <a href="https://mwouts.github.io/itables/troubleshooting.html">help</a>?)</td>
+    </tr></tbody></table>
+<link href="https://www.unpkg.com/dt_for_itables@2.4.0/dt_bundle.css" rel="stylesheet">
+<script type="module">
+    import { ITable, jQuery as $ } from 'https://www.unpkg.com/dt_for_itables@2.4.0/dt_bundle.js';
+
+    document.querySelectorAll("#itables_737845cf_4d15_4fcf_8730_d4191b03ae95:not(.dataTable)").forEach(table => {
+        if (!(table instanceof HTMLTableElement))
+            return;
+
+        let dt_args = {"pageLength": 10, "layout": {"topStart": "buttons", "topEnd": null, "bottomStart": null, "bottomEnd": null}, "order": [], "buttons": ["copy", "csv", "print"], "scrollX": true, "text_in_header_can_be_selected": true, "style": {"table-layout": "auto", "width": "auto", "margin": "0", "caption-side": "bottom"}, "ordering": true, "classes": ["display", "compact"], "lengthMenu": [10, 25, 50, 100], "scrollY": true, "table_html": "<table><thead>\n    <tr style=\"text-align: right;\">\n      \n      <th>match_category</th>\n      <th>parcel_count</th>\n    </tr>\n  </thead></table>", "data_json": "[[\"Single address (mailable)\", 1820], [\"Multiple addresses (many mailable)\", 1392], [\"Single address (not mailable)\", 227], [\"Multiple addresses (none mailable)\", 17], [\"Multiple addresses (1 mailable)\", 8], [\"No match\", 1]]"};
+        new ITable(table, dt_args);
+    });
+</script>
+</div>
+</section>
+<section id="examine-addresses" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="examine-addresses">Examine Addresses</h2>
+<p>How many parcels are associated with each address? We expect each address to be matched with only one parcel - because we merge multiple parcels sharing the same geometry into single parcels.</p>
+<p>We may see a few addresses without parcels. Why?</p>
+<div class="column-page-right" style="font-size:0.7em">
+<!--| quarto-html-table-processing: none -->
+<table id="itables_e8dcafeb_1c5a_44a5_a409_2f4fd89811e5"><tbody><tr>
+    <td style="vertical-align:middle; text-align:left">
+    <a href="https://mwouts.github.io/itables/"><svg class="main-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" width="64" viewbox="0 0 500 400" style="font-family: 'Droid Sans', sans-serif;">
+    <g style="fill:#d9d7fc">
+        <path d="M100,400H500V357H100Z"></path>
+        <path d="M100,300H400V257H100Z"></path>
+        <path d="M0,200H400V157H0Z"></path>
+        <path d="M100,100H500V57H100Z"></path>
+        <path d="M100,350H500V307H100Z"></path>
+        <path d="M100,250H400V207H100Z"></path>
+        <path d="M0,150H400V107H0Z"></path>
+        <path d="M100,50H500V7H100Z"></path>
+    </g>
+    <g style="fill:#1a1366;stroke:#1a1366;">
+   <rect x="100" y="7" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="5s" repeatcount="indefinite"></animate>
+      <animate attributename="x" values="100;100;500" dur="5s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="0" y="107" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="3.5s" repeatcount="indefinite"></animate>
+    <animate attributename="x" values="0;0;400" dur="3.5s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="100" y="207" width="300" height="43">
+    <animate attributename="width" values="0;300;0" dur="3s" repeatcount="indefinite"></animate>
+    <animate attributename="x" values="100;100;400" dur="3s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="100" y="307" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="4s" repeatcount="indefinite"></animate>
+      <animate attributename="x" values="100;100;500" dur="4s" repeatcount="indefinite"></animate>
+  </rect>
+        <g style="fill:transparent;stroke-width:8; stroke-linejoin:round" rx="5">
+            <g transform="translate(45 50) rotate(-45)">
+                <circle r="33" cx="0" cy="0"></circle>
+                <rect x="-8" y="32" width="16" height="30"></rect>
+            </g>
+
+            <g transform="translate(450 152)">
+                <polyline points="-15,-20 -35,-20 -35,40 25,40 25,20"></polyline>
+                <rect x="-15" y="-40" width="60" height="60"></rect>
+            </g>
+
+            <g transform="translate(50 352)">
+                <polygon points="-35,-5 0,-40 35,-5"></polygon>
+                <polygon points="-35,10 0,45 35,10"></polygon>
+            </g>
+
+            <g transform="translate(75 250)">
+                <polyline points="-30,30 -60,0 -30,-30"></polyline>
+                <polyline points="0,30 -30,0 0,-30"></polyline>
+            </g>
+
+            <g transform="translate(425 250) rotate(180)">
+                <polyline points="-30,30 -60,0 -30,-30"></polyline>
+                <polyline points="0,30 -30,0 0,-30"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>
+</a>
+    Loading ITables v2.5.2 from the internet...
+    (need <a href="https://mwouts.github.io/itables/troubleshooting.html">help</a>?)</td>
+    </tr></tbody></table>
+<link href="https://www.unpkg.com/dt_for_itables@2.4.0/dt_bundle.css" rel="stylesheet">
+<script type="module">
+    import { ITable, jQuery as $ } from 'https://www.unpkg.com/dt_for_itables@2.4.0/dt_bundle.js';
+
+    document.querySelectorAll("#itables_e8dcafeb_1c5a_44a5_a409_2f4fd89811e5:not(.dataTable)").forEach(table => {
+        if (!(table instanceof HTMLTableElement))
+            return;
+
+        let dt_args = {"pageLength": 10, "layout": {"topStart": "buttons", "topEnd": null, "bottomStart": null, "bottomEnd": null}, "order": [], "buttons": ["copy", "csv", "print"], "scrollX": true, "text_in_header_can_be_selected": true, "style": {"table-layout": "auto", "width": "auto", "margin": "0", "caption-side": "bottom"}, "ordering": true, "classes": ["display", "compact"], "lengthMenu": [10, 25, 50, 100], "scrollY": true, "table_html": "<table><thead>\n    <tr style=\"text-align: right;\">\n      \n      <th>parcel_category</th>\n      <th>address_count</th>\n      <th>AddressMailable</th>\n    </tr>\n  </thead></table>", "data_json": "[[\"Single parcel\", 10893, \"Yes\"], [\"Single parcel\", 411, \"No\"], [\"No parcel match\", 9, \"Yes\"], [\"Single parcel\", 1, \"None\"]]"};
+        new ITable(table, dt_args);
+    });
+</script>
+</div>
+</section>
+<section id="merge-in-contacts." class="level2">
+<h2 class="anchored" data-anchor-id="merge-in-contacts.">Merge in contacts.</h2>
+<div id="7fcdc9c5" class="cell" data-execution_count="8">
+<div class="cell-output cell-output-stdout">
+<pre><code>::: {.column-page-right style="font-size:0.7em"}</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<!--| quarto-html-table-processing: none -->
+<table id="itables_2f8f800a_c817_4ac9_81a6_fc3ec2df6c5a"><tbody><tr>
+    <td style="vertical-align:middle; text-align:left">
+    <a href="https://mwouts.github.io/itables/"><svg class="main-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" width="64" viewbox="0 0 500 400" style="font-family: 'Droid Sans', sans-serif;">
+    <g style="fill:#d9d7fc">
+        <path d="M100,400H500V357H100Z"></path>
+        <path d="M100,300H400V257H100Z"></path>
+        <path d="M0,200H400V157H0Z"></path>
+        <path d="M100,100H500V57H100Z"></path>
+        <path d="M100,350H500V307H100Z"></path>
+        <path d="M100,250H400V207H100Z"></path>
+        <path d="M0,150H400V107H0Z"></path>
+        <path d="M100,50H500V7H100Z"></path>
+    </g>
+    <g style="fill:#1a1366;stroke:#1a1366;">
+   <rect x="100" y="7" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="5s" repeatcount="indefinite"></animate>
+      <animate attributename="x" values="100;100;500" dur="5s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="0" y="107" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="3.5s" repeatcount="indefinite"></animate>
+    <animate attributename="x" values="0;0;400" dur="3.5s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="100" y="207" width="300" height="43">
+    <animate attributename="width" values="0;300;0" dur="3s" repeatcount="indefinite"></animate>
+    <animate attributename="x" values="100;100;400" dur="3s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="100" y="307" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="4s" repeatcount="indefinite"></animate>
+      <animate attributename="x" values="100;100;500" dur="4s" repeatcount="indefinite"></animate>
+  </rect>
+        <g style="fill:transparent;stroke-width:8; stroke-linejoin:round" rx="5">
+            <g transform="translate(45 50) rotate(-45)">
+                <circle r="33" cx="0" cy="0"></circle>
+                <rect x="-8" y="32" width="16" height="30"></rect>
+            </g>
+
+            <g transform="translate(450 152)">
+                <polyline points="-15,-20 -35,-20 -35,40 25,40 25,20"></polyline>
+                <rect x="-15" y="-40" width="60" height="60"></rect>
+            </g>
+
+            <g transform="translate(50 352)">
+                <polygon points="-35,-5 0,-40 35,-5"></polygon>
+                <polygon points="-35,10 0,45 35,10"></polygon>
+            </g>
+
+            <g transform="translate(75 250)">
+                <polyline points="-30,30 -60,0 -30,-30"></polyline>
+                <polyline points="0,30 -30,0 0,-30"></polyline>
+            </g>
+
+            <g transform="translate(425 250) rotate(180)">
+                <polyline points="-30,30 -60,0 -30,-30"></polyline>
+                <polyline points="0,30 -30,0 0,-30"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>
+</a>
+    Loading ITables v2.5.2 from the internet...
+    (need <a href="https://mwouts.github.io/itables/troubleshooting.html">help</a>?)</td>
+    </tr></tbody></table>
+<link href="https://www.unpkg.com/dt_for_itables@2.4.0/dt_bundle.css" rel="stylesheet">
+<script type="module">
+    import { ITable, jQuery as $ } from 'https://www.unpkg.com/dt_for_itables@2.4.0/dt_bundle.js';
+
+    document.querySelectorAll("#itables_2f8f800a_c817_4ac9_81a6_fc3ec2df6c5a:not(.dataTable)").forEach(table => {
+        if (!(table instanceof HTMLTableElement))
+            return;
+
+        let dt_args = {"layout": {"topStart": "buttons", "topEnd": null, "bottomStart": null, "bottomEnd": null}, "order": [], "buttons": ["copy", "csv", "print"], "scrollX": true, "text_in_header_can_be_selected": true, "style": {"table-layout": "auto", "width": "auto", "margin": "0", "caption-side": "bottom"}, "ordering": true, "classes": ["display", "compact"], "lengthMenu": [10, 25, 50, 100], "scrollY": true, "pageLength": 25, "table_html": "<table><thead>\n    <tr style=\"text-align: right;\">\n      \n      <th>Count</th>\n    </tr>\n  </thead></table>", "data_json": "[[12395]]"};
+        new ITable(table, dt_args);
+    });
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>:::</code></pre>
+</div>
+</div>
+<div id="3bb9a32a" class="cell" data-execution_count="9">
+<div class="cell-output cell-output-stdout">
+<pre><code>::: {.column-page-right style="font-size:0.7em"}</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<!--| quarto-html-table-processing: none -->
+<table id="itables_fd068ed0_913d_4ada_aab7_5c228a9019ed"><tbody><tr>
+    <td style="vertical-align:middle; text-align:left">
+    <a href="https://mwouts.github.io/itables/"><svg class="main-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" width="64" viewbox="0 0 500 400" style="font-family: 'Droid Sans', sans-serif;">
+    <g style="fill:#d9d7fc">
+        <path d="M100,400H500V357H100Z"></path>
+        <path d="M100,300H400V257H100Z"></path>
+        <path d="M0,200H400V157H0Z"></path>
+        <path d="M100,100H500V57H100Z"></path>
+        <path d="M100,350H500V307H100Z"></path>
+        <path d="M100,250H400V207H100Z"></path>
+        <path d="M0,150H400V107H0Z"></path>
+        <path d="M100,50H500V7H100Z"></path>
+    </g>
+    <g style="fill:#1a1366;stroke:#1a1366;">
+   <rect x="100" y="7" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="5s" repeatcount="indefinite"></animate>
+      <animate attributename="x" values="100;100;500" dur="5s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="0" y="107" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="3.5s" repeatcount="indefinite"></animate>
+    <animate attributename="x" values="0;0;400" dur="3.5s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="100" y="207" width="300" height="43">
+    <animate attributename="width" values="0;300;0" dur="3s" repeatcount="indefinite"></animate>
+    <animate attributename="x" values="100;100;400" dur="3s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="100" y="307" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="4s" repeatcount="indefinite"></animate>
+      <animate attributename="x" values="100;100;500" dur="4s" repeatcount="indefinite"></animate>
+  </rect>
+        <g style="fill:transparent;stroke-width:8; stroke-linejoin:round" rx="5">
+            <g transform="translate(45 50) rotate(-45)">
+                <circle r="33" cx="0" cy="0"></circle>
+                <rect x="-8" y="32" width="16" height="30"></rect>
+            </g>
+
+            <g transform="translate(450 152)">
+                <polyline points="-15,-20 -35,-20 -35,40 25,40 25,20"></polyline>
+                <rect x="-15" y="-40" width="60" height="60"></rect>
+            </g>
+
+            <g transform="translate(50 352)">
+                <polygon points="-35,-5 0,-40 35,-5"></polygon>
+                <polygon points="-35,10 0,45 35,10"></polygon>
+            </g>
+
+            <g transform="translate(75 250)">
+                <polyline points="-30,30 -60,0 -30,-30"></polyline>
+                <polyline points="0,30 -30,0 0,-30"></polyline>
+            </g>
+
+            <g transform="translate(425 250) rotate(180)">
+                <polyline points="-30,30 -60,0 -30,-30"></polyline>
+                <polyline points="0,30 -30,0 0,-30"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>
+</a>
+    Loading ITables v2.5.2 from the internet...
+    (need <a href="https://mwouts.github.io/itables/troubleshooting.html">help</a>?)</td>
+    </tr></tbody></table>
+<link href="https://www.unpkg.com/dt_for_itables@2.4.0/dt_bundle.css" rel="stylesheet">
+<script type="module">
+    import { ITable, jQuery as $ } from 'https://www.unpkg.com/dt_for_itables@2.4.0/dt_bundle.js';
+
+    document.querySelectorAll("#itables_fd068ed0_913d_4ada_aab7_5c228a9019ed:not(.dataTable)").forEach(table => {
+        if (!(table instanceof HTMLTableElement))
+            return;
+
+        let dt_args = {"layout": {"topStart": "buttons", "topEnd": "search", "bottomStart": "info", "bottomEnd": "paging"}, "order": [], "buttons": ["copy", "csv", "print"], "scrollX": true, "text_in_header_can_be_selected": true, "style": {"table-layout": "auto", "width": "auto", "margin": "0", "caption-side": "bottom"}, "ordering": true, "classes": ["display", "compact"], "lengthMenu": [10, 25, 50, 100], "scrollY": true, "pageLength": 25, "table_html": "<table><thead>\n    <tr style=\"text-align: right;\">\n      \n      <th>FanUse</th>\n      <th>Membershiplevelname</th>\n      <th>Total</th>\n      <th>member_cnt</th>\n      <th>non_member_cnt</th>\n      <th>not_in_fda</th>\n    </tr>\n  </thead></table>", "data_json": "[[\"FanBusiness\", \"Friend\", 1.0, 1.0, 0.0, 0.0], [\"FanBusiness\", \"Individual\", 2.0, 2.0, 0.0, 0.0], [\"FanBusiness\", \"Organization/Business\", 6.0, 6.0, 0.0, 0.0], [\"FanBusiness\", \"Organization/Business - Autorenewing Annually\", 1.0, 1.0, 0.0, 0.0], [\"FanBusiness\", \"None\", 1685.0, 0.0, 0.0, 1685.0], [\"FanMixed-Use\", \"Individual\", 2.0, 2.0, 0.0, 0.0], [\"FanMixed-Use\", \"Individual - Autorenewing Annually\", 1.0, 1.0, 0.0, 0.0], [\"FanMixed-Use\", \"Organization/Business\", 1.0, 1.0, 0.0, 0.0], [\"FanMixed-Use\", \"None\", 330.0, 0.0, 0.0, 330.0], [\"FanOther\", \"Organization/Business\", 1.0, 1.0, 0.0, 0.0], [\"FanOther\", \"None\", 372.0, 0.0, 0.0, 372.0], [\"FanResidential\", \"Friend\", 8.0, 8.0, 0.0, 0.0], [\"FanResidential\", \"Household\", 566.0, 544.0, 22.0, 0.0], [\"FanResidential\", \"Household - Autorenewing Annually\", 221.0, 217.0, 4.0, 0.0], [\"FanResidential\", \"Individual\", 136.0, 134.0, 2.0, 0.0], [\"FanResidential\", \"Individual - Autorenewing Annually\", 34.0, 32.0, 2.0, 0.0], [\"FanResidential\", \"Organization/Business\", 4.0, 4.0, 0.0, 0.0], [\"FanResidential\", \"Organization/Business - Autorenewing Annually\", 2.0, 2.0, 0.0, 0.0], [\"FanResidential\", \"Student\", 1.0, 1.0, 0.0, 0.0], [\"FanResidential\", \"None\", 8240.0, 0.0, 88.0, 8152.0], [\"None\", \"Friend\", 8.0, 8.0, 0.0, 0.0], [\"None\", \"Household\", 23.0, 23.0, 0.0, 0.0], [\"None\", \"Household - Autorenewing Annually\", 7.0, 7.0, 0.0, 0.0], [\"None\", \"Individual\", 12.0, 11.0, 1.0, 0.0], [\"None\", \"Individual - Autorenewing Annually\", 1.0, 1.0, 0.0, 0.0], [\"None\", \"Organization/Business\", 4.0, 4.0, 0.0, 0.0], [\"None\", \"Organization/Business - Autorenewing Annually\", 4.0, 4.0, 0.0, 0.0], [\"None\", \"None\", 722.0, 0.0, 714.0, 8.0]]"};
+        new ITable(table, dt_args);
+    });
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>:::</code></pre>
+</div>
+</div>
+<div id="a65db293" class="cell" data-execution_count="10">
+<div class="cell-output cell-output-stdout">
+<pre><code>::: {.column-page-right style="font-size:0.7em"}</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<!--| quarto-html-table-processing: none -->
+<table id="itables_9386482d_fa48_47e3_8be1_2ee74da8cec3"><tbody><tr>
+    <td style="vertical-align:middle; text-align:left">
+    <a href="https://mwouts.github.io/itables/"><svg class="main-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" width="64" viewbox="0 0 500 400" style="font-family: 'Droid Sans', sans-serif;">
+    <g style="fill:#d9d7fc">
+        <path d="M100,400H500V357H100Z"></path>
+        <path d="M100,300H400V257H100Z"></path>
+        <path d="M0,200H400V157H0Z"></path>
+        <path d="M100,100H500V57H100Z"></path>
+        <path d="M100,350H500V307H100Z"></path>
+        <path d="M100,250H400V207H100Z"></path>
+        <path d="M0,150H400V107H0Z"></path>
+        <path d="M100,50H500V7H100Z"></path>
+    </g>
+    <g style="fill:#1a1366;stroke:#1a1366;">
+   <rect x="100" y="7" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="5s" repeatcount="indefinite"></animate>
+      <animate attributename="x" values="100;100;500" dur="5s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="0" y="107" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="3.5s" repeatcount="indefinite"></animate>
+    <animate attributename="x" values="0;0;400" dur="3.5s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="100" y="207" width="300" height="43">
+    <animate attributename="width" values="0;300;0" dur="3s" repeatcount="indefinite"></animate>
+    <animate attributename="x" values="100;100;400" dur="3s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="100" y="307" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="4s" repeatcount="indefinite"></animate>
+      <animate attributename="x" values="100;100;500" dur="4s" repeatcount="indefinite"></animate>
+  </rect>
+        <g style="fill:transparent;stroke-width:8; stroke-linejoin:round" rx="5">
+            <g transform="translate(45 50) rotate(-45)">
+                <circle r="33" cx="0" cy="0"></circle>
+                <rect x="-8" y="32" width="16" height="30"></rect>
+            </g>
+
+            <g transform="translate(450 152)">
+                <polyline points="-15,-20 -35,-20 -35,40 25,40 25,20"></polyline>
+                <rect x="-15" y="-40" width="60" height="60"></rect>
+            </g>
+
+            <g transform="translate(50 352)">
+                <polygon points="-35,-5 0,-40 35,-5"></polygon>
+                <polygon points="-35,10 0,45 35,10"></polygon>
+            </g>
+
+            <g transform="translate(75 250)">
+                <polyline points="-30,30 -60,0 -30,-30"></polyline>
+                <polyline points="0,30 -30,0 0,-30"></polyline>
+            </g>
+
+            <g transform="translate(425 250) rotate(180)">
+                <polyline points="-30,30 -60,0 -30,-30"></polyline>
+                <polyline points="0,30 -30,0 0,-30"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>
+</a>
+    Loading ITables v2.5.2 from the internet...
+    (need <a href="https://mwouts.github.io/itables/troubleshooting.html">help</a>?)</td>
+    </tr></tbody></table>
+<link href="https://www.unpkg.com/dt_for_itables@2.4.0/dt_bundle.css" rel="stylesheet">
+<script type="module">
+    import { ITable, jQuery as $ } from 'https://www.unpkg.com/dt_for_itables@2.4.0/dt_bundle.js';
+
+    document.querySelectorAll("#itables_9386482d_fa48_47e3_8be1_2ee74da8cec3:not(.dataTable)").forEach(table => {
+        if (!(table instanceof HTMLTableElement))
+            return;
+
+        let dt_args = {"layout": {"topStart": "buttons", "topEnd": null, "bottomStart": null, "bottomEnd": null}, "order": [], "buttons": ["copy", "csv", "print"], "scrollX": true, "text_in_header_can_be_selected": true, "style": {"table-layout": "auto", "width": "auto", "margin": "0", "caption-side": "bottom"}, "ordering": true, "classes": ["display", "compact"], "lengthMenu": [10, 25, 50, 100], "scrollY": true, "pageLength": 25, "table_html": "<table><thead>\n    <tr style=\"text-align: right;\">\n      \n      <th>FanUse</th>\n      <th>Total</th>\n    </tr>\n  </thead></table>", "data_json": "[[\"FanBusiness\", 1695.0], [\"None\", 781.0], [\"FanMixed-Use\", 334.0], [\"FanResidential\", 9212.0], [\"FanOther\", 373.0]]"};
+        new ITable(table, dt_args);
+    });
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>:::</code></pre>
+</div>
+</div>
+<div id="ed5800a9" class="cell" data-execution_count="11">
+<div class="cell-output cell-output-stdout">
+<pre><code>::: {.column-page-right style="font-size:0.7em"}</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<!--| quarto-html-table-processing: none -->
+<table id="itables_43fa9510_2100_4fb6_9c27_e2aeb19653f4"><tbody><tr>
+    <td style="vertical-align:middle; text-align:left">
+    <a href="https://mwouts.github.io/itables/"><svg class="main-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" width="64" viewbox="0 0 500 400" style="font-family: 'Droid Sans', sans-serif;">
+    <g style="fill:#d9d7fc">
+        <path d="M100,400H500V357H100Z"></path>
+        <path d="M100,300H400V257H100Z"></path>
+        <path d="M0,200H400V157H0Z"></path>
+        <path d="M100,100H500V57H100Z"></path>
+        <path d="M100,350H500V307H100Z"></path>
+        <path d="M100,250H400V207H100Z"></path>
+        <path d="M0,150H400V107H0Z"></path>
+        <path d="M100,50H500V7H100Z"></path>
+    </g>
+    <g style="fill:#1a1366;stroke:#1a1366;">
+   <rect x="100" y="7" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="5s" repeatcount="indefinite"></animate>
+      <animate attributename="x" values="100;100;500" dur="5s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="0" y="107" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="3.5s" repeatcount="indefinite"></animate>
+    <animate attributename="x" values="0;0;400" dur="3.5s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="100" y="207" width="300" height="43">
+    <animate attributename="width" values="0;300;0" dur="3s" repeatcount="indefinite"></animate>
+    <animate attributename="x" values="100;100;400" dur="3s" repeatcount="indefinite"></animate>
+  </rect>
+        <rect x="100" y="307" width="400" height="43">
+    <animate attributename="width" values="0;400;0" dur="4s" repeatcount="indefinite"></animate>
+      <animate attributename="x" values="100;100;500" dur="4s" repeatcount="indefinite"></animate>
+  </rect>
+        <g style="fill:transparent;stroke-width:8; stroke-linejoin:round" rx="5">
+            <g transform="translate(45 50) rotate(-45)">
+                <circle r="33" cx="0" cy="0"></circle>
+                <rect x="-8" y="32" width="16" height="30"></rect>
+            </g>
+
+            <g transform="translate(450 152)">
+                <polyline points="-15,-20 -35,-20 -35,40 25,40 25,20"></polyline>
+                <rect x="-15" y="-40" width="60" height="60"></rect>
+            </g>
+
+            <g transform="translate(50 352)">
+                <polygon points="-35,-5 0,-40 35,-5"></polygon>
+                <polygon points="-35,10 0,45 35,10"></polygon>
+            </g>
+
+            <g transform="translate(75 250)">
+                <polyline points="-30,30 -60,0 -30,-30"></polyline>
+                <polyline points="0,30 -30,0 0,-30"></polyline>
+            </g>
+
+            <g transform="translate(425 250) rotate(180)">
+                <polyline points="-30,30 -60,0 -30,-30"></polyline>
+                <polyline points="0,30 -30,0 0,-30"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>
+</a>
+    Loading ITables v2.5.2 from the internet...
+    (need <a href="https://mwouts.github.io/itables/troubleshooting.html">help</a>?)</td>
+    </tr></tbody></table>
+<link href="https://www.unpkg.com/dt_for_itables@2.4.0/dt_bundle.css" rel="stylesheet">
+<script type="module">
+    import { ITable, jQuery as $ } from 'https://www.unpkg.com/dt_for_itables@2.4.0/dt_bundle.js';
+
+    document.querySelectorAll("#itables_43fa9510_2100_4fb6_9c27_e2aeb19653f4:not(.dataTable)").forEach(table => {
+        if (!(table instanceof HTMLTableElement))
+            return;
+
+        let dt_args = {"layout": {"topStart": "buttons", "topEnd": "search", "bottomStart": "info", "bottomEnd": "paging"}, "order": [], "buttons": ["copy", "csv", "print"], "scrollX": true, "text_in_header_can_be_selected": true, "style": {"table-layout": "auto", "width": "auto", "margin": "0", "caption-side": "bottom"}, "ordering": true, "classes": ["display", "compact"], "lengthMenu": [10, 25, 50, 100], "scrollY": true, "pageLength": 25, "table_html": "<table><thead>\n    <tr style=\"text-align: right;\">\n      \n      <th>FanUse</th>\n      <th>AddressLabel</th>\n      <th>Total</th>\n    </tr>\n  </thead></table>", "data_json": "[[\"FanBusiness\", \"1 S Allen Ave\", 1], [\"FanBusiness\", \"10 S Allen Ave\", 1], [\"FanBusiness\", \"14 S Allen Ave\", 1], [\"FanBusiness\", \"500 N Allen Ave\", 1], [\"FanBusiness\", \"1 N Arthur Ashe Blvd\", 1], [\"FanBusiness\", \"201 N Arthur Ashe Blvd\", 1], [\"FanBusiness\", \"203 N Arthur Ashe Blvd\", 1], [\"FanBusiness\", \"205 N Arthur Ashe Blvd\", 1], [\"FanBusiness\", \"319 N Arthur Ashe Blvd\", 1], [\"FanBusiness\", \"321 N Arthur Ashe Blvd\", 1], [\"FanBusiness\", \"417 N Arthur Ashe Blvd\", 1], [\"FanBusiness\", \"419 N Arthur Ashe Blvd\", 1], [\"FanBusiness\", \"425 N Arthur Ashe Blvd\", 1], [\"FanBusiness\", \"601 N Arthur Ashe Blvd\", 1], [\"FanBusiness\", \"104 N Belvidere St\", 1], [\"FanBusiness\", \"1211 W Broad St\", 1], [\"FanBusiness\", \"1213 W Broad St\", 1], [\"FanBusiness\", \"1213 W Broad St Rear\", 1], [\"FanBusiness\", \"1215 W Broad St\", 1], [\"FanBusiness\", \"1217 W Broad St\", 1], [\"FanBusiness\", \"1225 W Broad St\", 1], [\"FanBusiness\", \"1229 W Broad St\", 1], [\"FanBusiness\", \"1235 W Broad St\", 1], [\"FanBusiness\", \"1513 W Broad St\", 1], [\"FanBusiness\", \"1515 W Broad St\", 1], [\"FanBusiness\", \"1607 W Broad St\", 1], [\"FanBusiness\", \"1609 W Broad St\", 1], [\"FanBusiness\", \"1611 W Broad St\", 1], [\"FanBusiness\", \"1615 W Broad St\", 1], [\"FanBusiness\", \"1623 W Broad St\", 1], [\"FanBusiness\", \"1625 W Broad St\", 1], [\"FanBusiness\", \"1633 W Broad St\", 1], [\"FanBusiness\", \"1635 W Broad St\", 1], [\"FanBusiness\", \"1639 W Broad St\", 1], [\"FanBusiness\", \"1641 W Broad St\", 1], [\"FanBusiness\", \"1801 W Broad St\", 1], [\"FanBusiness\", \"1811 W Broad St\", 1], [\"FanBusiness\", \"1815 W Broad St\", 1], [\"FanBusiness\", \"1817 W Broad St\", 1], [\"FanBusiness\", \"1819 W Broad St\", 1], [\"FanBusiness\", \"1831 W Broad St\", 1], [\"FanBusiness\", \"1833 W Broad St\", 1], [\"FanBusiness\", \"1837 W Broad St\", 1], [\"FanBusiness\", \"1839 W Broad St\", 1], [\"FanBusiness\", \"1841 W Broad St\", 1], [\"FanBusiness\", \"1843 W Broad St\", 1], [\"FanBusiness\", \"1845 W Broad St\", 1], [\"FanBusiness\", \"2001 W Broad St\", 1], [\"FanBusiness\", \"2011 W Broad St\", 1], [\"FanBusiness\", \"2015 W Broad St\", 1], [\"FanBusiness\", \"2025 W Broad St\", 1], [\"FanBusiness\", \"2027 W Broad St\", 1], [\"FanBusiness\", \"2029 W Broad St\", 1], [\"FanBusiness\", \"2043 W Broad St\", 1], [\"FanBusiness\", \"2043 W Broad St Rear\", 1], [\"FanBusiness\", \"2045 W Broad St\", 1], [\"FanBusiness\", \"2111 B W Broad St\", 1], [\"FanBusiness\", \"2201 W Broad St\", 1], [\"FanBusiness\", \"2209 W Broad St\", 1], [\"FanBusiness\", \"2211 W Broad St\", 1], [\"FanBusiness\", \"2237 W Broad St\", 1], [\"FanBusiness\", \"2239 W Broad St\", 1], [\"FanBusiness\", \"2309 W Broad St\", 1], [\"FanBusiness\", \"2311 W Broad St\", 1], [\"FanBusiness\", \"2315 W Broad St\", 1], [\"FanBusiness\", \"2317 W Broad St\", 1], [\"FanBusiness\", \"2325 W Broad St\", 1], [\"FanBusiness\", \"2337 W Broad St\", 1], [\"FanBusiness\", \"2343 W Broad St\", 1], [\"FanBusiness\", \"2601 W Broad St\", 1], [\"FanBusiness\", \"2701 W Broad St\", 1], [\"FanBusiness\", \"2705 W Broad St\", 1], [\"FanBusiness\", \"2727 W Broad St\", 1], [\"FanBusiness\", \"2727 W Broad St Ste Front\", 1], [\"FanBusiness\", \"2729 W Broad St\", 1], [\"FanBusiness\", \"2731 W Broad St\", 1], [\"FanBusiness\", \"2735 W Broad St\", 1], [\"FanBusiness\", \"2745 W Broad St\", 1], [\"FanBusiness\", \"601 W Broad St\", 1], [\"FanBusiness\", \"701 W Broad St\", 1], [\"FanBusiness\", \"717 W Broad St\", 1], [\"FanBusiness\", \"719 W Broad St\", 1], [\"FanBusiness\", \"721 W Broad St\", 1], [\"FanBusiness\", \"723 W Broad St\", 1], [\"FanBusiness\", \"725 W Broad St\", 1], [\"FanBusiness\", \"727 W Broad St\", 1], [\"FanBusiness\", \"807 W Broad St\", 1], [\"FanBusiness\", \"809 W Broad St\", 1], [\"FanBusiness\", \"10 N Brunswick St\", 1], [\"FanBusiness\", \"12 N Brunswick St\", 1], [\"FanBusiness\", \"14 N Brunswick St\", 1], [\"FanBusiness\", \"2 N Brunswick St\", 1], [\"FanBusiness\", \"110 N Cathedral Pl\", 1], [\"FanBusiness\", \"112 N Cathedral Pl\", 1], [\"FanBusiness\", \"800 S Cathedral Pl\", 1], [\"FanBusiness\", \"806 S Cathedral Pl\", 1], [\"FanBusiness\", \"807 S Cathedral Pl\", 1], [\"FanBusiness\", \"808 S Cathedral Pl\", 1], [\"FanBusiness\", \"809 S Cathedral Pl\", 1], [\"FanBusiness\", \"810 Cathedral Pl\", 1], [\"FanBusiness\", \"811 S Cathedral Pl\", 1], [\"FanBusiness\", \"813 S Cathedral Pl\", 1], [\"FanBusiness\", \"815 S Cathedral Pl\", 1], [\"FanBusiness\", \"817 S Cathedral Pl\", 1], [\"FanBusiness\", \"819 S Cathedral Pl\", 1], [\"FanBusiness\", \"823 Cathedral Pl\", 1], [\"FanBusiness\", \"824 Cathedral Pl\", 1], [\"FanBusiness\", \"805 N Davis Ave\", 1], [\"FanBusiness\", \"1122 Floyd Ave\", 1], [\"FanBusiness\", \"1128 Floyd Ave\", 1], [\"FanBusiness\", \"1315 Floyd Ave\", 1], [\"FanBusiness\", \"1701 Floyd Ave\", 1], [\"FanBusiness\", \"2526 Floyd Ave\", 1], [\"FanBusiness\", \"2601 Floyd Ave\", 1], [\"FanBusiness\", \"901 Floyd Ave\", 1], [\"FanBusiness\", \"907 Floyd Ave\", 1], [\"FanBusiness\", \"919 Floyd Ave\", 1], [\"FanBusiness\", \"1001 W Franklin St\", 1], [\"FanBusiness\", \"1014 W Franklin St\", 1], [\"FanBusiness\", \"1109 W Franklin St\", 1], [\"FanBusiness\", \"1111 W Franklin St\", 1], [\"FanBusiness\", \"1117 W Franklin St\", 1], [\"FanBusiness\", \"1121 W Franklin St\", 1], [\"FanBusiness\", \"1125 W Franklin St\", 1], [\"FanBusiness\", \"1127 W Franklin St\", 1], [\"FanBusiness\", \"1131 W Franklin St\", 1], [\"FanBusiness\", \"1133 W Franklin St\", 1], [\"FanBusiness\", \"1133 W Franklin St Apt 1\", 1], [\"FanBusiness\", \"1133 W Franklin St Apt 2\", 1], [\"FanBusiness\", \"1133 W Franklin St Apt 3\", 1], [\"FanBusiness\", \"1135 W Franklin St\", 1], [\"FanBusiness\", \"1201 W Franklin St\", 1], [\"FanBusiness\", \"1203 W Franklin St\", 1], [\"FanBusiness\", \"1205 W Franklin St\", 1], [\"FanBusiness\", \"1205 W Franklin St Ste A\", 1], [\"FanBusiness\", \"600 W Franklin St\", 1], [\"FanBusiness\", \"700 W Franklin St\", 1], [\"FanBusiness\", \"704 1/2 W Franklin St\", 1], [\"FanBusiness\", \"704 W Franklin St\", 1], [\"FanBusiness\", \"710 W Franklin St\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 0401\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 10003a\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 10005a\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 10005b\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 1101a\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 1106\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 1106b\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 1108\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 12001B\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 12001a\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 12004d\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 12005D\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 12005e\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 12006a\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 1200B\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 1218\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 13002e\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 13004A\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 13006A\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 14003d\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 14005d\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 1414\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 1505\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 17002a\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 17002d\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 17004a\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 17004b\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 1809\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 1819\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 187d\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 2004b\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 2005A\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 205\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 3005b\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 303b\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 4003a\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 4005e\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 4006b\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 5003b\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 5004E\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 5006b\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 503\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 6002b\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 6003A\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 6004e\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 6005E\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 604\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 7003e\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 7004a\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 7005a\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 7006a\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 717\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 8002d\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 817\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 9002a\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 9002b\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 9002c\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 9002d\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 9004B\", 1], [\"FanBusiness\", \"710 W Franklin St Apt 901\", 1], [\"FanBusiness\", \"710 W Franklin St Room 100\", 1], [\"FanBusiness\", \"710 W Franklin St Room 10001\", 1], [\"FanBusiness\", \"710 W Franklin St Room 10002\", 1], [\"FanBusiness\", \"710 W Franklin St Room 10003\", 1], [\"FanBusiness\", \"710 W Franklin St Room 10004\", 1], [\"FanBusiness\", \"710 W Franklin St Room 10005\", 1], [\"FanBusiness\", \"710 W Franklin St Room 10006\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1001\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1002\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1003\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1004\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1005\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1006\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1007\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1008\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1009\", 1], [\"FanBusiness\", \"710 W Franklin St Room 101\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1010\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1011\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1012\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1013\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1014\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1015\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1016\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1017\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1018\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1019\", 1], [\"FanBusiness\", \"710 W Franklin St Room 102\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1020\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1021\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1022\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1023\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1024\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1025\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1026\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1027\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1028\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1029\", 1], [\"FanBusiness\", \"710 W Franklin St Room 103\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1030\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1031\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1032\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1033\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1034\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1035\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1036\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1037\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1038\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1039\", 1], [\"FanBusiness\", \"710 W Franklin St Room 104\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1040\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1041\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1042\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1043\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1044\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1045\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1046\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1047\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1048\", 1], [\"FanBusiness\", \"710 W Franklin St Room 105\", 1], [\"FanBusiness\", \"710 W Franklin St Room 106\", 1], [\"FanBusiness\", \"710 W Franklin St Room 107\", 1], [\"FanBusiness\", \"710 W Franklin St Room 108\", 1], [\"FanBusiness\", \"710 W Franklin St Room 109\", 1], [\"FanBusiness\", \"710 W Franklin St Room 110\", 1], [\"FanBusiness\", \"710 W Franklin St Room 11001\", 1], [\"FanBusiness\", \"710 W Franklin St Room 11002\", 1], [\"FanBusiness\", \"710 W Franklin St Room 11003\", 1], [\"FanBusiness\", \"710 W Franklin St Room 11004\", 1], [\"FanBusiness\", \"710 W Franklin St Room 11005\", 1], [\"FanBusiness\", \"710 W Franklin St Room 11006\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1101\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1102\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1103\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1104\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1105\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1106\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1107\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1108\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1109\", 1], [\"FanBusiness\", \"710 W Franklin St Room 111\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1110\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1111\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1112\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1113\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1114\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1115\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1116\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1117\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1118\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1119\", 1], [\"FanBusiness\", \"710 W Franklin St Room 112\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1120\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1121\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1122\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1123\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1124\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1125\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1126\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1127\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1128\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1129\", 1], [\"FanBusiness\", \"710 W Franklin St Room 113\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1130\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1131\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1132\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1133\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1134\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1135\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1136\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1137\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1138\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1139\", 1], [\"FanBusiness\", \"710 W Franklin St Room 114\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1140\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1141\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1142\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1143\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1144\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1145\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1146\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1147\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1148\", 1], [\"FanBusiness\", \"710 W Franklin St Room 115\", 1], [\"FanBusiness\", \"710 W Franklin St Room 116\", 1], [\"FanBusiness\", \"710 W Franklin St Room 117\", 1], [\"FanBusiness\", \"710 W Franklin St Room 118\", 1], [\"FanBusiness\", \"710 W Franklin St Room 119\", 1], [\"FanBusiness\", \"710 W Franklin St Room 120\", 1], [\"FanBusiness\", \"710 W Franklin St Room 12001\", 1], [\"FanBusiness\", \"710 W Franklin St Room 12002\", 1], [\"FanBusiness\", \"710 W Franklin St Room 12003\", 1], [\"FanBusiness\", \"710 W Franklin St Room 12004\", 1], [\"FanBusiness\", \"710 W Franklin St Room 12005\", 1], [\"FanBusiness\", \"710 W Franklin St Room 12006\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1201\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1202\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1203\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1204\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1205\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1206\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1207\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1208\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1209\", 1], [\"FanBusiness\", \"710 W Franklin St Room 121\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1210\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1211\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1212\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1213\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1214\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1215\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1216\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1217\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1218\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1219\", 1], [\"FanBusiness\", \"710 W Franklin St Room 122\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1220\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1221\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1222\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1223\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1224\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1225\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1226\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1227\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1228\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1229\", 1], [\"FanBusiness\", \"710 W Franklin St Room 123\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1230\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1231\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1232\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1233\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1234\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1235\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1236\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1237\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1238\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1239\", 1], [\"FanBusiness\", \"710 W Franklin St Room 124\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1240\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1241\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1242\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1243\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1244\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1245\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1246\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1247\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1248\", 1], [\"FanBusiness\", \"710 W Franklin St Room 125\", 1], [\"FanBusiness\", \"710 W Franklin St Room 126\", 1], [\"FanBusiness\", \"710 W Franklin St Room 127\", 1], [\"FanBusiness\", \"710 W Franklin St Room 13001\", 1], [\"FanBusiness\", \"710 W Franklin St Room 13002\", 1], [\"FanBusiness\", \"710 W Franklin St Room 13003\", 1], [\"FanBusiness\", \"710 W Franklin St Room 13004\", 1], [\"FanBusiness\", \"710 W Franklin St Room 13005\", 1], [\"FanBusiness\", \"710 W Franklin St Room 13006\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1301\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1302\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1303\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1304\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1305\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1306\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1307\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1308\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1309\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1310\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1311\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1312\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1313\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1314\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1315\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1316\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1317\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1318\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1319\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1320\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1321\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1322\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1323\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1324\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1325\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1326\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1327\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1328\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1329\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1330\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1331\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1332\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1333\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1334\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1335\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1336\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1337\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1338\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1339\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1340\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1341\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1342\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1343\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1344\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1345\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1346\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1347\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1348\", 1], [\"FanBusiness\", \"710 W Franklin St Room 14001\", 1], [\"FanBusiness\", \"710 W Franklin St Room 14002\", 1], [\"FanBusiness\", \"710 W Franklin St Room 14003\", 1], [\"FanBusiness\", \"710 W Franklin St Room 14004\", 1], [\"FanBusiness\", \"710 W Franklin St Room 14005\", 1], [\"FanBusiness\", \"710 W Franklin St Room 14006\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1401\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1402\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1403\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1404\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1405\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1406\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1407\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1408\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1409\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1410\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1411\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1412\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1413\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1414\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1415\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1416\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1417\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1418\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1419\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1420\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1421\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1422\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1423\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1424\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1425\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1426\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1427\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1428\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1429\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1430\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1431\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1432\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1433\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1434\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1435\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1436\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1437\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1438\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1439\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1440\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1441\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1442\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1443\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1444\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1445\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1446\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1447\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1448\", 1], [\"FanBusiness\", \"710 W Franklin St Room 15001\", 1], [\"FanBusiness\", \"710 W Franklin St Room 15001b\", 1], [\"FanBusiness\", \"710 W Franklin St Room 15002\", 1], [\"FanBusiness\", \"710 W Franklin St Room 15003\", 1], [\"FanBusiness\", \"710 W Franklin St Room 15004\", 1], [\"FanBusiness\", \"710 W Franklin St Room 15005\", 1], [\"FanBusiness\", \"710 W Franklin St Room 15006\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1501\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1502\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1503\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1504\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1505\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1506\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1507\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1508\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1509\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1510\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1511\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1512\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1513\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1514\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1515\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1516\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1517\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1518\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1519\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1520\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1521\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1522\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1523\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1524\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1525\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1526\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1527\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1528\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1529\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1530\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1531\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1532\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1533\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1534\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1535\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1536\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1537\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1538\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1539\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1540\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1541\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1542\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1543\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1544\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1545\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1546\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1547\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1548\", 1], [\"FanBusiness\", \"710 W Franklin St Room 16001\", 1], [\"FanBusiness\", \"710 W Franklin St Room 16002\", 1], [\"FanBusiness\", \"710 W Franklin St Room 16003\", 1], [\"FanBusiness\", \"710 W Franklin St Room 16004\", 1], [\"FanBusiness\", \"710 W Franklin St Room 16005\", 1], [\"FanBusiness\", \"710 W Franklin St Room 16006\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1601\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1602\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1603\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1604\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1605\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1606\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1607\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1608\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1609\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1610\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1611\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1612\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1613\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1614\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1615\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1616\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1617\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1618\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1619\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1620\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1621\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1622\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1623\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1624\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1625\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1626\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1627\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1628\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1629\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1630\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1631\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1632\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1633\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1634\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1635\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1636\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1637\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1638\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1639\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1640\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1641\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1642\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1643\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1644\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1645\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1646\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1647\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1648\", 1], [\"FanBusiness\", \"710 W Franklin St Room 17001\", 1], [\"FanBusiness\", \"710 W Franklin St Room 17002\", 1], [\"FanBusiness\", \"710 W Franklin St Room 17003\", 1], [\"FanBusiness\", \"710 W Franklin St Room 17004\", 1], [\"FanBusiness\", \"710 W Franklin St Room 17005\", 1], [\"FanBusiness\", \"710 W Franklin St Room 17006\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1701\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1702\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1703\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1704\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1705\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1706\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1707\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1708\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1709\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1710\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1711\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1712\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1713\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1714\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1715\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1716\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1717\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1718\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1719\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1720\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1721\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1722\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1723\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1724\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1725\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1726\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1727\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1728\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1729\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1730\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1731\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1732\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1733\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1734\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1735\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1736\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1737\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1738\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1739\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1740\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1741\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1742\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1743\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1744\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1745\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1746\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1747\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1748\", 1], [\"FanBusiness\", \"710 W Franklin St Room 1802\", 1], [\"FanBusiness\", \"710 W Franklin St Room 2000\", 1], [\"FanBusiness\", \"710 W Franklin St Room 2001\", 1], [\"FanBusiness\", \"710 W Franklin St Room 2002\", 1], [\"FanBusiness\", \"710 W Franklin St Room 2003\", 1], [\"FanBusiness\", \"710 W Franklin St Room 2004\", 1], [\"FanBusiness\", \"710 W Franklin St Room 2005\", 1], [\"FanBusiness\", \"710 W Franklin St Room 2006\", 1], [\"FanBusiness\", \"710 W Franklin St Room 2006a\", 1], [\"FanBusiness\", \"710 W Franklin St Room 2007\", 1], [\"FanBusiness\", \"710 W Franklin St Room 2008\", 1], [\"FanBusiness\", \"710 W Franklin St Room 2009\", 1], [\"FanBusiness\", \"710 W Franklin St Room 201\", 1], [\"FanBusiness\", \"710 W Franklin St Room 2010\", 1], [\"FanBusiness\", \"710 W Franklin St Room 202\", 1], [\"FanBusiness\", \"710 W Franklin St Room 203\", 1], [\"FanBusiness\", \"710 W Franklin St Room 204\", 1], [\"FanBusiness\", \"710 W Franklin St Room 205\", 1], [\"FanBusiness\", \"710 W Franklin St Room 206\", 1], [\"FanBusiness\", \"710 W Franklin St Room 207\", 1], [\"FanBusiness\", \"710 W Franklin St Room 208\", 1], [\"FanBusiness\", \"710 W Franklin St Room 209\", 1], [\"FanBusiness\", \"710 W Franklin St Room 210\", 1], [\"FanBusiness\", \"710 W Franklin St Room 211\", 1], [\"FanBusiness\", \"710 W Franklin St Room 212\", 1], [\"FanBusiness\", \"710 W Franklin St Room 213\", 1], [\"FanBusiness\", \"710 W Franklin St Room 214\", 1], [\"FanBusiness\", \"710 W Franklin St Room 215\", 1], [\"FanBusiness\", \"710 W Franklin St Room 216\", 1], [\"FanBusiness\", \"710 W Franklin St Room 217\", 1], [\"FanBusiness\", \"710 W Franklin St Room 218\", 1], [\"FanBusiness\", \"710 W Franklin St Room 219\", 1], [\"FanBusiness\", \"710 W Franklin St Room 220\", 1], [\"FanBusiness\", \"710 W Franklin St Room 221\", 1], [\"FanBusiness\", \"710 W Franklin St Room 222\", 1], [\"FanBusiness\", \"710 W Franklin St Room 223\", 1], [\"FanBusiness\", \"710 W Franklin St Room 224\", 1], [\"FanBusiness\", \"710 W Franklin St Room 225\", 1], [\"FanBusiness\", \"710 W Franklin St Room 226\", 1], [\"FanBusiness\", \"710 W Franklin St Room 227\", 1], [\"FanBusiness\", \"710 W Franklin St Room 228\", 1], [\"FanBusiness\", \"710 W Franklin St Room 229\", 1], [\"FanBusiness\", \"710 W Franklin St Room 230\", 1], [\"FanBusiness\", \"710 W Franklin St Room 231\", 1], [\"FanBusiness\", \"710 W Franklin St Room 232\", 1], [\"FanBusiness\", \"710 W Franklin St Room 233\", 1], [\"FanBusiness\", \"710 W Franklin St Room 234\", 1], [\"FanBusiness\", \"710 W Franklin St Room 235\", 1], [\"FanBusiness\", \"710 W Franklin St Room 236\", 1], [\"FanBusiness\", \"710 W Franklin St Room 237\", 1], [\"FanBusiness\", \"710 W Franklin St Room 238\", 1], [\"FanBusiness\", \"710 W Franklin St Room 239\", 1], [\"FanBusiness\", \"710 W Franklin St Room 240\", 1], [\"FanBusiness\", \"710 W Franklin St Room 241\", 1], [\"FanBusiness\", \"710 W Franklin St Room 242\", 1], [\"FanBusiness\", \"710 W Franklin St Room 243\", 1], [\"FanBusiness\", \"710 W Franklin St Room 244\", 1], [\"FanBusiness\", \"710 W Franklin St Room 245\", 1], [\"FanBusiness\", \"710 W Franklin St Room 246\", 1], [\"FanBusiness\", \"710 W Franklin St Room 247\", 1], [\"FanBusiness\", \"710 W Franklin St Room 248\", 1], [\"FanBusiness\", \"710 W Franklin St Room 3001\", 1], [\"FanBusiness\", \"710 W Franklin St Room 3002\", 1], [\"FanBusiness\", \"710 W Franklin St Room 3003\", 1], [\"FanBusiness\", \"710 W Franklin St Room 3004\", 1], [\"FanBusiness\", \"710 W Franklin St Room 3005\", 1], [\"FanBusiness\", \"710 W Franklin St Room 3006\", 1], [\"FanBusiness\", \"710 W Franklin St Room 301\", 1], [\"FanBusiness\", \"710 W Franklin St Room 302\", 1], [\"FanBusiness\", \"710 W Franklin St Room 303\", 1], [\"FanBusiness\", \"710 W Franklin St Room 304\", 1], [\"FanBusiness\", \"710 W Franklin St Room 305\", 1], [\"FanBusiness\", \"710 W Franklin St Room 306\", 1], [\"FanBusiness\", \"710 W Franklin St Room 307\", 1], [\"FanBusiness\", \"710 W Franklin St Room 308\", 1], [\"FanBusiness\", \"710 W Franklin St Room 309\", 1], [\"FanBusiness\", \"710 W Franklin St Room 310\", 1], [\"FanBusiness\", \"710 W Franklin St Room 311\", 1], [\"FanBusiness\", \"710 W Franklin St Room 312\", 1], [\"FanBusiness\", \"710 W Franklin St Room 313\", 1], [\"FanBusiness\", \"710 W Franklin St Room 314\", 1], [\"FanBusiness\", \"710 W Franklin St Room 315\", 1], [\"FanBusiness\", \"710 W Franklin St Room 316\", 1], [\"FanBusiness\", \"710 W Franklin St Room 317\", 1], [\"FanBusiness\", \"710 W Franklin St Room 318\", 1], [\"FanBusiness\", \"710 W Franklin St Room 319\", 1], [\"FanBusiness\", \"710 W Franklin St Room 320\", 1], [\"FanBusiness\", \"710 W Franklin St Room 321\", 1], [\"FanBusiness\", \"710 W Franklin St Room 322\", 1], [\"FanBusiness\", \"710 W Franklin St Room 323\", 1], [\"FanBusiness\", \"710 W Franklin St Room 324\", 1], [\"FanBusiness\", \"710 W Franklin St Room 325\", 1], [\"FanBusiness\", \"710 W Franklin St Room 326\", 1], [\"FanBusiness\", \"710 W Franklin St Room 327\", 1], [\"FanBusiness\", \"710 W Franklin St Room 328\", 1], [\"FanBusiness\", \"710 W Franklin St Room 329\", 1], [\"FanBusiness\", \"710 W Franklin St Room 330\", 1], [\"FanBusiness\", \"710 W Franklin St Room 331\", 1], [\"FanBusiness\", \"710 W Franklin St Room 332\", 1], [\"FanBusiness\", \"710 W Franklin St Room 333\", 1], [\"FanBusiness\", \"710 W Franklin St Room 334\", 1], [\"FanBusiness\", \"710 W Franklin St Room 335\", 1], [\"FanBusiness\", \"710 W Franklin St Room 336\", 1], [\"FanBusiness\", \"710 W Franklin St Room 337\", 1], [\"FanBusiness\", \"710 W Franklin St Room 338\", 1], [\"FanBusiness\", \"710 W Franklin St Room 339\", 1], [\"FanBusiness\", \"710 W Franklin St Room 340\", 1], [\"FanBusiness\", \"710 W Franklin St Room 341\", 1], [\"FanBusiness\", \"710 W Franklin St Room 342\", 1], [\"FanBusiness\", \"710 W Franklin St Room 343\", 1], [\"FanBusiness\", \"710 W Franklin St Room 344\", 1], [\"FanBusiness\", \"710 W Franklin St Room 345\", 1], [\"FanBusiness\", \"710 W Franklin St Room 346\", 1], [\"FanBusiness\", \"710 W Franklin St Room 347\", 1], [\"FanBusiness\", \"710 W Franklin St Room 348\", 1], [\"FanBusiness\", \"710 W Franklin St Room 4001\", 1], [\"FanBusiness\", \"710 W Franklin St Room 4002\", 1], [\"FanBusiness\", \"710 W Franklin St Room 4003\", 1], [\"FanBusiness\", \"710 W Franklin St Room 4004\", 1], [\"FanBusiness\", \"710 W Franklin St Room 4005\", 1], [\"FanBusiness\", \"710 W Franklin St Room 4005b\", 1], [\"FanBusiness\", \"710 W Franklin St Room 4006\", 1], [\"FanBusiness\", \"710 W Franklin St Room 401\", 1], [\"FanBusiness\", \"710 W Franklin St Room 402\", 1], [\"FanBusiness\", \"710 W Franklin St Room 403\", 1], [\"FanBusiness\", \"710 W Franklin St Room 404\", 1], [\"FanBusiness\", \"710 W Franklin St Room 405\", 1], [\"FanBusiness\", \"710 W Franklin St Room 406\", 1], [\"FanBusiness\", \"710 W Franklin St Room 407\", 1], [\"FanBusiness\", \"710 W Franklin St Room 408\", 1], [\"FanBusiness\", \"710 W Franklin St Room 409\", 1], [\"FanBusiness\", \"710 W Franklin St Room 410\", 1], [\"FanBusiness\", \"710 W Franklin St Room 411\", 1], [\"FanBusiness\", \"710 W Franklin St Room 412\", 1], [\"FanBusiness\", \"710 W Franklin St Room 413\", 1], [\"FanBusiness\", \"710 W Franklin St Room 414\", 1], [\"FanBusiness\", \"710 W Franklin St Room 415\", 1], [\"FanBusiness\", \"710 W Franklin St Room 416\", 1], [\"FanBusiness\", \"710 W Franklin St Room 417\", 1], [\"FanBusiness\", \"710 W Franklin St Room 418\", 1], [\"FanBusiness\", \"710 W Franklin St Room 419\", 1], [\"FanBusiness\", \"710 W Franklin St Room 420\", 1], [\"FanBusiness\", \"710 W Franklin St Room 421\", 1], [\"FanBusiness\", \"710 W Franklin St Room 422\", 1], [\"FanBusiness\", \"710 W Franklin St Room 423\", 1], [\"FanBusiness\", \"710 W Franklin St Room 424\", 1], [\"FanBusiness\", \"710 W Franklin St Room 425\", 1], [\"FanBusiness\", \"710 W Franklin St Room 426\", 1], [\"FanBusiness\", \"710 W Franklin St Room 427\", 1], [\"FanBusiness\", \"710 W Franklin St Room 428\", 1], [\"FanBusiness\", \"710 W Franklin St Room 429\", 1], [\"FanBusiness\", \"710 W Franklin St Room 430\", 1], [\"FanBusiness\", \"710 W Franklin St Room 431\", 1], [\"FanBusiness\", \"710 W Franklin St Room 432\", 1], [\"FanBusiness\", \"710 W Franklin St Room 433\", 1], [\"FanBusiness\", \"710 W Franklin St Room 434\", 1], [\"FanBusiness\", \"710 W Franklin St Room 435\", 1], [\"FanBusiness\", \"710 W Franklin St Room 436\", 1], [\"FanBusiness\", \"710 W Franklin St Room 437\", 1], [\"FanBusiness\", \"710 W Franklin St Room 438\", 1], [\"FanBusiness\", \"710 W Franklin St Room 439\", 1], [\"FanBusiness\", \"710 W Franklin St Room 440\", 1], [\"FanBusiness\", \"710 W Franklin St Room 441\", 1], [\"FanBusiness\", \"710 W Franklin St Room 442\", 1], [\"FanBusiness\", \"710 W Franklin St Room 443\", 1], [\"FanBusiness\", \"710 W Franklin St Room 444\", 1], [\"FanBusiness\", \"710 W Franklin St Room 445\", 1], [\"FanBusiness\", \"710 W Franklin St Room 446\", 1], [\"FanBusiness\", \"710 W Franklin St Room 447\", 1], [\"FanBusiness\", \"710 W Franklin St Room 448\", 1], [\"FanBusiness\", \"710 W Franklin St Room 5001\", 1], [\"FanBusiness\", \"710 W Franklin St Room 5002\", 1], [\"FanBusiness\", \"710 W Franklin St Room 5003\", 1], [\"FanBusiness\", \"710 W Franklin St Room 5004\", 1], [\"FanBusiness\", \"710 W Franklin St Room 5005\", 1], [\"FanBusiness\", \"710 W Franklin St Room 5006\", 1], [\"FanBusiness\", \"710 W Franklin St Room 501\", 1], [\"FanBusiness\", \"710 W Franklin St Room 502\", 1], [\"FanBusiness\", \"710 W Franklin St Room 503\", 1], [\"FanBusiness\", \"710 W Franklin St Room 504\", 1], [\"FanBusiness\", \"710 W Franklin St Room 505\", 1], [\"FanBusiness\", \"710 W Franklin St Room 506\", 1], [\"FanBusiness\", \"710 W Franklin St Room 507\", 1], [\"FanBusiness\", \"710 W Franklin St Room 508\", 1], [\"FanBusiness\", \"710 W Franklin St Room 509\", 1], [\"FanBusiness\", \"710 W Franklin St Room 510\", 1], [\"FanBusiness\", \"710 W Franklin St Room 511\", 1], [\"FanBusiness\", \"710 W Franklin St Room 512\", 1], [\"FanBusiness\", \"710 W Franklin St Room 513\", 1], [\"FanBusiness\", \"710 W Franklin St Room 514\", 1], [\"FanBusiness\", \"710 W Franklin St Room 515\", 1], [\"FanBusiness\", \"710 W Franklin St Room 516\", 1], [\"FanBusiness\", \"710 W Franklin St Room 517\", 1], [\"FanBusiness\", \"710 W Franklin St Room 518\", 1], [\"FanBusiness\", \"710 W Franklin St Room 519\", 1], [\"FanBusiness\", \"710 W Franklin St Room 520\", 1], [\"FanBusiness\", \"710 W Franklin St Room 521\", 1], [\"FanBusiness\", \"710 W Franklin St Room 522\", 1], [\"FanBusiness\", \"710 W Franklin St Room 523\", 1], [\"FanBusiness\", \"710 W Franklin St Room 524\", 1], [\"FanBusiness\", \"710 W Franklin St Room 525\", 1], [\"FanBusiness\", \"710 W Franklin St Room 526\", 1], [\"FanBusiness\", \"710 W Franklin St Room 527\", 1], [\"FanBusiness\", \"710 W Franklin St Room 528\", 1], [\"FanBusiness\", \"710 W Franklin St Room 529\", 1], [\"FanBusiness\", \"710 W Franklin St Room 530\", 1], [\"FanBusiness\", \"710 W Franklin St Room 531\", 1], [\"FanBusiness\", \"710 W Franklin St Room 532\", 1], [\"FanBusiness\", \"710 W Franklin St Room 533\", 1], [\"FanBusiness\", \"710 W Franklin St Room 534\", 1], [\"FanBusiness\", \"710 W Franklin St Room 535\", 1], [\"FanBusiness\", \"710 W Franklin St Room 536\", 1], [\"FanBusiness\", \"710 W Franklin St Room 537\", 1], [\"FanBusiness\", \"710 W Franklin St Room 538\", 1], [\"FanBusiness\", \"710 W Franklin St Room 539\", 1], [\"FanBusiness\", \"710 W Franklin St Room 540\", 1], [\"FanBusiness\", \"710 W Franklin St Room 541\", 1], [\"FanBusiness\", \"710 W Franklin St Room 542\", 1], [\"FanBusiness\", \"710 W Franklin St Room 543\", 1], [\"FanBusiness\", \"710 W Franklin St Room 544\", 1], [\"FanBusiness\", \"710 W Franklin St Room 545\", 1], [\"FanBusiness\", \"710 W Franklin St Room 546\", 1], [\"FanBusiness\", \"710 W Franklin St Room 547\", 1], [\"FanBusiness\", \"710 W Franklin St Room 548\", 1], [\"FanBusiness\", \"710 W Franklin St Room 6001\", 1], [\"FanBusiness\", \"710 W Franklin St Room 6002\", 1], [\"FanBusiness\", \"710 W Franklin St Room 6003\", 1], [\"FanBusiness\", \"710 W Franklin St Room 6004\", 1], [\"FanBusiness\", \"710 W Franklin St Room 6005\", 1], [\"FanBusiness\", \"710 W Franklin St Room 6006\", 1], [\"FanBusiness\", \"710 W Franklin St Room 601\", 1], [\"FanBusiness\", \"710 W Franklin St Room 602\", 1], [\"FanBusiness\", \"710 W Franklin St Room 603\", 1], [\"FanBusiness\", \"710 W Franklin St Room 604\", 1], [\"FanBusiness\", \"710 W Franklin St Room 605\", 1], [\"FanBusiness\", \"710 W Franklin St Room 606\", 1], [\"FanBusiness\", \"710 W Franklin St Room 607\", 1], [\"FanBusiness\", \"710 W Franklin St Room 608\", 1], [\"FanBusiness\", \"710 W Franklin St Room 609\", 1], [\"FanBusiness\", \"710 W Franklin St Room 610\", 1], [\"FanBusiness\", \"710 W Franklin St Room 611\", 1], [\"FanBusiness\", \"710 W Franklin St Room 612\", 1], [\"FanBusiness\", \"710 W Franklin St Room 613\", 1], [\"FanBusiness\", \"710 W Franklin St Room 614\", 1], [\"FanBusiness\", \"710 W Franklin St Room 615\", 1], [\"FanBusiness\", \"710 W Franklin St Room 616\", 1], [\"FanBusiness\", \"710 W Franklin St Room 617\", 1], [\"FanBusiness\", \"710 W Franklin St Room 618\", 1], [\"FanBusiness\", \"710 W Franklin St Room 619\", 1], [\"FanBusiness\", \"710 W Franklin St Room 620\", 1], [\"FanBusiness\", \"710 W Franklin St Room 621\", 1], [\"FanBusiness\", \"710 W Franklin St Room 622\", 1], [\"FanBusiness\", \"710 W Franklin St Room 623\", 1], [\"FanBusiness\", \"710 W Franklin St Room 624\", 1], [\"FanBusiness\", \"710 W Franklin St Room 625\", 1], [\"FanBusiness\", \"710 W Franklin St Room 626\", 1], [\"FanBusiness\", \"710 W Franklin St Room 627\", 1], [\"FanBusiness\", \"710 W Franklin St Room 628\", 1], [\"FanBusiness\", \"710 W Franklin St Room 629\", 1], [\"FanBusiness\", \"710 W Franklin St Room 630\", 1], [\"FanBusiness\", \"710 W Franklin St Room 631\", 1], [\"FanBusiness\", \"710 W Franklin St Room 632\", 1], [\"FanBusiness\", \"710 W Franklin St Room 633\", 1], [\"FanBusiness\", \"710 W Franklin St Room 634\", 1], [\"FanBusiness\", \"710 W Franklin St Room 635\", 1], [\"FanBusiness\", \"710 W Franklin St Room 636\", 1], [\"FanBusiness\", \"710 W Franklin St Room 637\", 1], [\"FanBusiness\", \"710 W Franklin St Room 638\", 1], [\"FanBusiness\", \"710 W Franklin St Room 639\", 1], [\"FanBusiness\", \"710 W Franklin St Room 640\", 1], [\"FanBusiness\", \"710 W Franklin St Room 641\", 1], [\"FanBusiness\", \"710 W Franklin St Room 642\", 1], [\"FanBusiness\", \"710 W Franklin St Room 643\", 1], [\"FanBusiness\", \"710 W Franklin St Room 644\", 1], [\"FanBusiness\", \"710 W Franklin St Room 645\", 1], [\"FanBusiness\", \"710 W Franklin St Room 646\", 1], [\"FanBusiness\", \"710 W Franklin St Room 647\", 1], [\"FanBusiness\", \"710 W Franklin St Room 648\", 1], [\"FanBusiness\", \"710 W Franklin St Room 7001\", 1], [\"FanBusiness\", \"710 W Franklin St Room 7002\", 1], [\"FanBusiness\", \"710 W Franklin St Room 7003\", 1], [\"FanBusiness\", \"710 W Franklin St Room 7004\", 1], [\"FanBusiness\", \"710 W Franklin St Room 7005\", 1], [\"FanBusiness\", \"710 W Franklin St Room 7006\", 1], [\"FanBusiness\", \"710 W Franklin St Room 701\", 1], [\"FanBusiness\", \"710 W Franklin St Room 702\", 1], [\"FanBusiness\", \"710 W Franklin St Room 703\", 1], [\"FanBusiness\", \"710 W Franklin St Room 704\", 1], [\"FanBusiness\", \"710 W Franklin St Room 705\", 1], [\"FanBusiness\", \"710 W Franklin St Room 706\", 1], [\"FanBusiness\", \"710 W Franklin St Room 707\", 1], [\"FanBusiness\", \"710 W Franklin St Room 708\", 1], [\"FanBusiness\", \"710 W Franklin St Room 709\", 1], [\"FanBusiness\", \"710 W Franklin St Room 710\", 1], [\"FanBusiness\", \"710 W Franklin St Room 711\", 1], [\"FanBusiness\", \"710 W Franklin St Room 712\", 1], [\"FanBusiness\", \"710 W Franklin St Room 713\", 1], [\"FanBusiness\", \"710 W Franklin St Room 714\", 1], [\"FanBusiness\", \"710 W Franklin St Room 715\", 1], [\"FanBusiness\", \"710 W Franklin St Room 716\", 1], [\"FanBusiness\", \"710 W Franklin St Room 717\", 1], [\"FanBusiness\", \"710 W Franklin St Room 718\", 1], [\"FanBusiness\", \"710 W Franklin St Room 719\", 1], [\"FanBusiness\", \"710 W Franklin St Room 720\", 1], [\"FanBusiness\", \"710 W Franklin St Room 721\", 1], [\"FanBusiness\", \"710 W Franklin St Room 722\", 1], [\"FanBusiness\", \"710 W Franklin St Room 723\", 1], [\"FanBusiness\", \"710 W Franklin St Room 724\", 1], [\"FanBusiness\", \"710 W Franklin St Room 725\", 1], [\"FanBusiness\", \"710 W Franklin St Room 726\", 1], [\"FanBusiness\", \"710 W Franklin St Room 727\", 1], [\"FanBusiness\", \"710 W Franklin St Room 728\", 1], [\"FanBusiness\", \"710 W Franklin St Room 729\", 1], [\"FanBusiness\", \"710 W Franklin St Room 730\", 1], [\"FanBusiness\", \"710 W Franklin St Room 731\", 1], [\"FanBusiness\", \"710 W Franklin St Room 732\", 1], [\"FanBusiness\", \"710 W Franklin St Room 733\", 1], [\"FanBusiness\", \"710 W Franklin St Room 734\", 1], [\"FanBusiness\", \"710 W Franklin St Room 735\", 1], [\"FanBusiness\", \"710 W Franklin St Room 736\", 1], [\"FanBusiness\", \"710 W Franklin St Room 737\", 1], [\"FanBusiness\", \"710 W Franklin St Room 738\", 1], [\"FanBusiness\", \"710 W Franklin St Room 739\", 1], [\"FanBusiness\", \"710 W Franklin St Room 740\", 1], [\"FanBusiness\", \"710 W Franklin St Room 741\", 1], [\"FanBusiness\", \"710 W Franklin St Room 742\", 1], [\"FanBusiness\", \"710 W Franklin St Room 743\", 1], [\"FanBusiness\", \"710 W Franklin St Room 744\", 1], [\"FanBusiness\", \"710 W Franklin St Room 745\", 1], [\"FanBusiness\", \"710 W Franklin St Room 746\", 1], [\"FanBusiness\", \"710 W Franklin St Room 747\", 1], [\"FanBusiness\", \"710 W Franklin St Room 748\", 1], [\"FanBusiness\", \"710 W Franklin St Room 8001\", 1], [\"FanBusiness\", \"710 W Franklin St Room 8002\", 1], [\"FanBusiness\", \"710 W Franklin St Room 8003\", 1], [\"FanBusiness\", \"710 W Franklin St Room 8004\", 1], [\"FanBusiness\", \"710 W Franklin St Room 8005\", 1], [\"FanBusiness\", \"710 W Franklin St Room 8006\", 1], [\"FanBusiness\", \"710 W Franklin St Room 801\", 1], [\"FanBusiness\", \"710 W Franklin St Room 802\", 1], [\"FanBusiness\", \"710 W Franklin St Room 803\", 1], [\"FanBusiness\", \"710 W Franklin St Room 804\", 1], [\"FanBusiness\", \"710 W Franklin St Room 805\", 1], [\"FanBusiness\", \"710 W Franklin St Room 806\", 1], [\"FanBusiness\", \"710 W Franklin St Room 807\", 1], [\"FanBusiness\", \"710 W Franklin St Room 808\", 1], [\"FanBusiness\", \"710 W Franklin St Room 809\", 1], [\"FanBusiness\", \"710 W Franklin St Room 810\", 1], [\"FanBusiness\", \"710 W Franklin St Room 811\", 1], [\"FanBusiness\", \"710 W Franklin St Room 812\", 1], [\"FanBusiness\", \"710 W Franklin St Room 813\", 1], [\"FanBusiness\", \"710 W Franklin St Room 814\", 1], [\"FanBusiness\", \"710 W Franklin St Room 815\", 1], [\"FanBusiness\", \"710 W Franklin St Room 816\", 1], [\"FanBusiness\", \"710 W Franklin St Room 817\", 1], [\"FanBusiness\", \"710 W Franklin St Room 818\", 1], [\"FanBusiness\", \"710 W Franklin St Room 819\", 1], [\"FanBusiness\", \"710 W Franklin St Room 820\", 1], [\"FanBusiness\", \"710 W Franklin St Room 821\", 1], [\"FanBusiness\", \"710 W Franklin St Room 822\", 1], [\"FanBusiness\", \"710 W Franklin St Room 823\", 1], [\"FanBusiness\", \"710 W Franklin St Room 824\", 1], [\"FanBusiness\", \"710 W Franklin St Room 825\", 1], [\"FanBusiness\", \"710 W Franklin St Room 826\", 1], [\"FanBusiness\", \"710 W Franklin St Room 827\", 1], [\"FanBusiness\", \"710 W Franklin St Room 828\", 1], [\"FanBusiness\", \"710 W Franklin St Room 829\", 1], [\"FanBusiness\", \"710 W Franklin St Room 830\", 1], [\"FanBusiness\", \"710 W Franklin St Room 831\", 1], [\"FanBusiness\", \"710 W Franklin St Room 832\", 1], [\"FanBusiness\", \"710 W Franklin St Room 833\", 1], [\"FanBusiness\", \"710 W Franklin St Room 834\", 1], [\"FanBusiness\", \"710 W Franklin St Room 835\", 1], [\"FanBusiness\", \"710 W Franklin St Room 836\", 1], [\"FanBusiness\", \"710 W Franklin St Room 837\", 1], [\"FanBusiness\", \"710 W Franklin St Room 838\", 1], [\"FanBusiness\", \"710 W Franklin St Room 839\", 1], [\"FanBusiness\", \"710 W Franklin St Room 840\", 1], [\"FanBusiness\", \"710 W Franklin St Room 841\", 1], [\"FanBusiness\", \"710 W Franklin St Room 842\", 1], [\"FanBusiness\", \"710 W Franklin St Room 843\", 1], [\"FanBusiness\", \"710 W Franklin St Room 844\", 1], [\"FanBusiness\", \"710 W Franklin St Room 845\", 1], [\"FanBusiness\", \"710 W Franklin St Room 846\", 1], [\"FanBusiness\", \"710 W Franklin St Room 847\", 1], [\"FanBusiness\", \"710 W Franklin St Room 848\", 1], [\"FanBusiness\", \"710 W Franklin St Room 9001\", 1], [\"FanBusiness\", \"710 W Franklin St Room 9002\", 1], [\"FanBusiness\", \"710 W Franklin St Room 9003\", 1], [\"FanBusiness\", \"710 W Franklin St Room 9004\", 1], [\"FanBusiness\", \"710 W Franklin St Room 9005\", 1], [\"FanBusiness\", \"710 W Franklin St Room 9006\", 1], [\"FanBusiness\", \"710 W Franklin St Room 901\", 1], [\"FanBusiness\", \"710 W Franklin St Room 902\", 1], [\"FanBusiness\", \"710 W Franklin St Room 903\", 1], [\"FanBusiness\", \"710 W Franklin St Room 904\", 1], [\"FanBusiness\", \"710 W Franklin St Room 905\", 1], [\"FanBusiness\", \"710 W Franklin St Room 906\", 1], [\"FanBusiness\", \"710 W Franklin St Room 907\", 1], [\"FanBusiness\", \"710 W Franklin St Room 908\", 1], [\"FanBusiness\", \"710 W Franklin St Room 909\", 1], [\"FanBusiness\", \"710 W Franklin St Room 910\", 1], [\"FanBusiness\", \"710 W Franklin St Room 911\", 1], [\"FanBusiness\", \"710 W Franklin St Room 912\", 1], [\"FanBusiness\", \"710 W Franklin St Room 913\", 1], [\"FanBusiness\", \"710 W Franklin St Room 914\", 1], [\"FanBusiness\", \"710 W Franklin St Room 915\", 1], [\"FanBusiness\", \"710 W Franklin St Room 916\", 1], [\"FanBusiness\", \"710 W Franklin St Room 917\", 1], [\"FanBusiness\", \"710 W Franklin St Room 918\", 1], [\"FanBusiness\", \"710 W Franklin St Room 919\", 1], [\"FanBusiness\", \"710 W Franklin St Room 920\", 1], [\"FanBusiness\", \"710 W Franklin St Room 921\", 1], [\"FanBusiness\", \"710 W Franklin St Room 922\", 1], [\"FanBusiness\", \"710 W Franklin St Room 923\", 1], [\"FanBusiness\", \"710 W Franklin St Room 924\", 1], [\"FanBusiness\", \"710 W Franklin St Room 925\", 1], [\"FanBusiness\", \"710 W Franklin St Room 926\", 1], [\"FanBusiness\", \"710 W Franklin St Room 927\", 1], [\"FanBusiness\", \"710 W Franklin St Room 928\", 1], [\"FanBusiness\", \"710 W Franklin St Room 929\", 1], [\"FanBusiness\", \"710 W Franklin St Room 930\", 1], [\"FanBusiness\", \"710 W Franklin St Room 931\", 1], [\"FanBusiness\", \"710 W Franklin St Room 932\", 1], [\"FanBusiness\", \"710 W Franklin St Room 933\", 1], [\"FanBusiness\", \"710 W Franklin St Room 934\", 1], [\"FanBusiness\", \"710 W Franklin St Room 935\", 1], [\"FanBusiness\", \"710 W Franklin St Room 936\", 1], [\"FanBusiness\", \"710 W Franklin St Room 937\", 1], [\"FanBusiness\", \"710 W Franklin St Room 938\", 1], [\"FanBusiness\", \"710 W Franklin St Room 939\", 1], [\"FanBusiness\", \"710 W Franklin St Room 940\", 1], [\"FanBusiness\", \"710 W Franklin St Room 941\", 1], [\"FanBusiness\", \"710 W Franklin St Room 942\", 1], [\"FanBusiness\", \"710 W Franklin St Room 943\", 1], [\"FanBusiness\", \"710 W Franklin St Room 944\", 1], [\"FanBusiness\", \"710 W Franklin St Room 945\", 1], [\"FanBusiness\", \"710 W Franklin St Room 946\", 1], [\"FanBusiness\", \"710 W Franklin St Room 947\", 1], [\"FanBusiness\", \"710 W Franklin St Room 948\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1000\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1001\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1002\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1003\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1004\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1005\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1006\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1007\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1008\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1009\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1010\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1011\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1012\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1013\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1014\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1015\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1016\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1017\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1018\", 1], [\"FanBusiness\", \"710 W Franklin St Room Bh1019\", 1], [\"FanBusiness\", \"712 W Franklin St\", 1], [\"FanBusiness\", \"720 W Franklin St\", 1], [\"FanBusiness\", \"720 W Franklin St Apt 15005e\", 1], [\"FanBusiness\", \"720 W Franklin St Apt 2005b\", 1], [\"FanBusiness\", \"720 W Franklin St Apt 3005D\", 1], [\"FanBusiness\", \"720 W Franklin St Apt 3005e\", 1], [\"FanBusiness\", \"720 W Franklin St Apt 5003e\", 1], [\"FanBusiness\", \"720 W Franklin St Apt 6004d\", 1], [\"FanBusiness\", \"720 W Franklin St Apt 8004E\", 1], [\"FanBusiness\", \"720 W Franklin St Apt 90004a\", 1], [\"FanBusiness\", \"720 W Franklin St Apt 9004A\", 1], [\"FanBusiness\", \"720 W Franklin St Room 14002A\", 1], [\"FanBusiness\", \"720 W Franklin St Ste 2\", 1], [\"FanBusiness\", \"800 W Franklin St\", 1], [\"FanBusiness\", \"801 W Franklin St\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 1003B\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 1004\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 1005\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 1009\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 1018\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 1023\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 1105\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 1112\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 1113\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 1114\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 1123\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 1203\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 1205\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 1208\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 1212\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 1217\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 1222\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 1224\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 15\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 207\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 211\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 217\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 302\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 303\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 309\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 311\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 314\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 316\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 320\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 321\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 323\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 402\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 403\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 408\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 41\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 411\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 415\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 504\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 505\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 506\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 508\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 512\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 513\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 516\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 517\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 519\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 605\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 608\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 609\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 618\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 619\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 621\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 622\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 702\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 706b\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 707\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 708\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 715\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 721\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 801\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 814\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 819\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 820\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 822\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 823\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 908\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 912\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 914\", 1], [\"FanBusiness\", \"801 W Franklin St Apt 917\", 1], [\"FanBusiness\", \"801 W Franklin St Apt A\", 1], [\"FanBusiness\", \"801 W Franklin St Gar\", 1], [\"FanBusiness\", \"801 W Franklin St Room 1017\", 1], [\"FanBusiness\", \"801 W Franklin St Room 1019\", 1], [\"FanBusiness\", \"801 W Franklin St Room 1103\", 1], [\"FanBusiness\", \"801 W Franklin St Room 1104\", 1], [\"FanBusiness\", \"801 W Franklin St Room 1111\", 1], [\"FanBusiness\", \"801 W Franklin St Room 1202\", 1], [\"FanBusiness\", \"801 W Franklin St Room 1204\", 1], [\"FanBusiness\", \"801 W Franklin St Room 209\", 1], [\"FanBusiness\", \"801 W Franklin St Room 211\", 1], [\"FanBusiness\", \"801 W Franklin St Room 310\", 1], [\"FanBusiness\", \"801 W Franklin St Room 408\", 1], [\"FanBusiness\", \"801 W Franklin St Room 4192\", 1], [\"FanBusiness\", \"801 W Franklin St Room 503\", 1], [\"FanBusiness\", \"801 W Franklin St Room 503\", 1], [\"FanBusiness\", \"801 W Franklin St Room 510\", 1], [\"FanBusiness\", \"801 W Franklin St Room 520\", 1], [\"FanBusiness\", \"801 W Franklin St Room 603\", 1], [\"FanBusiness\", \"801 W Franklin St Room 604\", 1], [\"FanBusiness\", \"801 W Franklin St Room 620\", 1], [\"FanBusiness\", \"801 W Franklin St Room 702\", 1], [\"FanBusiness\", \"801 W Franklin St Room 711\", 1], [\"FanBusiness\", \"801 W Franklin St Room 802\", 1], [\"FanBusiness\", \"801 W Franklin St Unit 1204\", 1], [\"FanBusiness\", \"805 W Franklin St\", 1], [\"FanBusiness\", \"806 W Franklin St\", 1], [\"FanBusiness\", \"808 W Franklin St\", 1], [\"FanBusiness\", \"810 W Franklin St\", 1], [\"FanBusiness\", \"812 W Franklin St\", 1], [\"FanBusiness\", \"814 W Franklin St\", 1], [\"FanBusiness\", \"816 W Franklin St\", 1], [\"FanBusiness\", \"817 W Franklin St\", 1], [\"FanBusiness\", \"820 W Franklin St\", 1], [\"FanBusiness\", \"821 W Franklin St\", 1], [\"FanBusiness\", \"821 W Franklin St Ste 14\", 1], [\"FanBusiness\", \"821 W Franklin St Ste Rear\", 1], [\"FanBusiness\", \"822 W Franklin St\", 1], [\"FanBusiness\", \"826 W Franklin St\", 1], [\"FanBusiness\", \"827 W Franklin St\", 1], [\"FanBusiness\", \"828 W Franklin St\", 1], [\"FanBusiness\", \"833 W Franklin St\", 1], [\"FanBusiness\", \"901 W Franklin St\", 1], [\"FanBusiness\", \"901 W Franklin St Rear\", 1], [\"FanBusiness\", \"907 1/2 W Franklin St\", 1], [\"FanBusiness\", \"908 W Franklin St\", 1], [\"FanBusiness\", \"909 W Franklin St\", 1], [\"FanBusiness\", \"909 W Franklin St Apt 2\", 1], [\"FanBusiness\", \"909 W Franklin St Apt 2e\", 1], [\"FanBusiness\", \"909 W Franklin St Apt 2w\", 1], [\"FanBusiness\", \"909 W Franklin St Apt 5\", 1], [\"FanBusiness\", \"909 W Franklin St Carr\", 1], [\"FanBusiness\", \"909 W Franklin St Rear\", 1], [\"FanBusiness\", \"909 W Franklin St Rear\", 1], [\"FanBusiness\", \"910 W Franklin St\", 1], [\"FanBusiness\", \"912 W Franklin St\", 1], [\"FanBusiness\", \"913 W Franklin St\", 1], [\"FanBusiness\", \"914 W Franklin St\", 1], [\"FanBusiness\", \"915 W Franklin St\", 1], [\"FanBusiness\", \"916 W Franklin St\", 1], [\"FanBusiness\", \"917 W Franklin St\", 1], [\"FanBusiness\", \"918 W Franklin St\", 1], [\"FanBusiness\", \"919 W Franklin St\", 1], [\"FanBusiness\", \"920 W Franklin St\", 1], [\"FanBusiness\", \"921 W Franklin St\", 1], [\"FanBusiness\", \"922 W Franklin St\", 1], [\"FanBusiness\", \"923 W Franklin St\", 1], [\"FanBusiness\", \"924 W Franklin St\", 1], [\"FanBusiness\", \"924 W Franklin St Apt 1a\", 1], [\"FanBusiness\", \"924 W Franklin St Apt 1b\", 1], [\"FanBusiness\", \"924 W Franklin St Apt 2a\", 1], [\"FanBusiness\", \"924 W Franklin St Apt 2b\", 1], [\"FanBusiness\", \"924 W Franklin St Apt 2c\", 1], [\"FanBusiness\", \"924 W Franklin St Apt 3a\", 1], [\"FanBusiness\", \"1000 W Grace St\", 1], [\"FanBusiness\", \"1000 W Grace St Apt 1134A\", 1], [\"FanBusiness\", \"1000 W Grace St Apt 1148C\", 1], [\"FanBusiness\", \"1000 W Grace St Apt 2103C\", 1], [\"FanBusiness\", \"1000 W Grace St Apt 2104B\", 1], [\"FanBusiness\", \"1000 W Grace St Apt 2126A\", 1], [\"FanBusiness\", \"1000 W Grace St Apt 2217A\", 1], [\"FanBusiness\", \"1000 W Grace St Apt 2219D\", 1], [\"FanBusiness\", \"1000 W Grace St Apt 3115C\", 1], [\"FanBusiness\", \"1000 W Grace St Apt 3216B\", 1], [\"FanBusiness\", \"1000 W Grace St Apt 4100D\", 1], [\"FanBusiness\", \"1000 W Grace St Apt 4103A\", 1], [\"FanBusiness\", \"1000 W Grace St Apt 4104D\", 1], [\"FanBusiness\", \"1000 W Grace St Apt 5125\", 1], [\"FanBusiness\", \"1000 W Grace St Apt 5129A\", 1], [\"FanBusiness\", \"1001 W Grace St\", 1], [\"FanBusiness\", \"1003 W Grace St\", 1], [\"FanBusiness\", \"1010 W Grace St\", 1], [\"FanBusiness\", \"1010 W Grace St Apt 1136B\", 1], [\"FanBusiness\", \"1010 W Grace St Apt 2207B\", 1], [\"FanBusiness\", \"1010 W Grace St Apt 3214A\", 1], [\"FanBusiness\", \"1010 W Grace St Apt 3218D\", 1], [\"FanBusiness\", \"1010 W Grace St Apt 4218\", 1], [\"FanBusiness\", \"1010 W Grace St Apt 5220D\", 1], [\"FanBusiness\", \"1010 W Grace St Apt 5221B\", 1], [\"FanBusiness\", \"1020 W Grace St\", 1], [\"FanBusiness\", \"1024 W Grace St\", 1], [\"FanBusiness\", \"1100 W Grace St\", 1], [\"FanBusiness\", \"1800 W Grace St\", 1], [\"FanBusiness\", \"1801 W Grace St\", 1], [\"FanBusiness\", \"2603 W Grace St\", 1], [\"FanBusiness\", \"2603 W Grace St Apt A\", 1], [\"FanBusiness\", \"2603 W Grace St Apt B\", 1], [\"FanBusiness\", \"700 W Grace St\", 1], [\"FanBusiness\", \"701 W Grace St\", 1], [\"FanBusiness\", \"701 W Grace St Apt 0507\", 1], [\"FanBusiness\", \"701 W Grace St Apt 3\", 1], [\"FanBusiness\", \"701 W Grace St Apt 301\", 1], [\"FanBusiness\", \"701 W Grace St Apt 302\", 1], [\"FanBusiness\", \"701 W Grace St Apt 308\", 1], [\"FanBusiness\", \"701 W Grace St Apt 314\", 1], [\"FanBusiness\", \"701 W Grace St Apt 315\", 1], [\"FanBusiness\", \"701 W Grace St Apt 320\", 1], [\"FanBusiness\", \"701 W Grace St Apt 325\", 1], [\"FanBusiness\", \"701 W Grace St Apt 332\", 1], [\"FanBusiness\", \"701 W Grace St Apt 404\", 1], [\"FanBusiness\", \"701 W Grace St Apt 405\", 1], [\"FanBusiness\", \"701 W Grace St Apt 407\", 1], [\"FanBusiness\", \"701 W Grace St Apt 408a\", 1], [\"FanBusiness\", \"701 W Grace St Apt 414\", 1], [\"FanBusiness\", \"701 W Grace St Apt 425\", 1], [\"FanBusiness\", \"701 W Grace St Apt 436\", 1], [\"FanBusiness\", \"701 W Grace St Apt 503\", 1], [\"FanBusiness\", \"701 W Grace St Apt 521\", 1], [\"FanBusiness\", \"701 W Grace St Apt 608\", 1], [\"FanBusiness\", \"701 W Grace St Apt 622\", 1], [\"FanBusiness\", \"701 W Grace St Apt 625\", 1], [\"FanBusiness\", \"701 W Grace St Apt 627\", 1], [\"FanBusiness\", \"701 W Grace St Apt 632\", 1], [\"FanBusiness\", \"701 W Grace St Apt 633\", 1], [\"FanBusiness\", \"701 W Grace St Apt 635\", 1], [\"FanBusiness\", \"701 W Grace St Apt 705\", 1], [\"FanBusiness\", \"701 W Grace St Apt 709\", 1], [\"FanBusiness\", \"701 W Grace St Apt 713\", 1], [\"FanBusiness\", \"701 W Grace St Apt 716\", 1], [\"FanBusiness\", \"701 W Grace St Apt 720\", 1], [\"FanBusiness\", \"701 W Grace St Apt 729\", 1], [\"FanBusiness\", \"701 W Grace St Apt 730\", 1], [\"FanBusiness\", \"701 W Grace St Room 535\", 1], [\"FanBusiness\", \"720 W Grace St\", 1], [\"FanBusiness\", \"800 W Grace St\", 1], [\"FanBusiness\", \"805 W Grace St\", 1], [\"FanBusiness\", \"806 W Grace St\", 1], [\"FanBusiness\", \"808 W Grace St\", 1], [\"FanBusiness\", \"810 W Grace St\", 1], [\"FanBusiness\", \"810 W Grace St Ste 1\", 1], [\"FanBusiness\", \"810 W Grace St Ste 2\", 1], [\"FanBusiness\", \"810 W Grace St Ste 3\", 1], [\"FanBusiness\", \"810 W Grace St Ste 4\", 1], [\"FanBusiness\", \"810 W Grace St Ste 5\", 1], [\"FanBusiness\", \"814 W Grace St\", 1], [\"FanBusiness\", \"830 W Grace St\", 1], [\"FanBusiness\", \"830 W Grace St Apt 101b\", 1], [\"FanBusiness\", \"830 W Grace St Apt 2100\", 1], [\"FanBusiness\", \"830 W Grace St Apt 2111B\", 1], [\"FanBusiness\", \"830 W Grace St Apt 2201A\", 1], [\"FanBusiness\", \"830 W Grace St Apt 2205A\", 1], [\"FanBusiness\", \"830 W Grace St Apt 2303a1\", 1], [\"FanBusiness\", \"830 W Grace St Apt 2307A\", 1], [\"FanBusiness\", \"830 W Grace St Apt 2307B\", 1], [\"FanBusiness\", \"830 W Grace St Apt 3111a\", 1], [\"FanBusiness\", \"830 W Grace St Apt 3201B\", 1], [\"FanBusiness\", \"830 W Grace St Apt 3206\", 1], [\"FanBusiness\", \"830 W Grace St Apt 3210B\", 1], [\"FanBusiness\", \"830 W Grace St Apt 3304b\", 1], [\"FanBusiness\", \"830 W Grace St Apt 3305B1\", 1], [\"FanBusiness\", \"830 W Grace St Apt 4101D\", 1], [\"FanBusiness\", \"830 W Grace St Apt 4109B\", 1], [\"FanBusiness\", \"830 W Grace St Apt 4205C\", 1], [\"FanBusiness\", \"830 W Grace St Apt 4304A\", 1], [\"FanBusiness\", \"830 W Grace St Apt 4304D\", 1], [\"FanBusiness\", \"830 W Grace St Apt 5111B\", 1], [\"FanBusiness\", \"830 W Grace St Apt 5302A\", 1], [\"FanBusiness\", \"830 W Grace St Apt 5318B\", 1], [\"FanBusiness\", \"830 W Grace St Apt 5335B\", 1], [\"FanBusiness\", \"830 W Grace St Room 2302a\", 1], [\"FanBusiness\", \"830 W Grace St Room 5201a\", 1], [\"FanBusiness\", \"835 W Grace St\", 1], [\"FanBusiness\", \"835 W Grace St Apt 1242A\", 1], [\"FanBusiness\", \"835 W Grace St Apt 1244b\", 1], [\"FanBusiness\", \"835 W Grace St Apt 1330a\", 1], [\"FanBusiness\", \"835 W Grace St Apt 1337A\", 1], [\"FanBusiness\", \"835 W Grace St Apt 1522a1\", 1], [\"FanBusiness\", \"835 W Grace St Apt 1553B\", 1], [\"FanBusiness\", \"835 W Grace St Apt 2014C\", 1], [\"FanBusiness\", \"835 W Grace St Apt 2018D\", 1], [\"FanBusiness\", \"835 W Grace St Apt 2153B\", 1], [\"FanBusiness\", \"835 W Grace St Apt 2154A\", 1], [\"FanBusiness\", \"835 W Grace St Apt 2154B\", 1], [\"FanBusiness\", \"835 W Grace St Apt 2333b\", 1], [\"FanBusiness\", \"835 W Grace St Apt 2337b\", 1], [\"FanBusiness\", \"835 W Grace St Apt 3013b\", 1], [\"FanBusiness\", \"835 W Grace St Apt 3014c\", 1], [\"FanBusiness\", \"835 W Grace St Apt 3015B2\", 1], [\"FanBusiness\", \"835 W Grace St Apt 3152d\", 1], [\"FanBusiness\", \"835 W Grace St Apt 3154D\", 1], [\"FanBusiness\", \"835 W Grace St Apt 3333B\", 1], [\"FanBusiness\", \"835 W Grace St Apt 4007a\", 1], [\"FanBusiness\", \"835 W Grace St Apt 4016B\", 1], [\"FanBusiness\", \"835 W Grace St Apt 4018C\", 1], [\"FanBusiness\", \"835 W Grace St Apt 4153A\", 1], [\"FanBusiness\", \"835 W Grace St Apt 4330B\", 1], [\"FanBusiness\", \"835 W Grace St Apt 5004A\", 1], [\"FanBusiness\", \"835 W Grace St Apt 5009B\", 1], [\"FanBusiness\", \"835 W Grace St Apt 5243b\", 1], [\"FanBusiness\", \"835 W Grace St Apt 5333A\", 1], [\"FanBusiness\", \"901 W Grace St\", 1], [\"FanBusiness\", \"910 W Grace St\", 1], [\"FanBusiness\", \"911 1/2 W Grace St\", 1], [\"FanBusiness\", \"911 W Grace St\", 1], [\"FanBusiness\", \"912 W Grace St\", 1], [\"FanBusiness\", \"913 W Grace St\", 1], [\"FanBusiness\", \"913 W Grace St Ste A\", 1], [\"FanBusiness\", \"914 W Grace St\", 1], [\"FanBusiness\", \"920 W Grace St\", 1], [\"FanBusiness\", \"922 W Grace St\", 1], [\"FanBusiness\", \"924 W Grace St\", 1], [\"FanBusiness\", \"926 W Grace St\", 1], [\"FanBusiness\", \"927 W Grace St\", 1], [\"FanBusiness\", \"928 W Grace St\", 1], [\"FanBusiness\", \"930 W Grace St\", 1], [\"FanBusiness\", \"932 2/3 W Grace St\", 1], [\"FanBusiness\", \"932 W Grace St\", 1], [\"FanBusiness\", \"934 W Grace St\", 1], [\"FanBusiness\", \"935 W Grace St\", 1], [\"FanBusiness\", \"935 W Grace St Ste A\", 1], [\"FanBusiness\", \"935 W Grace St Ste B\", 1], [\"FanBusiness\", \"937 W Grace St\", 1], [\"FanBusiness\", \"938 W Grace St\", 1], [\"FanBusiness\", \"940 W Grace St\", 1], [\"FanBusiness\", \"942 W Grace St\", 1], [\"FanBusiness\", \"944 W Grace St\", 1], [\"FanBusiness\", \"3 S Granby St\", 1], [\"FanBusiness\", \"3 S Granby St Unit A\", 1], [\"FanBusiness\", \"3 S Granby St Unit B\", 1], [\"FanBusiness\", \"8 N Granby St\", 1], [\"FanBusiness\", \"1001 Grove Ave\", 1], [\"FanBusiness\", \"1015 Grove Ave\", 1], [\"FanBusiness\", \"1911 Grove Ave\", 1], [\"FanBusiness\", \"1925 Grove Ave\", 1], [\"FanBusiness\", \"1925 Grove Ave Rear\", 1], [\"FanBusiness\", \"2201 Grove Ave\", 1], [\"FanBusiness\", \"2319 Grove Ave\", 1], [\"FanBusiness\", \"2713 Grove Ave\", 1], [\"FanBusiness\", \"2715 Grove Ave\", 1], [\"FanBusiness\", \"2300 Hanover Ave\", 1], [\"FanBusiness\", \"101 N Harrison St\", 1], [\"FanBusiness\", \"201 N Harrison St\", 1], [\"FanBusiness\", \"311 N Harrison St\", 1], [\"FanBusiness\", \"324 N Harrison St\", 1], [\"FanBusiness\", \"325 N Harrison St\", 1], [\"FanBusiness\", \"325 N Harrison St Rear\", 1], [\"FanBusiness\", \"327 N Harrison St\", 1], [\"FanBusiness\", \"402 N Harrison St\", 1], [\"FanBusiness\", \"404 N Harrison St\", 1], [\"FanBusiness\", \"410 N Harrison St\", 1], [\"FanBusiness\", \"411 N Harrison St\", 1], [\"FanBusiness\", \"411 N Harrison St Fl 1\", 1], [\"FanBusiness\", \"411 N Harrison St Fl 2\", 1], [\"FanBusiness\", \"500 N Harrison St\", 1], [\"FanBusiness\", \"534 N Harrison St\", 1], [\"FanBusiness\", \"534 N Harrison St Fl 2\", 1], [\"FanBusiness\", \"6 N Harrison St\", 1], [\"FanBusiness\", \"8 N Harrison St\", 1], [\"FanBusiness\", \"6 S Harvie St\", 1], [\"FanBusiness\", \"8 S Harvie St\", 1], [\"FanBusiness\", \"14 N Laurel St\", 1], [\"FanBusiness\", \"16 N Laurel St\", 1], [\"FanBusiness\", \"18 N Laurel St\", 1], [\"FanBusiness\", \"2 N Laurel St\", 1], [\"FanBusiness\", \"207 N Laurel St\", 1], [\"FanBusiness\", \"26 N Laurel St\", 1], [\"FanBusiness\", \"307 N Laurel St\", 1], [\"FanBusiness\", \"309 N Laurel St\", 1], [\"FanBusiness\", \"311 N Laurel St\", 1], [\"FanBusiness\", \"313 N Laurel St\", 1], [\"FanBusiness\", \"4 N Laurel St\", 1], [\"FanBusiness\", \"6 N Laurel St\", 1], [\"FanBusiness\", \"8 N Laurel St\", 1], [\"FanBusiness\", \"114 N Linden St\", 1], [\"FanBusiness\", \"1 N Lombardy St\", 1], [\"FanBusiness\", \"3 N Lombardy St\", 1], [\"FanBusiness\", \"34 N Lombardy St\", 1], [\"FanBusiness\", \"612 N Lombardy St\", 1], [\"FanBusiness\", \"614 N Lombardy St\", 1], [\"FanBusiness\", \"618 N Lombardy St\", 1], [\"FanBusiness\", \"1100 W Main St\", 1], [\"FanBusiness\", \"1101 W Main St\", 1], [\"FanBusiness\", \"1102 W Main St\", 1], [\"FanBusiness\", \"1102 W Main St Apt 1\", 1], [\"FanBusiness\", \"1102 W Main St Apt 2\", 1], [\"FanBusiness\", \"1115 W Main St\", 1], [\"FanBusiness\", \"1118 W Main St\", 1], [\"FanBusiness\", \"1127 W Main St\", 1], [\"FanBusiness\", \"1200 W Main St\", 1], [\"FanBusiness\", \"1201 W Main St\", 1], [\"FanBusiness\", \"1203 W Main St\", 1], [\"FanBusiness\", \"1203 W Main St Apt 1\", 1], [\"FanBusiness\", \"1205 W Main St\", 1], [\"FanBusiness\", \"1207 W Main St\", 1], [\"FanBusiness\", \"1208 W Main St\", 1], [\"FanBusiness\", \"1209 W Main St\", 1], [\"FanBusiness\", \"1210 W Main St\", 1], [\"FanBusiness\", \"1213 W Main St\", 1], [\"FanBusiness\", \"1215 W Main St\", 1], [\"FanBusiness\", \"1305 W Main St\", 1], [\"FanBusiness\", \"1306 W Main St\", 1], [\"FanBusiness\", \"1308 W Main St\", 1], [\"FanBusiness\", \"1310 W Main St\", 1], [\"FanBusiness\", \"1310 W Main St Apt 1\", 1], [\"FanBusiness\", \"1310 W Main St Apt 2\", 1], [\"FanBusiness\", \"1310 W Main St Apt A\", 1], [\"FanBusiness\", \"1310 W Main St Apt B\", 1], [\"FanBusiness\", \"1312 W Main St\", 1], [\"FanBusiness\", \"1312 W Main St Apt 2\", 1], [\"FanBusiness\", \"1312 W Main St Apt A\", 1], [\"FanBusiness\", \"1312 W Main St Apt B\", 1], [\"FanBusiness\", \"1314 W Main St\", 1], [\"FanBusiness\", \"1323 W Main St\", 1], [\"FanBusiness\", \"1329 W Main St\", 1], [\"FanBusiness\", \"1425 W Main St\", 1], [\"FanBusiness\", \"1427 W Main St\", 1], [\"FanBusiness\", \"1429 W Main St\", 1], [\"FanBusiness\", \"1431 W Main St\", 1], [\"FanBusiness\", \"1433 W Main St\", 1], [\"FanBusiness\", \"1435 W Main St\", 1], [\"FanBusiness\", \"1506 W Main St\", 1], [\"FanBusiness\", \"1508 W Main St\", 1], [\"FanBusiness\", \"1509 W Main St\", 1], [\"FanBusiness\", \"1512 W Main St\", 1], [\"FanBusiness\", \"1513 W Main St\", 1], [\"FanBusiness\", \"1513 W Main St Apt A\", 1], [\"FanBusiness\", \"1514 W Main St\", 1], [\"FanBusiness\", \"1515 W Main St\", 1], [\"FanBusiness\", \"1516 W Main St\", 1], [\"FanBusiness\", \"1520 W Main St\", 1], [\"FanBusiness\", \"1531 W Main St\", 1], [\"FanBusiness\", \"1606 W Main St\", 1], [\"FanBusiness\", \"1608 W Main St\", 1], [\"FanBusiness\", \"1623 W Main St\", 1], [\"FanBusiness\", \"1625 W Main St\", 1], [\"FanBusiness\", \"1627 W Main St\", 1], [\"FanBusiness\", \"1627 W Main St Apt 1\", 1], [\"FanBusiness\", \"1627 W Main St Apt 2\", 1], [\"FanBusiness\", \"1701 W Main St\", 1], [\"FanBusiness\", \"1703 W Main St\", 1], [\"FanBusiness\", \"1722 W Main St\", 1], [\"FanBusiness\", \"1805 W Main St\", 1], [\"FanBusiness\", \"1809 W Main St\", 1], [\"FanBusiness\", \"1823 W Main St\", 1], [\"FanBusiness\", \"1901 W Main St\", 1], [\"FanBusiness\", \"1903 W Main St\", 1], [\"FanBusiness\", \"1909 W Main St\", 1], [\"FanBusiness\", \"1911 W Main St\", 1], [\"FanBusiness\", \"1912 W Main St\", 1], [\"FanBusiness\", \"1914 W Main St\", 1], [\"FanBusiness\", \"1916 W Main St\", 1], [\"FanBusiness\", \"1917 W Main St\", 1], [\"FanBusiness\", \"1919 W Main St\", 1], [\"FanBusiness\", \"1919 W Main St Apt 1\", 1], [\"FanBusiness\", \"1919 W Main St Fl 1\", 1], [\"FanBusiness\", \"1919 W Main St Fl 2\", 1], [\"FanBusiness\", \"2001 1/2 W Main St\", 1], [\"FanBusiness\", \"2010 W Main St\", 1], [\"FanBusiness\", \"2010 W Main St Apt 1\", 1], [\"FanBusiness\", \"2010 W Main St Apt 2\", 1], [\"FanBusiness\", \"2111 W Main St\", 1], [\"FanBusiness\", \"2117 W Main St\", 1], [\"FanBusiness\", \"2117 W Main St Apt 1\", 1], [\"FanBusiness\", \"2119 W Main St\", 1], [\"FanBusiness\", \"2200 W Main St\", 1], [\"FanBusiness\", \"2201 W Main St\", 1], [\"FanBusiness\", \"2206 W Main St\", 1], [\"FanBusiness\", \"2215 W Main St\", 1], [\"FanBusiness\", \"2217 W Main St\", 1], [\"FanBusiness\", \"2219 W Main St\", 1], [\"FanBusiness\", \"2225 W Main St\", 1], [\"FanBusiness\", \"2226 W Main St\", 1], [\"FanBusiness\", \"2227 W Main St\", 1], [\"FanBusiness\", \"2229 W Main St\", 1], [\"FanBusiness\", \"2232 W Main St\", 1], [\"FanBusiness\", \"2302 W Main St\", 1], [\"FanBusiness\", \"2304 W Main St\", 1], [\"FanBusiness\", \"2304 W Main St Apt 2\", 1], [\"FanBusiness\", \"2306 W Main St\", 1], [\"FanBusiness\", \"2308 W Main St\", 1], [\"FanBusiness\", \"2309 W Main St\", 1], [\"FanBusiness\", \"2310 1/2 W Main St\", 1], [\"FanBusiness\", \"2310 W Main St\", 1], [\"FanBusiness\", \"2311 W Main St\", 1], [\"FanBusiness\", \"2313 W Main St\", 1], [\"FanBusiness\", \"2315 W Main St\", 1], [\"FanBusiness\", \"2405 W Main St\", 1], [\"FanBusiness\", \"2407 W Main St\", 1], [\"FanBusiness\", \"2501 W Main St\", 1], [\"FanBusiness\", \"2600 W Main St\", 1], [\"FanBusiness\", \"2600 W Main St Apt 1\", 1], [\"FanBusiness\", \"2602 W Main St\", 1], [\"FanBusiness\", \"2602 W Main St Apt 1\", 1], [\"FanBusiness\", \"2602 W Main St Apt 2\", 1], [\"FanBusiness\", \"2619 W Main St\", 1], [\"FanBusiness\", \"2623 W Main St\", 1], [\"FanBusiness\", \"800 W Main St\", 1], [\"FanBusiness\", \"804 W Main St\", 1], [\"FanBusiness\", \"108 A N Meadow St\", 1], [\"FanBusiness\", \"108 N Meadow St\", 1], [\"FanBusiness\", \"706 N Meadow St\", 1], [\"FanBusiness\", \"708 N Meadow St\", 1], [\"FanBusiness\", \"9 S Meadow St\", 1], [\"FanBusiness\", \"1603 Monument Ave\", 1], [\"FanBusiness\", \"1605 Monument Ave\", 1], [\"FanBusiness\", \"1609 Monument Ave\", 1], [\"FanBusiness\", \"1611 Monument Ave\", 1], [\"FanBusiness\", \"1617 Monument Ave\", 1], [\"FanBusiness\", \"1621 Monument Ave\", 1], [\"FanBusiness\", \"1627 Monument Ave\", 1], [\"FanBusiness\", \"1627 Monument Ave Rear\", 1], [\"FanBusiness\", \"2016 Monument Ave\", 1], [\"FanBusiness\", \"2201 Monument Ave\", 1], [\"FanBusiness\", \"2222 Monument Ave\", 1], [\"FanBusiness\", \"2222 Monument Ave Fl 2f\", 1], [\"FanBusiness\", \"2222 Monument Ave Fl 3\", 1], [\"FanBusiness\", \"2709 Monument Ave\", 1], [\"FanBusiness\", \"2709 Monument Ave\", 1], [\"FanBusiness\", \"1 N Morris St\", 1], [\"FanBusiness\", \"26 N Morris St\", 1], [\"FanBusiness\", \"5 N Morris St\", 1], [\"FanBusiness\", \"1 S Mulberry St\", 1], [\"FanBusiness\", \"510 N Mulberry St\", 1], [\"FanBusiness\", \"808 N Mulberry St\", 1], [\"FanBusiness\", \"1801 Park Ave\", 1], [\"FanBusiness\", \"1836 Park Ave\", 1], [\"FanBusiness\", \"2501 Park Ave\", 1], [\"FanBusiness\", \"2503 Park Ave\", 1], [\"FanBusiness\", \"2705 Park Ave\", 1], [\"FanBusiness\", \"824 Park Ave\", 1], [\"FanBusiness\", \"900 Park Ave\", 1], [\"FanBusiness\", \"901 Park Ave\", 1], [\"FanBusiness\", \"908 Park Ave\", 1], [\"FanBusiness\", \"912 Park Ave\", 1], [\"FanBusiness\", \"914 Park Ave\", 1], [\"FanBusiness\", \"922 Park Ave\", 1], [\"FanBusiness\", \"924 Park Ave\", 1], [\"FanBusiness\", \"931 Park Ave\", 1], [\"FanBusiness\", \"6 S Plum St Rear\", 1], [\"FanBusiness\", \"0 N Robinson St\", 1], [\"FanBusiness\", \"10 N Robinson St\", 1], [\"FanBusiness\", \"18 N Robinson St\", 1], [\"FanBusiness\", \"200 N Robinson St\", 1], [\"FanBusiness\", \"203 N Robinson St\", 1], [\"FanBusiness\", \"205 N Robinson St\", 1], [\"FanBusiness\", \"210 N Robinson St\", 1], [\"FanBusiness\", \"212 N Robinson St\", 1], [\"FanBusiness\", \"214 N Robinson St\", 1], [\"FanBusiness\", \"22 N Robinson St\", 1], [\"FanBusiness\", \"300 N Robinson St\", 1], [\"FanBusiness\", \"302 N Robinson St\", 1], [\"FanBusiness\", \"304 N Robinson St\", 1], [\"FanBusiness\", \"307 N Robinson St\", 1], [\"FanBusiness\", \"400 N Robinson St\", 1], [\"FanBusiness\", \"400 N Robinson St Ste A\", 1], [\"FanBusiness\", \"706 N Robinson St\", 1], [\"FanBusiness\", \"708 N Robinson St\", 1], [\"FanBusiness\", \"8 N Robinson St\", 1], [\"FanBusiness\", \"215 Shafer St\", 1], [\"FanBusiness\", \"216 Shafer St\", 1], [\"FanBusiness\", \"217 Shafer St\", 1], [\"FanBusiness\", \"218 Shafer St\", 1], [\"FanBusiness\", \"221 Shafer St\", 1], [\"FanBusiness\", \"221 Shafer St Rear\", 1], [\"FanBusiness\", \"223 Shafer St\", 1], [\"FanBusiness\", \"310 Shafer St\", 1], [\"FanBusiness\", \"312 Shafer St\", 1], [\"FanBusiness\", \"1 1/2 S Stafford Ave\", 1], [\"FanBusiness\", \"1 S Stafford Ave\", 1], [\"FanBusiness\", \"3 S Stafford Ave\", 1], [\"FanBusiness\", \"208 Strawberry St\", 1], [\"FanBusiness\", \"317 Strawberry St\", 1], [\"FanBusiness\", \"401 Strawberry St\", 1], [\"FanBusiness\", \"403 Strawberry St\", 1], [\"FanBusiness\", \"419 Strawberry St\", 1], [\"FanBusiness\", \"421 Strawberry St\", 1], [\"FanBusiness\", \"2317 Stuart Ave\", 1], [\"FanBusiness\", \"2601 Stuart Ave\", 1], [\"FanBusiness\", \"2617 Stuart Ave\", 1], [\"FanBusiness\", \"503 Stuart Cir\", 1]]"};
+        new ITable(table, dt_args);
+    });
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>:::</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
