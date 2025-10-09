@@ -239,14 +239,23 @@ group by
 show_result_set("""
 select 
   FanUse,
-  AddressLabel,
-  1 as Total
+  LandUse,
+  PropertyClass,
+  AddressBase,
+  sum( 1 ) as Total
 from
   golden_join
-where
+WHERE
   FanUse='FanBusiness'
+  and PropertyClass='B University'
+group by
+  FanUse,
+  LandUse,
+  PropertyClass,
+  StreetName,
+  AddressBase
 order by
-  StreetName, AddressLabel
+  5 desc, StreetName, AddressBase
 """)
 ```
 
