@@ -68,7 +68,7 @@ CREATE OR REPLACE TABLE contacts AS SELECT * FROM 'Contacts_in_fda.parquet';
 
 ```{python}
 show_result_set("""
-describe addresses
+describe contacts
 """);
 ```
 
@@ -86,9 +86,10 @@ SELECT
     p.LandUse,
     p.PropertyClass,
     p.geometry AS parcel_geom,
+    p.ParcelGeometryID,
     p.FanUse,
     p.FanUseType,
-    P.FanUseOrder,
+    p.FanUseOrder,
     a.AddressId,
     a.AddressLabel,
     a.BuildingNumber,
@@ -102,7 +103,9 @@ SELECT
     a.Mailable AS AddressMailable,
     a.AddressBase,
     a.AddressExtension,
-    a.geometry AS addr_geom
+    a.AddressStreet,
+    a.geometry AS addr_geom,
+    a.AddressGeometryID
 FROM parcels p
   FULL OUTER JOIN addresses a
   ON ST_Within(a.geometry, p.geometry);
@@ -194,17 +197,17 @@ from
 ```{python}
 show_result_set("""
 select 
-  FanUse, MembershipLevelName,
+  FanUse, LandUse,
   sum( 1 ) as Total,
   sum( case when Member='True' then 1 else 0 end ) as member_cnt,
-  sum( case when Member<>'True' and Member is not NULL then 1 else 0 end) as non_member_cnt,
+  sum( case when Member<>'True' and Member is not NULL then 1 else 0 end) as contacts_cnt,
   sum( case when Member is NULL then 1 else 0 end ) as not_in_fda
 from
   golden_join
 group by
-  FanUse, MembershipLevelName
+  FanUse, LandUse,FanUseOrder
 order by
-  FanUse, MembershipLevelName
+  FanUseOrder, LandUse
 """)
 ```
 
@@ -223,31 +226,69 @@ group by
 ```
 
 
-
 ```{python}
 show_result_set("""
-select 
-  FanUse,
-  LandUse,
-  PropertyClass,
-  AddressBase,
-  sum( 1 ) as Total
-from
-  golden_join
-WHERE
-  FanUse='FanBusiness'
-  and PropertyClass='B University'
-group by
-  FanUse,
-  LandUse,
-  PropertyClass,
-  StreetName,
-  AddressBase
-order by
-  5 desc, StreetName, AddressBase
+describe golden_join
 """)
 ```
 
 
+```{python}
+x = con.execute("""
+create or replace view golden_view as
+select
+  email,
+  lastName || ', ' || firstname as SortableName,
+  firstname || ' ' || lastname as FullName,
+  firstname,
+  lastname,
+  AddressLabel,
+  City,
+  State,
+  Zip_norm,
+  AddressStreet,
+  AddressBase,
+  member,
+  membershiplevelName,
+  FanUse,
+  FanUseOrder,
+  FanUseType,
+  LandUse,
+  PropertyClass,
+  AddressMailable,
+  AddressNote,
+  (case when Member='True' then 1 else 0 end ) as Stats_Member_cnt,
+  (case when Member<>'True' and Member is not NULL then 1 else 0 end) as Stats_Contacts_cnt,
+  (case when Member is NULL and LandUse is not NULL then 1 else 0 end ) as Stats_Addr_not_in_FDA,
+  (case when Member is NULL and LandUse is NULL then 1 else 0 end ) as Stats_Addr_not_in_Fan,
+  id as UserId,
+  RepresentativeParcelId,
+  ParcelGeometryID,
+  AddressId,
+  AddressGeometryId
+from
+  golden_join
+order by
+  UserName
+""")
+```
 
+```{python}
+show_result_set("""
+select * from golden_view order by Member, SortableName, AddressLabel
+""",pageLength=10)
+```
 
+```{python}
+df = con.execute("""
+select * from golden_view order by Member, SortableName, AddressLabel
+""").fetch_df()
+
+with pd.ExcelWriter("fda_merged.xlsx", engine="xlsxwriter") as writer:
+    df.to_excel(writer, sheet_name="Full join", index=False)
+    # Example: auto-adjust column width
+    for column in df:
+        col_width = max(df[column].astype(str).map(len).max(), len(column))
+        col_idx = df.columns.get_loc(column)
+        writer.sheets["Full join"].set_column(col_idx, col_idx, col_width)
+```

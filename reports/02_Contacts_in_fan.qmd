@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 from matplotlib.lines import Line2D
 from math import floor
+from pathlib import Path
 
 from loguru import logger
 # Configure loguru to only log to stderr (console)
@@ -43,14 +44,13 @@ import duckdb
 con = duckdb.connect()
 x = con.execute("INSTALL spatial; LOAD spatial;")
 
-sys.path.append("..")
-from fandu.geo_utils import get_newest_file
+from fandu.geo_utils import get_newest_path
 
 pd.set_option("display.max_rows", None)
 
-precious_folder = "../precious/"
+precious_folder = Path("../precious/")
 
-fda_contacts_filename = get_newest_file( precious_folder,'FDA_contacts',ext='.csv')
+fda_contacts_filename = get_newest_path( precious_folder,'FDA_contacts',ext='.csv')
 contacts = pd.read_csv(fda_contacts_filename).drop(index=0).reset_index(drop=True)
 contacts.columns = contacts.columns.str.title().str.replace(" ", "", regex=False).str.replace(":","",regex=False)
 contacts.columns = contacts.columns.str.replace(".","_", regex=False)

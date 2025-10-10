@@ -1,0 +1,102 @@
+---
+title: Addresses
+---
+
+```{python}
+
+import geopandas as gpd
+from shapely import wkt
+import folium
+from folium.plugins import MarkerCluster
+
+from pathlib import Path
+
+from fandu.mapping_utils import get_boundary_map
+from fandu.geo_utils import get_newest_path
+
+import duckdb
+con = duckdb.connect()
+x = con.execute("INSTALL spatial; LOAD spatial;")
+
+def show_result_set( query, **kwargs ):
+    print('::: {.column-screen-inset style="font-size:0.7em"}')
+    df = con.execute( query ).fetch_df()
+    show(df,**kwargs)
+    print(':::')
+
+```
+
+
+```{python}
+# Load and filter files
+
+precious_folder = Path("../precious/")
+
+address_file_root = "Addresses"
+boundary_file_root = "Civic_Associations"
+boundary_selector = "Fan District Association"
+
+boundary_path = get_newest_path( precious_folder,boundary_file_root )
+m, boundary_layer, boundary_shape = get_boundary_map( boundary_path,boundary_selector )
+
+addresses_path = get_newest_path( precious_folder,address_file_root)
+addresses_gpd = gpd.read_file( addresses_path )
+addresses_gpd = addresses_gpd.to_crs( boundary_shape.crs )
+
+```
+
+
+```{python}
+x = con.execute("CREATE OR REPLACE TABLE addresses AS SELECT * FROM 'Addresses_in_fan.parquet';")
+```
+
+
+## Plot all addresses
+
+```{python}
+df = con.execute("""
+    SELECT AddressBase,ST_AsText(geometry) AS wkt, sum(1) as AddressCount
+    FROM addresses
+    WHERE Mailable='Yes'
+    group by AddressBase,ST_AsText(geometry)
+""").fetch_df()
+df["geometry"] = df["wkt"].apply(wkt.loads)
+gdf = gpd.GeoDataFrame(df, geometry="geometry", crs="EPSG:4326")
+```
+
+
+```{python}
+cluster = folium.FeatureGroup(name="Addresses in Fan").add_to(m)
+
+if 1:
+    for _, row in gdf.iterrows():
+        lat, lon = row.geometry.y, row.geometry.x
+        folium.CircleMarker(
+            location=[lat, lon],
+            popup=f'{row.get("AddressBase","")} ({row.get("AddressCount","")})',
+            tooltip=f'{row.get("AddressBase","")} ({row.get("AddressCount","")})',
+            radius=1.5,          # smaller dot (default = 10)
+            color="black",       # border color
+            weight=1,            # border thickness
+            fill=True,           # enable fill
+            fill_color="black",  # fill color
+            fill_opacity=1.0,    # fully opaque
+            opacity=1.0          # border opacity            
+        ).add_to(cluster)
+
+m.fit_bounds([
+    [gdf.total_bounds[1], gdf.total_bounds[0]],
+    [gdf.total_bounds[3], gdf.total_bounds[2]],
+])
+
+# Remove any previous LayerControls and add a fresh one
+for k, v in list(m._children.items()):
+    if isinstance(v, folium.map.LayerControl):
+        del m._children[k]
+
+x = folium.LayerControl().add_to(m)
+
+```
+
+
+

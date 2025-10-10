@@ -4,6 +4,8 @@ Geospatial Utilities for Fandu
 import os
 import re
 
+from pathlib import Path
+
 import zipfile
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -13,35 +15,52 @@ from typing import Optional
 from loguru import logger
 
 
-def get_newest_file(path: str, feature: str, ext: str = ".geojson") -> Optional[str]:
+def get_newest_path(path: Path, feature: str, ext: str = ".geojson") -> Optional[Path]:
     """
-    Finds the newest .geojson file matching the pattern 'feature-YYYY-MM-DD*.ext' in the given path.
-    Returns the absolute file path, or None if no matching files are found.
+    Finds the newest file matching the pattern 'feature-YYYY-MM-DD*.ext' in the given path.
+    Returns the absolute Path object, or None if no matching files are found.
 
-    Parameters:
-        path (str): Relative directory path to search in.
-        feature (str): Feature name prefix, e.g., 'Addresses' or 'Parcels'.
+    Parameters
+    ----------
+    path : Path
+        Directory path to search in.
+    feature : str
+        Feature name prefix, e.g., 'Addresses' or 'Parcels'.
+    ext : str, optional
+        File extension to match (default='.geojson').
 
-    Returns:
-        Optional[str]: Absolute file path of the newest feature file, or None.
+    Returns
+    -------
+    Optional[Path]
+        Absolute Path of the newest feature file, or None if not found.
     """
-    pattern = re.compile(rf"^{re.escape(feature)}-(\d{{4}}-\d{{2}}-\d{{2}}).*{re.escape(ext)}$", re.IGNORECASE)
-    newest_file = None
-    newest_date = None
 
-    for filename in os.listdir(path):
-        match = pattern.match(filename)
+    pattern = re.compile(
+        rf"^{re.escape(feature)}-(\d{{4}}-\d{{2}}-\d{{2}}).*{re.escape(ext)}$",
+        re.IGNORECASE
+    )
+
+    newest_file: Optional[Path] = None
+    newest_date: Optional[datetime] = None
+
+    for file in path.iterdir():  # iterdir() yields Path objects
+        if not file.is_file():
+            continue
+
+        match = pattern.match(file.name)
         if match:
             try:
                 file_date = datetime.strptime(match.group(1), "%Y-%m-%d")
                 if newest_date is None or file_date > newest_date:
                     newest_date = file_date
-                    newest_file = filename
+                    newest_file = file
             except ValueError:
                 continue
+
     if newest_file:
-        return os.path.abspath(os.path.join(path, newest_file))
+        return newest_file.resolve()  # returns absolute Path
     return None
+
 
 def load_shapefile_from_zip(zip_path="../data/neighborhoods-shp.zip" ):
     """Extracts, loads a shapefile from a ZIP archive."""

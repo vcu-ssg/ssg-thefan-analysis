@@ -13,13 +13,21 @@ import sys
 import sqlite3
 import requests
 import numpy as np
+import folium
+
 import pandas as pd
+pd.set_option("display.max_rows", None)
+
 import geopandas as gpd
 import matplotlib.pyplot as plt
 
 from matplotlib.patches import Patch
 from matplotlib.lines import Line2D
 from math import floor
+from pathlib import Path
+
+from fandu.mapping_utils import get_boundary_map
+from fandu.geo_utils import get_newest_path
 
 from loguru import logger
 # Configure loguru to only log to stderr (console)
@@ -45,23 +53,6 @@ import duckdb
 con = duckdb.connect()
 x = con.execute("INSTALL spatial; LOAD spatial;")
 
-sys.path.append("..")
-from fandu.geo_utils import get_newest_file
-
-pd.set_option("display.max_rows", None)
-
-precious_folder = "../precious/"
-
-features = ["Addresses"]
-
-selector = "Civic_Associations"
-selector_key = "Fan District Association"
-
-fda_contacts_filename = get_newest_file( precious_folder,'FDA_contacts',ext='.csv')
-
-```
-```{python}
-
 def show_result_set( query, **kwargs ):
     print('::: {.column-screen-inset style="font-size:0.7em"}')
     df = con.execute( query ).fetch_df()
@@ -75,20 +66,20 @@ def show_result_set( query, **kwargs ):
 ## Load files
 
 ```{python}
-#| echo: true
+# Load and filter files
 
-# Load the neighborhoods GeoJSON
-# creates data["Parcels"] containing geojson data.
-data = {}
-for feature in [selector] + features:
-    geofile = get_newest_file( precious_folder, feature, ext=".geojson" )
-    #logger.debug(geofile)
-    logger.info(f"Found {feature}:  {geofile}" )
-    data[feature] = gpd.read_file( geofile )
+precious_folder = Path("../precious/")
 
-# convert all feature files to same CRS mapping as Civic_Associations
-for feature in features:
-    data[feature] = data[feature].to_crs( data[selector].crs )
+address_file_root = "Addresses"
+boundary_file_root = "Civic_Associations"
+boundary_selector = "Fan District Association"
+
+boundary_path = get_newest_path( precious_folder,boundary_file_root )
+m, boundary_layer, boundary_shape = get_boundary_map( boundary_path,boundary_selector )
+
+addresses_path = get_newest_path( precious_folder,address_file_root)
+addresses_gpd = gpd.read_file( addresses_path )
+addresses_gpd = addresses_gpd.to_crs( boundary_shape.crs )
 
 ```
 
@@ -97,15 +88,10 @@ for feature in features:
 ```{python}
 #| echo: true
 # columns to drop:
-shared_drops = ['CreatedBy','CreatedDate','EditBy','EditDate']
-## file specific column drop mappings
-drop_columns = {
-    "Civic_Associations" : ['OBJECTID'] + shared_drops,
-    "Addresses"          : ['OBJECTID'] + shared_drops,
-    "Parcels"            : ['OBJECTID'],
-}
-for feature in [selector] + features:
-    data[feature] = data[feature].drop(columns=drop_columns[feature])
+shared_drops = ['OBJECTID','CreatedBy','CreatedDate','EditBy','EditDate']
+
+addresses_gpd = addresses_gpd.drop( columns = shared_drops )
+boundary_shape = boundary_shape.drop( columns = shared_drops )
 
 ```
 
@@ -114,13 +100,8 @@ for feature in [selector] + features:
 ```{python}
 #| echo: true
 
-# Pull out only FDA from Civic_Associations and store it
-data[selector_key] = data[selector][ data[selector]["Name"] == selector_key ]
 
-# Select only features from the selector_key (FDA).  perform spatial join.
-for feature in features:
-    predicate = "overlaps" if feature=="Neighborhoods" else "within"
-    data[feature+"_in_fan"] = gpd.sjoin(data[feature], data[selector_key], predicate=predicate, how="inner")
+filtered_addresses = gpd.sjoin( addresses_gpd, boundary_shape, predicate="within", how="inner")
 
 ```
 
@@ -129,14 +110,10 @@ for feature in features:
 ```{python}
 #| echo: true
 # Drop columns created from spatial join
-shared_drops = ["index_right","AdoptionDate","ChangeDate","Shape__Area","Shape__Length"]
-drop_columns = {
-    "Addresses"          : ['GlobalID'] + shared_drops,
-    "Parcels"            : ['MaskedOwner','GlobalID_left','GlobalID_right'] + shared_drops,
-}
-for feature in features:
-    feature_name = feature+"_in_fan"
-    data[feature_name] = data[feature_name].drop(columns=drop_columns[feature])
+shared_drops = ["GlobalID","index_right","AdoptionDate","ChangeDate","Shape__Area","Shape__Length"]
+
+filtered_addresses = filtered_addresses.drop( columns = shared_drops )
+
 ```
 
 
@@ -144,7 +121,7 @@ for feature in features:
 
 ```{python}
 #| echo: true
-gdf = data["Addresses_in_fan"]
+gdf = filtered_addresses
 
 # Trim and normalize white space
 gdf = gdf.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
@@ -244,29 +221,53 @@ gdf.loc[gdf["AddressBase"] == "425 Strawberry St", "AddressLabel"] = (
 ).str.strip()
 ```
 
-```{python}
-#| echo: true
+### Create AddressStreet for sorting purposes
 
-data[feature_name] = gdf
+```{python}
+gdf["AddressStreet"] = (
+    gdf[["StreetDirection", "StreetName", "StreetType"]]
+    .fillna("")                                  # replace NaN with ""
+    .agg(" ".join, axis=1)                       # join them with spaces
+    .str.replace(r"\s+", " ", regex=True)        # collapse multiple spaces
+    .str.strip()                                 # remove leading/trailing spaces
+)
+```
+
+
+### Record number of addresses that share this base address.
+
+```{python}
+gdf["Shared_AddressBase_Cnt"] = gdf.groupby("AddressBase")["AddressBase"].transform("count")
+```
+
+### Record number of addresses that share this geometry.
+
+```{python}
+from shapely import to_wkt
+
+# Convert geometries to WKT (as strings)
+gdf["_geom_wkt"] = gdf.geometry.apply(to_wkt)
+
+# Assign unique ID to each distinct geometry (starting from 1)
+gdf["AddressGeometryID"] = pd.factorize(gdf["_geom_wkt"])[0] + 10000
+
+# Count how many rows share that exact WKT geometry
+gdf["Shared_AddressGeometry_Cnt"] = gdf.groupby("AddressGeometryID")["AddressGeometryID"].transform("count")
+
+# Drop the helper column (optional)
+gdf = gdf.drop(columns="_geom_wkt")
 
 ```
+
+
 
 ### Save Parcels_in_fan and Addresses_in_fan for later use.
 
 ```{python}
 #| echo: true
-for feature in features:
-    feature_name = feature+"_in_fan"
 
-    # store to parquet using pyarror (workflow tip from chatgpt
-    data[feature_name].to_parquet(f"{feature_name}.parquet",engine="pyarrow")
-    logger.info(f"Saving: {feature_name}.parquet" )
-
-    # create dataframe without spatial geometries and store to CSV
-    gdf = data[feature_name].drop(columns="geometry")
-    gdf.to_csv(f"{feature_name}.csv", index=False)
-    logger.info(f"Saving: {feature_name}.csv" )
-
+feature_name = address_file_root + "_in_fan"
+gdf.to_parquet( f"{feature_name}.parquet",engine="pyarrow")
 
 ```
 
@@ -277,8 +278,17 @@ are necessary, iterate with the cleaning sections and rerun the report until
 everyting is clean.
 
 ```{python}
-x = con.execute("CREATE OR REPLACE TABLE addresses AS SELECT * FROM 'Addresses_in_fan.parquet';")
+x = con.execute(f"CREATE OR REPLACE TABLE addresses AS SELECT * FROM '{feature_name}.parquet';")
 ```
+
+## Examine columns
+
+```{python}
+show_result_set("""
+describe addresses
+""",pageLength=10)
+```
+
 
 ## List count addresses by zipcode
 ```{python}
@@ -295,6 +305,55 @@ order by
   ZipCode
 """,pageLength=10)
 ```
+
+
+## Multiple Addresses that share the same Geometry
+
+We can also identify properties that share the same geometry.  Further,
+there are some case where units share a base address but NOT share a geometry.
+
+```{python}
+#| output: asis
+show_result_set("""
+with test_cte as (
+ select AddressBase, count( AddressLabel ) as AddressBaseCnt
+ from addresses group by AddressBase
+)
+select
+  a.AddressLabel, Mailable, a.Shared_AddressGeometry_Cnt, b.AddressBaseCnt, AddressGeometryID
+from
+  addresses a left join test_cte b on (a.AddressBase=b.AddressBase)
+where
+  b.AddressBaseCnt < a.Shared_AddressGeometry_Cnt
+order by
+  a.AddressGeometryID, a.AddressBase, AddressLabel
+""",pageLength=10)
+```
+
+## Multiple Geometries that share the same AddressBase
+
+We can also identify properties that share the same geometry.  Further,
+there are some case where units share a base address but NOT share a geometry.
+
+```{python}
+#| output: asis
+show_result_set("""
+with test_cte as (
+ select AddressBase, count( AddressLabel ) as AddressBaseCnt
+ from addresses group by AddressBase
+)
+select
+  a.AddressLabel, Mailable, a.Shared_AddressGeometry_Cnt, b.AddressBaseCnt, a.AddressBase, a.AddressGeometryID
+from
+  addresses a left join test_cte b on (a.AddressBase=b.AddressBase)
+where
+  b.AddressBaseCnt > a.Shared_AddressGeometry_Cnt
+order by
+  a.AddressBase, AddressGeometryID, AddressLabel
+""",pageLength=10)
+```
+
+
 
 ## List odd addresses
 
@@ -377,13 +436,13 @@ WHERE AddressLabel NOT LIKE AddressBase || '%';
 #| output: asis
 show_result_set("""
 SELECT 
-  '"' || AddressLabel || '"',
-  '"' || AddressBase || '"',
-  '"' || AddressExtension || '"',
-  '"' || ExtensionWithUnit || '"',
-  len(addresslabel),
-  len(addressbase),
-  len(addressextension)
+  '"' || AddressLabel || '"' as AddressLabel,
+  '"' || AddressBase || '"' as AddressBase,
+  '"' || AddressExtension || '"' as AddressExtension,
+  '"' || ExtensionWithUnit || '"' as ExtensionWithUnit,
+  len(addresslabel) as LabelLen,
+  len(addressbase) as BaseLen,
+  len(addressextension) as ExtensionLen
 FROM addresses
 WHERE upper(AddressLabel) NOT LIKE ('% ' || upper(AddressExtension) || '%')
   AND AddressExtension IS NOT NULL 
@@ -482,6 +541,4 @@ select * from addresses
 show(df,pageLength=10)
 ```
 :::
-
-
 

@@ -16,6 +16,7 @@ import numpy as np
 import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 from matplotlib.patches import Patch
 from matplotlib.lines import Line2D
@@ -51,19 +52,20 @@ import duckdb
 con = duckdb.connect()
 x = con.execute("INSTALL spatial; LOAD spatial;")
 
-sys.path.append("..")
-from fandu.geo_utils import get_newest_file
+#sys.path.append("..")
+from fandu.mapping_utils import get_boundary_map
+from fandu.geo_utils import get_newest_path
 
 pd.set_option("display.max_rows", None)
 
-precious_folder = "../precious/"
+precious_folder = Path("../precious/")
 
 features = ["Parcels"]
 
 selector = "Civic_Associations"
 selector_key = "Fan District Association"
 
-fda_contacts_filename = get_newest_file( precious_folder,'FDA_contacts',ext='.csv')
+fda_contacts_filename = get_newest_path( precious_folder,'FDA_contacts',ext='.csv')
 
 ```
 ```{python}
@@ -87,7 +89,7 @@ def show_result_set( query, **kwargs ):
 # creates data["Parcels"] containing geojson data.
 data = {}
 for feature in [selector] + features:
-    geofile = get_newest_file( precious_folder, feature, ext=".geojson" )
+    geofile = get_newest_path( precious_folder, feature, ext=".geojson" )
     #logger.debug(geofile)
     logger.info(f"Found {feature}:  {geofile}" )
     data[feature] = gpd.read_file( geofile )
@@ -176,10 +178,10 @@ mapping = {
     "Multi-Family": "FanResidential",
     "Duplex (2 Family)" : "FanResidential",
     "Commercial": "FanBusiness",
-    "Industrial": "FanBusiness",
+    "Industrial": "FanOther",
     "Office" : "FanBusiness",
-    "Institutional" : "FanBusiness",
-    "Mixed-Use" : "FanMixed-Use"
+    "Institutional" : "FanOther",
+    "Mixed-Use" : "FanMixedUse"
 }
 gdf["FanUse"] = gdf["LandUse"].map(mapping).fillna("FanOther")
 
@@ -188,6 +190,9 @@ mask = gdf["PropertyClass"].fillna("").str.contains("vacant|parking|common|garag
 # Apply recode
 gdf.loc[mask, "FanUse"] = "FanOther"
 
+gdf.loc[gdf["PropertyClass"].fillna("").eq("B University"), "FanUse"] = "FanUniversity"
+gdf.loc[gdf["PropertyClass"].fillna("").eq("B Educational"), "FanUse"] = "FanSchools"
+gdf.loc[gdf["PropertyClass"].fillna("").eq("B Religious/Church/Synagogue"), "FanUse"] = "FanChurches"
 
 # A new variable to permit easy selecting
 
@@ -202,11 +207,33 @@ gdf.loc[mask, "FanUseType"] = "FanIgnore"
 mapping = {
     "FanResidential": 1,
     "FanBusiness": 10,
-    "FanMixed-Use" : 20,
+    "FanMixedUse" : 20,
+    "FanSchools" : 30,
+    "FanChurches" : 40,
+    "FanUniversity" : 50,
     "FanOther": 99
 }
 gdf["FanUseOrder"] = gdf["FanUse"].map(mapping).fillna(99)
 
+```
+
+```{python}
+from shapely import to_wkt
+
+# Convert geometries to WKT (as strings)
+gdf["_geom_wkt"] = gdf.geometry.apply(to_wkt)
+
+# Assign unique ID to each distinct geometry (starting from 1)
+gdf["ParcelGeometryID"] = pd.factorize(gdf["_geom_wkt"])[0] + 50000
+
+# Count how many rows share that exact WKT geometry
+gdf["Shared_ParcelGeometry_Cnt"] = gdf.groupby("ParcelGeometryID")["ParcelGeometryID"].transform("count")
+
+# Drop the helper column (optional)
+gdf = gdf.drop(columns="_geom_wkt")
+```
+
+```{python}
 data["Parcels_in_fan"] = gdf
 
 ```
@@ -255,6 +282,7 @@ WITH geom_keyed AS (
         FanUseOrder,
         FanUseType,
         geometry,
+        ParcelGeometryID,
         ST_AsText(geometry) AS geom_wkt
     FROM parcels
 ),
@@ -307,6 +335,7 @@ geom_representatives AS (
 -- Now pick one representative parcel per geometry
 SELECT DISTINCT ON (r.geom_wkt)
     p.ParcelID AS RepresentativeParcelID,
+    p.ParcelGeometryID,
     p.PIN,
     r.RepresentativeLandUse AS LandUse,
     r.RepresentativePropertyClass AS PropertyClass,

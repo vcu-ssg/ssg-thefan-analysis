@@ -1,2 +1,108 @@
 /.quarto/
 **/*.quarto_ipynb
+# ========================================
+# Quarto / Python project .gitignore
+# ========================================
+
+# --- Quarto ---
+# Rendered output (HTML, PDF, docx, etc.)
+*_files/
+*_cache/
+*.html
+*.pdf
+*.docx
+*.pptx
+
+# Quarto site or book output
+/_site/
+/docs/
+/public/
+
+# Quarto metadata and temporary files
+/.quarto/
+/.quarto-build/
+/.DS_Store
+/.ipynb_checkpoints/
+
+# --- Python ---
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.ipynb_checkpoints/
+
+# Poetry / Pipenv / virtualenv
+poetry.lock
+# (keep pyproject.toml tracked)
+pip-wheel-metadata/
+*.egg-info/
+.eggs/
+
+# Distribution / packaging
+build/
+dist/
+wheels/
+*.egg
+MANIFEST
+
+# --- IDEs and editors ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+
+# --- OS files ---
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# --- Logs and runtime files ---
+*.log
+*.out
+*.err
+*.tmp
+*.bak
+
+# --- Jupyter / Notebooks ---
+.ipynb_checkpoints/
+*.nbconvert.ipynb
+
+# --- Data & analysis ---
+# Comment these out if you version control small example data
+/data/
+*.csv
+*.tsv
+*.parquet
+*.feather
+*.db
+*.sqlite
+*.duckdb
+
+# --- Secrets & environment ---
+.env
+.env.*
+*.key
+*.pem
+*.crt
+*.p12
+*.token
+*.secrets.json
+
+# --- OS / Cache ---
+__MACOSX/
+.cache/
+tmp/
+.temp/
+
+# --- Quarto render logs ---
+.quarto-build/
+.quarto-preview/
