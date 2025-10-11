@@ -1,0 +1,175 @@
+---
+title: Quick look at zones
+format:
+    html:
+        embed-resources: true
+author: John Leonard
+date: last-modified
+---
+
+*Zones* were assigned to each address in the data set. Zones
+were generally assigned to east-west streets.  North-south streets were
+clipped at east-west streets, with homes in each block assigned to the northern
+east-west street.
+
+
+```{python}
+import sys
+import pandas as pd
+pd.set_option("display.max_rows", None)
+
+import geopandas as gpd
+import matplotlib.pyplot as plt
+
+from matplotlib.patches import Patch
+from matplotlib.lines import Line2D
+
+from loguru import logger
+# Configure loguru to only log to stderr (console)
+logger.remove()  # remove default handler
+logger.add(sys.__stderr__, level="INFO", format="{level: <8} | {name}:{function}:{line} - {message}" )  # use the original stderr, not Jupyter’s proxy
+
+## Set up itables
+import itables
+from itables import show
+
+# Sensible global defaults for itables
+itables.options.maxBytes = 0                        # show full content in each cell
+itables.options.classes = ["display", "compact"]    # compact, clean look
+itables.options.lengthMenu = [10, 25, 50, 100]      # page length menu
+itables.options.pageLength = 25
+itables.options.buttons = ["copy", "csv", "print"]
+itables.options.scrollX = True                      # allow horizontal scroll if needed
+itables.options.scrollY = True                      # allow horizontal scroll if needed
+itables.options.ordering = True
+
+## Set up duckdb
+
+import duckdb
+con = duckdb.connect()
+x = con.execute("INSTALL spatial; LOAD spatial;")
+```
+
+```{python}
+
+def show_result_set( query, **kwargs ):
+    # This depends on global variable CON to keep the argument list clean
+    print('::: {.column-page-right style="font-size:0.9em"}')
+    df = con.execute( query ).fetch_df()
+    show(df,**kwargs)
+    print(':::')
+```
+
+
+
+```{python}
+x = con.execute("""
+CREATE OR REPLACE TABLE golden AS SELECT * FROM 'Golden_fan.parquet';
+""");
+```
+
+## Pivot of Zones vs Fan Member Status
+
+Below is a table of the number of addresses in each zone.  The table shows
+total addresses in each zone, and a breakdown of the total:
+
+```{python}
+#| output: asis
+show_result_set("""
+select Zone as Zone,
+  sum( 1 ) as Total,
+  sum( case when FanMemberStatus='Current member' then 1 else 0 end) as Current,
+  sum( case when FanMemberStatus='Expired member' then 1 else 0 end) as Expired,
+  sum( case when FanMemberStatus='Contact' then 1 else 0 end) as Contact,
+  sum( case when FanMemberStatus='Not in FDA DB' then 1 else 0 end) as Not_in_FDA_db
+  from golden
+  group by zone order by zone
+""")
+```
+
+
+* *Current* - the address belongs to current FDA member,
+* *Expired* - the address belongs to an expired or lapsed FDA member,
+* *Contact* - the address belongs to someone who hasn't been a member of the FDA but
+we're tracking them in our FDA database as a contact (holiday house tour, etc.), and
+* *Not in FDA db* - the address is not associated with a person or a person that we track in the FDA database.
+
+## Pivot of Membership Level name vs Fan Member Status
+
+Here is a look at the same data grouped by Membership Level Name. Fan addresses that
+are not associated with anyone in the FDA database are shown as *None* for the
+membership level name and *null_member* for the membership status.
+
+```{python}
+#| output: asis
+show_result_set("""
+select MembershipLevelName,
+  sum( 1 ) as Total,
+  sum( case when FanMemberStatus='Current member' then 1 else 0 end) as Current,
+  sum( case when FanMemberStatus='Expired member' then 1 else 0 end) as Expired,
+  sum( case when FanMemberStatus='Contact' then 1 else 0 end) as Contact,
+  sum( case when FanMemberStatus='Not in FDA DB' then 1 else 0 end) as Not_in_FDA_db
+from golden
+group by 
+  membershiplevelname
+order by
+  case 
+    when substr(membershiplevelname,1,3)='Hou' then 1 
+    when substr(membershiplevelname,1,3)='Ind' then 5
+    when substr(membershiplevelname,1,3)='Org' then 10
+    when substr(membershiplevelname,1,3)='Fri' then 20
+    when substr(membershiplevelname,1,3)='Stu' then 30
+  else 99 end,
+  membershipLevelName
+""")
+```
+
+## Pivot of Address Note vs Fan Member Status
+
+Below we look at the *Address Note* associated with all of our addresses.
+
+Note that I found several members of the FDA who don't actually live within the Fan, rather then live just outside the boundary as defined by the City of Richmond.
+
+```{python}
+#| output: asis
+show_result_set("""
+select AddressNote,
+  sum( 1 ) as Total,
+  sum( case when FanMemberStatus='Current member' then 1 else 0 end) as Current,
+  sum( case when FanMemberStatus='Expired member' then 1 else 0 end) as Expired,
+  sum( case when FanMemberStatus='Contact' then 1 else 0 end) as Contact,
+  sum( case when FanMemberStatus='Not in FDA DB' then 1 else 0 end) as Not_in_FDA_db
+from golden
+group by 
+  AddressNote
+order by
+  AddressNote
+""")
+```
+
+* *Barely outside Fan* - this members live just outside the Fan boundary, for example just south of Main Street or a specific section of Arthur Ashe Blvd.
+* *In Fan but not in city DB* - this members obviously live in the Fan but the address they provided to the FDA wasn't found in the City DB.
+* *Maybe bad spelling* - I couldn't determine how to fix these, but they looked like they might be in the Fan.
+* *Outside the Fan* - these addresses are clearly not in the Fan.
+* *Valid Fan Address* - assigned to addresses that matched cleanly with the City database.
+
+## Pivot of FanUse vs Fan Member Status
+
+*FanUse* is based on the City *Land Use* and *Property class* fields.
+
+```{python}
+#| output: asis
+show_result_set("""
+select FanUse,
+  sum( 1 ) as Total,
+  sum( case when FanMemberStatus='Current member' then 1 else 0 end) as Current,
+  sum( case when FanMemberStatus='Expired member' then 1 else 0 end) as Expired,
+  sum( case when FanMemberStatus='Contact' then 1 else 0 end) as Contact,
+  sum( case when FanMemberStatus='Not in FDA DB' then 1 else 0 end) as Not_in_FDA_db
+from golden
+group by 
+  FanUse, FanUseOrder
+order by
+  FanUseOrder
+""")
+```
