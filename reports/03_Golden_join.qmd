@@ -420,6 +420,7 @@ SortableName
 """).fetch_df()
 
 with pd.ExcelWriter("fda_merged.xlsx", engine="xlsxwriter") as writer:
+
     df.to_excel(writer, sheet_name="Full join", index=False)
     # Example: auto-adjust column width
     for column in df:
@@ -427,7 +428,24 @@ with pd.ExcelWriter("fda_merged.xlsx", engine="xlsxwriter") as writer:
         col_idx = df.columns.get_loc(column)
         writer.sheets["Full join"].set_column(col_idx, col_idx, col_width)
 
-    
+    # Write one sheet per Zone
+    for zone, zone_df in df.groupby("zone", dropna=False):
+        # Replace invalid characters with a dash and trim to 31 chars
+        if pd.isna(zone):
+            safe_name = "Unknown"
+        else:
+            safe_name = re.sub(r"[:\\/*?\[\]]", "-", str(zone))  # remove illegal chars
+            safe_name = safe_name[:31]  # Excel sheet name limit
+
+        # Write sheet
+        zone_df.to_excel(writer, sheet_name=safe_name, index=False)
+
+        # Auto-adjust columns for this sheet
+        worksheet = writer.sheets[safe_name]
+        for i, column in enumerate(zone_df.columns):
+            col_width = max(zone_df[column].astype(str).map(len).max(), len(column))
+            worksheet.set_column(i, i, col_width)
+
 df.to_parquet("Golden_fan.parquet")
 
 ```
